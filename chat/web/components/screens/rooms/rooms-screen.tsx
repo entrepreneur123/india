@@ -90,7 +90,8 @@ export function RoomsScreen() {
               maxLength={40}
               onChange={(e) => setText(e.target.value)}
               placeholder={st('rooms.searchPlaceholder')}
-              className="h-full min-w-0 flex-1 rounded-full bg-transparent pe-10 ps-10 text-[15px] outline-none [&::-webkit-search-cancel-button]:hidden"
+              // Room for the clear button only once there is text; a long hint ends in "…" on narrow phones.
+              className={`h-full min-w-0 flex-1 rounded-full bg-transparent ps-10 text-[15px] text-ellipsis outline-none [&::-webkit-search-cancel-button]:hidden ${text ? 'pe-10' : 'pe-3'}`}
             />
             {text ? (
               <button

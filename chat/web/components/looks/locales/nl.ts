@@ -78,9 +78,9 @@ const nl: LooksDict = {
   'layout.resizeHint': 'Sleep om het formaat te wijzigen. Tik twee keer voor alleen de chat.',
   'layout.showRoom': 'Ruimte tonen',
 
-  'ended.add': 'De chat is afgelopen. Voeg {name} toe als vriend om verder te praten.',
-  'ended.waiting': 'De chat is afgelopen. Wachten tot {name} je vriendschapsverzoek accepteert.',
-  'ended.incoming': 'De chat is afgelopen. {name} wil vrienden worden: accepteer om verder te praten.',
+  'ended.add': 'Voeg {name} toe als vriend om verder te praten.',
+  'ended.waiting': 'Wachten tot {name} je vriendschapsverzoek accepteert.',
+  'ended.incoming': '{name} wil vrienden worden: accepteer om verder te praten.',
   'find.title': 'Zoeken op ID',
   'find.placeholder': 'ID’s zoeken',
   'find.hint': 'Typ een ID om iemand te vinden',

@@ -8,10 +8,11 @@ export function Landing({ lang, t }: { lang: string; t: FullDict }) {
   const plain = (s: string) => s.replace(/[[\]]/g, '')
   return (
     <main lang={lang} dir={isRtl(lang as never) ? 'rtl' : 'ltr'} className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-8 px-5 py-12 sm:py-20">
-      <p className="text-sm font-semibold text-primary-text">yaari · {t['auth.badge']}</p>
+      {/* Not the app's badge ("phone-verified" / "no phone number needed"): which is true depends on a server switch. */}
+      <p className="text-sm font-semibold text-primary-text">yaari · 18+</p>
       <h1 className="text-4xl leading-tight font-bold tracking-tight text-balance sm:text-5xl">{plain(t['auth.headline'])}</h1>
       <p className="text-lg leading-relaxed text-pretty text-muted-foreground">{t['auth.intro']}</p>
-      <a href={`/?lang=${lang}`} className="w-fit rounded-full bg-primary px-8 py-3.5 text-lg font-semibold text-primary-foreground">
+      <a href={`/?lang=${lang}`} className="w-fit rounded-full bg-primary px-8 py-3.5 text-xl font-bold text-primary-foreground">
         {t['lobby.start']}
       </a>
       <section className="grid gap-4 sm:grid-cols-2">

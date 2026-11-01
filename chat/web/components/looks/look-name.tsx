@@ -129,7 +129,7 @@ export function GenderAge({ p, className }: { p: { age: number; gender?: Gender 
     <span
       className={cn(
         'inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 align-middle text-[0.8em] leading-[1.45] font-semibold tabular-nums',
-        p.gender === 'female' ? 'bg-pink-500/12 text-pink-600' : p.gender === 'male' ? 'bg-sky-500/12 text-sky-600' : 'bg-muted text-muted-foreground',
+        p.gender === 'female' ? 'bg-pink-500/12 text-pink-700 dark:text-pink-400' : p.gender === 'male' ? 'bg-sky-500/12 text-sky-700 dark:text-sky-400' : 'bg-muted text-muted-foreground',
         className,
       )}
     >

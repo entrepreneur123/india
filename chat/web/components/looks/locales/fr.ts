@@ -78,9 +78,9 @@ const fr: LooksDict = {
   'layout.resizeHint': 'Faites glisser pour redimensionner. Touchez deux fois pour n’afficher que le chat.',
   'layout.showRoom': 'Afficher le salon',
 
-  'ended.add': 'Le chat est terminé. Ajoutez {name} en ami pour continuer à discuter.',
-  'ended.waiting': 'Le chat est terminé. En attente de l’acceptation de votre demande par {name}.',
-  'ended.incoming': 'Le chat est terminé. {name} veut être votre ami : acceptez pour continuer à discuter.',
+  'ended.add': 'Ajoutez {name} en ami pour continuer à discuter.',
+  'ended.waiting': 'En attente de l’acceptation de votre demande par {name}.',
+  'ended.incoming': '{name} veut être votre ami : acceptez pour continuer à discuter.',
   'find.title': 'Rechercher par identifiant',
   'find.placeholder': 'Rechercher des identifiants',
   'find.hint': 'Saisissez un identifiant pour trouver quelqu’un',

@@ -437,8 +437,9 @@ export function ChatView({
 }
 
 /**
- * An ended random chat with someone who isn't a friend (040): the history stays, a new line needs friendship. The bar
- * says so and holds the friend button; once they are friends the composer comes back.
+ * A thread I may not write in (chat_open false): an ended random chat with someone who isn't a friend (040), or a DM to
+ * someone who takes messages from friends only (127). The history stays; the bar holds the friend button and words it
+ * for both cases (no "chat ended", which a DM never was); once they are friends the composer comes back.
  */
 function FriendsBar({ name, f }: { name: string; f: ReturnType<typeof useFriendship> }) {
   const { t } = useI18n()

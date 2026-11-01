@@ -166,7 +166,7 @@ export function AudioBubble({ url, mine }: { url: string; mine: boolean }) {
       />
       <button
         type="button"
-        onClick={() => (playing ? ref.current?.pause() : void ref.current?.play())}
+        onClick={() => (playing ? ref.current?.pause() : void ref.current?.play().catch(() => undefined))} // a pause before it starts rejects (AbortError)
         className={cn('grid size-9 shrink-0 place-items-center rounded-full', mine ? 'bg-white/25' : 'bg-foreground/10')}
         aria-label={t('composer.voice')}
         aria-pressed={playing}

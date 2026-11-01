@@ -23,7 +23,8 @@ export function useCountryNames() {
   }, [locale])
 }
 
-export function CountrySelect({ value, onChange }: { value: Country; onChange: (c: Country) => void }) {
+/** `named`: the country's name instead of its dialling code (picking where one lives, not a phone number's prefix). */
+export function CountrySelect({ value, onChange, named }: { value: Country; onChange: (c: Country) => void; named?: boolean }) {
   const { t } = useI18n()
   const nameOf = useCountryNames()
   const [open, setOpen] = useState(false)
@@ -74,13 +75,13 @@ export function CountrySelect({ value, onChange }: { value: Country; onChange: (
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={t('country.code', { name: nameOf(value), dial: value.dial })}
+        aria-label={named ? `${t('pf.country')}: ${nameOf(value)}` : t('country.code', { name: nameOf(value), dial: value.dial })}
         className="flex h-12 items-center gap-2 rounded-xl border border-input bg-card pe-3 ps-3.5 text-[15px] font-semibold transition-colors duration-150 hover:bg-muted focus-visible:border-primary"
       >
         <span className="text-xl leading-none" aria-hidden>
           {flagEmoji(value.iso)}
         </span>
-        <span className="tabular-nums" dir="ltr">+{value.dial}</span>
+        {named ? <span className="truncate">{nameOf(value)}</span> : <span className="tabular-nums" dir="ltr">+{value.dial}</span>}
         <ChevronDown className={cn('size-4 text-muted-foreground transition-transform duration-150', open && 'rotate-180')} aria-hidden />
       </button>
       <AnimatePresence>

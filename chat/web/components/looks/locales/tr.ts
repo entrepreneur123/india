@@ -78,9 +78,9 @@ const tr: LooksDict = {
   'layout.resizeHint': 'Boyutu değiştirmek için sürükle. Yalnızca sohbet için iki kez dokun.',
   'layout.showRoom': 'Odayı göster',
 
-  'ended.add': 'Sohbet bitti. Konuşmaya devam etmek için {name} kişisini arkadaş olarak ekle.',
-  'ended.waiting': 'Sohbet bitti. {name} kişisinin arkadaşlık isteğini kabul etmesi bekleniyor.',
-  'ended.incoming': 'Sohbet bitti. {name} seninle arkadaş olmak istiyor: konuşmaya devam etmek için kabul et.',
+  'ended.add': 'Konuşmaya devam etmek için {name} kişisini arkadaş olarak ekle.',
+  'ended.waiting': '{name} kişisinin arkadaşlık isteğini kabul etmesi bekleniyor.',
+  'ended.incoming': '{name} seninle arkadaş olmak istiyor: konuşmaya devam etmek için kabul et.',
   'find.title': 'Kimlikle bul',
   'find.placeholder': 'Kimlik ara',
   'find.hint': 'Birini bulmak için kimlik yaz',

@@ -78,9 +78,9 @@ const ja: LooksDict = {
   'layout.resizeHint': 'ドラッグでサイズを変更。ダブルタップでチャットだけを表示します。',
   'layout.showRoom': 'ルームを表示',
 
-  'ended.add': 'チャットは終了しました。話を続けるには{name}さんを友だちに追加してください。',
-  'ended.waiting': 'チャットは終了しました。{name}さんが友だちリクエストを承認するのを待っています。',
-  'ended.incoming': 'チャットは終了しました。{name}さんから友だちリクエストが届いています。承認すると話を続けられます。',
+  'ended.add': '話を続けるには{name}さんを友だちに追加してください。',
+  'ended.waiting': '{name}さんが友だちリクエストを承認するのを待っています。',
+  'ended.incoming': '{name}さんから友だちリクエストが届いています。承認すると話を続けられます。',
   'find.title': 'IDで検索',
   'find.placeholder': 'IDを検索',
   'find.hint': 'IDを入力して相手を探しましょう',

@@ -78,9 +78,9 @@ const pl: LooksDict = {
   'layout.resizeHint': 'Przeciągnij, aby zmienić rozmiar. Stuknij dwa razy, aby zostawić sam czat.',
   'layout.showRoom': 'Pokaż pokój',
 
-  'ended.add': 'Czat się zakończył. Dodaj {name} do znajomych, aby dalej rozmawiać.',
-  'ended.waiting': 'Czat się zakończył. Czekamy, aż {name} przyjmie Twoje zaproszenie do znajomych.',
-  'ended.incoming': 'Czat się zakończył. {name} chce dodać Cię do znajomych: zaakceptuj, aby dalej rozmawiać.',
+  'ended.add': 'Dodaj {name} do znajomych, aby dalej rozmawiać.',
+  'ended.waiting': 'Czekamy, aż {name} przyjmie Twoje zaproszenie do znajomych.',
+  'ended.incoming': '{name} chce dodać Cię do znajomych: zaakceptuj, aby dalej rozmawiać.',
   'find.title': 'Szukaj po ID',
   'find.placeholder': 'Szukaj ID',
   'find.hint': 'Wpisz ID, aby kogoś znaleźć',

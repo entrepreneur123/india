@@ -24,6 +24,9 @@ const BIO_MAX = 150
  * An account without a phone (a guest, 123, or Google/Kakao/Facebook/Apple) has no number to take the country from, so
  * the person picks it (the sign-up's own country list). Asked from the session, so it holds after a reload too.
  */
+/** Three digits to add to a suggested ID that is taken (lisa_482). */
+const digits = () => String(100 + Math.floor(Math.random() * 900))
+
 export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) {
   const backend = useBackend()
   const { data: kind } = useSWR('sign-in-kind', () => backend.signInKind())
@@ -51,7 +54,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   }, [name, handleEdited])
   // The suggestion is someone else's already: offer it with a few digits instead.
   useEffect(() => {
-    if (!handleEdited && handleState === 'taken') setHandle(suggestHandle(name, String(100 + Math.floor(Math.random() * 900))))
+    if (!handleEdited && handleState === 'taken') setHandle(suggestHandle(name, digits()))
   }, [handleState, handleEdited, name])
 
   const age = birthDate ? ageFromBirthDate(birthDate) : null
@@ -77,15 +80,24 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         photo,
         country: noPhone ? country.iso : undefined,
       })
-      // The profile comes with a free ID (lisa_4821); then the chosen one. Taken meanwhile: the free one stays.
-      const wanted = handleSpelling(handle)
+      // The profile comes with a free ID (lisa_4821); then the chosen one. A suggested one found taken (submitted before
+      // its check answered, or taken meanwhile) is tried again with digits, as the field would; a typed one keeps the free.
+      let wanted = handleSpelling(handle)
       let mine = p.handle
-      if (wanted && wanted !== mine) {
+      for (let tries = 0; wanted && wanted !== mine; tries++) {
         try {
           mine = await backend.setHandle(wanted)
+          break
         } catch (err) {
-          if (errorCode(err) === 'handle_taken') toast.show(lt('id.keptFree', { handle: mine ?? '' }), 'info')
-          else toast.error(err)
+          if (errorCode(err) !== 'handle_taken') {
+            toast.error(err)
+            break
+          }
+          if (handleEdited || tries === 2) {
+            toast.show(lt('id.keptFree', { handle: mine ?? '' }), 'info')
+            break
+          }
+          wanted = suggestHandle(name, digits())
         }
       }
       onCreated({ ...p, handle: mine })
@@ -171,7 +183,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
       {noPhone ? (
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-semibold">{t('pf.country')}</span>
-          <CountrySelect value={country} onChange={setCountry} />
+          <CountrySelect value={country} onChange={setCountry} named />
         </div>
       ) : null}
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { EN, LANGS, type Dict } from '@/lib/i18n'
 import { Landing } from '@/components/landing'
+import { OG_IMAGES } from '@/lib/site'
 
 // A page per app language for search engines and shared links (owner's item 6): what Yaari is, in that language,
 // from the app's own translated strings (no copy written just for these pages), and Start into the app in it.
@@ -23,7 +24,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     title,
     description: t['auth.intro'],
     alternates: { canonical: `/${lang}`, languages: LANGUAGES },
-    openGraph: { title, description: t['auth.intro'], siteName: 'Yaari', type: 'website', locale: lang },
+    // Whole objects replace the root layout's (shallow merge): the image and the card are repeated, in this language.
+    openGraph: { title, description: t['auth.intro'], siteName: 'Yaari', type: 'website', locale: lang.replace('-', '_'), images: OG_IMAGES },
+    twitter: { card: 'summary_large_image', title, description: t['auth.intro'], images: OG_IMAGES.map((i) => i.url) },
   }
 }
 

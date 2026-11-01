@@ -78,9 +78,9 @@ const ko: LooksDict = {
   'layout.resizeHint': '드래그해서 크기를 조절하세요. 두 번 탭하면 채팅만 보여요.',
   'layout.showRoom': '방 보기',
 
-  'ended.add': '채팅이 끝났어요. 대화를 이어 가려면 {name}님을 친구로 추가해 주세요.',
-  'ended.waiting': '채팅이 끝났어요. {name}님이 친구 신청을 수락하길 기다리고 있어요.',
-  'ended.incoming': '채팅이 끝났어요. {name}님이 친구가 되고 싶어 해요. 수락하면 대화를 이어 갈 수 있어요.',
+  'ended.add': '대화를 이어 가려면 {name}님을 친구로 추가해 주세요.',
+  'ended.waiting': '{name}님이 친구 신청을 수락하길 기다리고 있어요.',
+  'ended.incoming': '{name}님이 친구가 되고 싶어 해요. 수락하면 대화를 이어 갈 수 있어요.',
   'find.title': '아이디로 찾기',
   'find.placeholder': '아이디 검색',
   'find.hint': '아이디를 입력해 사람을 찾아보세요',

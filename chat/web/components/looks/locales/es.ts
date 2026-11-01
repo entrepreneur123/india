@@ -78,9 +78,9 @@ const es: LooksDict = {
   'layout.resizeHint': 'Arrastra para cambiar el tamaño. Toca dos veces para ver solo el chat.',
   'layout.showRoom': 'Mostrar la sala',
 
-  'ended.add': 'El chat terminó. Agrega a {name} como amigo para seguir hablando.',
-  'ended.waiting': 'El chat terminó. Esperando a que {name} acepte tu solicitud de amistad.',
-  'ended.incoming': 'El chat terminó. {name} quiere ser tu amigo: acepta para seguir hablando.',
+  'ended.add': 'Agrega a {name} como amigo para seguir hablando.',
+  'ended.waiting': 'Esperando a que {name} acepte tu solicitud de amistad.',
+  'ended.incoming': '{name} quiere ser tu amigo: acepta para seguir hablando.',
   'find.title': 'Buscar por ID',
   'find.placeholder': 'Buscar ID',
   'find.hint': 'Escribe un ID para encontrar a alguien',

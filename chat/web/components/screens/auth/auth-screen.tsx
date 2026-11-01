@@ -91,7 +91,8 @@ export function AuthScreen({
             </div>
 
             <ol className="flex flex-col gap-4">
-              {HOW.map((s, i) => (
+              {/* Open to guests: the first step is coming in without a number, not verifying one (the badge says so too). */}
+              {(guests ? [{ title: 'auth.guest', body: 'auth.guestBody' } as const, ...HOW.slice(1)] : HOW).map((s, i) => (
                 <li key={s.title} className="flex gap-4">
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-background text-sm font-semibold text-primary-text ring-1 ring-border">
                     {i + 1}

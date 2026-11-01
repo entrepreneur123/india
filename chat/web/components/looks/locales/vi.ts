@@ -78,9 +78,9 @@ const vi: LooksDict = {
   'layout.resizeHint': 'Kéo để đổi kích thước. Chạm hai lần để chỉ xem chat.',
   'layout.showRoom': 'Hiện phòng',
 
-  'ended.add': 'Cuộc trò chuyện đã kết thúc. Kết bạn với {name} để tiếp tục nói chuyện.',
-  'ended.waiting': 'Cuộc trò chuyện đã kết thúc. Đang chờ {name} đồng ý lời mời kết bạn.',
-  'ended.incoming': 'Cuộc trò chuyện đã kết thúc. {name} muốn kết bạn: đồng ý để tiếp tục nói chuyện.',
+  'ended.add': 'Kết bạn với {name} để tiếp tục nói chuyện.',
+  'ended.waiting': 'Đang chờ {name} đồng ý lời mời kết bạn.',
+  'ended.incoming': '{name} muốn kết bạn: đồng ý để tiếp tục nói chuyện.',
   'find.title': 'Tìm theo ID',
   'find.placeholder': 'Tìm ID',
   'find.hint': 'Nhập ID để tìm ai đó',
