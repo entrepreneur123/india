@@ -604,7 +604,6 @@ const vi: Dict = {
   'pf.photoRequired': 'Hãy thêm ảnh đại diện để bắt đầu',
   'video.flip': 'Đổi camera',
   'chat.seeAll': 'Xem tất cả',
-  'voice.cameraNude': 'Camera của bạn đã bị tắt vì hình ảnh trông như khỏa thân',
   'pass.title': 'Vé giới tính',
   'pass.body': 'Chỉ gặp nữ hoặc chỉ gặp nam trong 24 giờ.',
   'pass.get': 'Nhận vé',

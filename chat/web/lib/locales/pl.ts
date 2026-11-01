@@ -607,7 +607,6 @@ const pl: Dict = {
   'pf.photoRequired': 'Dodaj zdjęcie profilowe, aby zacząć',
   'video.flip': 'Przełącz aparat',
   'chat.seeAll': 'Pokaż wszystko',
-  'voice.cameraNude': 'Twoja kamera została wyłączona, bo obraz wyglądał na nagość',
   'pass.title': 'Karnet płci',
   'pass.body': 'Przez 24 godziny poznawaj tylko kobiety albo tylko mężczyzn.',
   'pass.get': 'Zdobądź karnet',

@@ -615,7 +615,6 @@ const id: Dict = {
   'pf.photoRequired': 'Tambahkan foto profil untuk mulai',
   'video.flip': 'Ganti kamera',
   'chat.seeAll': 'Lihat semua',
-  'voice.cameraNude': 'Kameramu dimatikan karena terlihat seperti ketelanjangan',
   'pass.title': 'Pass gender',
   'pass.body': 'Temui hanya perempuan atau hanya laki-laki selama 24 jam.',
   'pass.get': 'Dapatkan pass',

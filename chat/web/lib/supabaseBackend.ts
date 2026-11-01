@@ -262,7 +262,6 @@ type VoiceLive = {
   /** What room changes don't carry (the language, the host's password): set here after my change so it stays. */
   keep: (p: Pick<VoiceStateRow, 'lang' | 'password'>) => void
   mic: (on: boolean) => Promise<void>
-  camera: (on: boolean) => Promise<void>
   startAudio: () => Promise<void>
   /** 46: the room's voices on or off for me. */
   sound: (on: boolean) => Promise<void>
@@ -1764,10 +1763,6 @@ export class SupabaseBackend implements Backend {
         if (!live) throw new BackendError('network')
         await live.mic(a.on)
         break
-      case 'camera':
-        if (!live) throw new BackendError('network')
-        await live.camera(a.on)
-        break
       case 'seat':
         // An open room seats me; a hand-raise room raises my hand instead. Either way LiveKit hears about it.
         if ((await this.rpc<string>('voice_take_seat', { ...room, p_seat: a.seat })) === 'seated') this.voiceSync(roomId, this.uid)
@@ -1932,7 +1927,6 @@ export class SupabaseBackend implements Backend {
         // the microphone goes off here too.
         if (before.seat === null && mine.seat !== null) this.voiceSync(roomId, me)
         if ((mine.seat === null && before.seat !== null) || (mine.muted && !before.muted)) void audio?.setMic(false).catch(() => undefined)
-        if (mine.seat === null && before.seat !== null) void audio?.setCamera(false).catch(() => undefined)
       }
       // Audio only while someone is on the stage: a room nobody talks in is a chat room and costs no LiveKit minutes.
       stage = room.members.some((x) => x.seat !== null)
@@ -2103,13 +2097,11 @@ export class SupabaseBackend implements Backend {
           permissions: () => permissionWaiters.splice(0).forEach((f) => f()),
           micMutedByServer: () => refresh(),
           micHint: (micHint) => setAudio({ micHint }),
-          videos: (videos) => emit({ type: 'videos', videos }),
           gone: (removed) => {
             if (audioCtl !== ctl) return
             audio = null
             audioCtl = null
             emit({ type: 'levels', levels: {} })
-            emit({ type: 'videos', videos: {} })
             if (removed) void fetchState() // removed or ended: the state says which
             retryAudio()
           },
@@ -2144,7 +2136,6 @@ export class SupabaseBackend implements Backend {
         audioState = { status: 'connecting', needsTap: false }
         emit({ type: 'audio', audio: null })
         emit({ type: 'levels', levels: {} })
-        emit({ type: 'videos', videos: {} })
       }
     }
     const audioWaiters: ((a: VoiceAudio | null) => void)[] = []
@@ -2187,30 +2178,6 @@ export class SupabaseBackend implements Backend {
       } catch (e) {
         await a.setMic(false).catch(() => undefined)
         throw e
-      }
-    }
-
-    // My camera (24): only on a seat; nothing is stored, the others see the LiveKit track.
-    const camera = async (on: boolean) => {
-      if (!on) return void (await audio?.setCamera(false).catch(() => undefined))
-      if (mine?.seat == null) throw new BackendError('not_allowed')
-      const a = await waitAudio(8_000)
-      if (!a) throw new BackendError('network')
-      const enable = async () => {
-        try {
-          await a.setCamera(true)
-          return true
-        } catch (e) {
-          const p = e instanceof Error ? e.message : ''
-          if (p === 'denied' || p === 'missing' || p === 'busy') throw new BackendError(`camera_${p}`)
-          return false
-        }
-      }
-      if (!(await enable())) {
-        // LiveKit hasn't heard I'm on a seat yet: ask for it and try once more.
-        this.voiceSync(roomId, me)
-        await waitPermission(4_000)
-        if (!(await enable())) throw new BackendError('not_allowed')
       }
     }
 
@@ -2287,7 +2254,6 @@ export class SupabaseBackend implements Backend {
         void show(base)
       },
       mic,
-      camera,
       startAudio: async () => {
         await audio?.startAudio()
         setAudio({ needsTap: false })

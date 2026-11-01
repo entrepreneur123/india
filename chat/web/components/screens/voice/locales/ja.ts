@@ -73,8 +73,6 @@ const ja: RoomDict = {
   lost: '接続切れ',
   reconnecting: '接続が切れました · 再接続しています…',
   lostLeft: '接続が切れたため、ルームから退出しました',
-  videoBig: '{name}さんを大きく表示',
-  videoSmall: 'ルームに戻る',
   'volumeOf': "自分に聞こえる{name}さんの音量",
   'volumeMute': "自分だけミュート",
   'volumeUnmute': "ミュート解除",

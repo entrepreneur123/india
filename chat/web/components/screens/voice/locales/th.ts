@@ -73,8 +73,6 @@ const th: RoomDict = {
   lost: 'การเชื่อมต่อหลุด',
   reconnecting: 'การเชื่อมต่อหลุด · กำลังเชื่อมต่อใหม่…',
   lostLeft: 'การเชื่อมต่อหลุด คุณจึงออกจากห้องแล้ว',
-  videoBig: 'ขยาย {name}',
-  videoSmall: 'กลับไปที่ห้อง',
   'volumeOf': "ระดับเสียงของ {name} สำหรับฉัน",
   'volumeMute': "ปิดเสียงสำหรับฉัน",
   'volumeUnmute': "เปิดเสียง",

@@ -615,7 +615,6 @@ const ja: Dict = {
   'pf.photoRequired': '始めるにはプロフィール写真を設定してください',
   'video.flip': 'カメラを切り替え',
   'chat.seeAll': '全文を表示',
-  'voice.cameraNude': '裸のように見えたため、カメラをオフにしました',
   'pass.title': '性別パス',
   'pass.body': '24時間、女性だけ・男性だけと出会えます。',
   'pass.get': 'パスを入手',

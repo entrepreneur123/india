@@ -606,7 +606,6 @@ const fr: Dict = {
   'pf.photoRequired': 'Ajoute une photo de profil pour commencer',
   'video.flip': 'Changer de caméra',
   'chat.seeAll': 'Tout afficher',
-  'voice.cameraNude': 'Votre caméra a été coupée car l’image ressemblait à de la nudité',
   'pass.title': 'Pass genre',
   'pass.body': 'Rencontre uniquement des femmes ou uniquement des hommes pendant 24 heures.',
   'pass.get': 'Obtenir le pass',

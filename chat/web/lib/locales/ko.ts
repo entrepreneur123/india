@@ -615,7 +615,6 @@ const ko: Dict = {
   'pf.photoRequired': '프로필 사진을 설정해야 시작할 수 있어요',
   'video.flip': '카메라 전환',
   'chat.seeAll': '전체보기',
-  'voice.cameraNude': '노출로 보여 카메라가 꺼졌어요',
   'pass.title': '성별 패스',
   'pass.body': '24시간 동안 여성만, 또는 남성만 만나요.',
   'pass.get': '패스 받기',

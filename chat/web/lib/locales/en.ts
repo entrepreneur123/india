@@ -614,7 +614,6 @@ const en = {
   'pf.photoRequired': 'Add a profile photo to start',
   'video.flip': 'Switch camera',
   'chat.seeAll': 'See all',
-  'voice.cameraNude': 'Your camera was turned off because it looked like nudity',
   'pass.title': 'Gender pass',
   'pass.body': 'Meet only women or only men for 24 hours.',
   'pass.get': 'Get the pass',

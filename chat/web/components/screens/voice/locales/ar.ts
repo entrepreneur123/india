@@ -78,8 +78,6 @@ const ar: RoomDict = {
   lost: 'انقطع الاتصال',
   reconnecting: 'انقطع الاتصال · جارٍ إعادة الاتصال…',
   lostLeft: 'انقطع اتصالك فخرجت من الغرفة',
-  videoBig: 'تكبير {name}',
-  videoSmall: 'العودة إلى الغرفة',
   'volumeOf': "مستوى صوت {name} عندي",
   'volumeMute': "كتم عندي فقط",
   'volumeUnmute': "إلغاء الكتم",

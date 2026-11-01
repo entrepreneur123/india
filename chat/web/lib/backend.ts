@@ -644,17 +644,8 @@ export interface VoiceAudioState {
   micHint?: 'talkingMuted' | 'silent' | null
 }
 
-/** A camera on in a voice room (24): shown by attaching it to a <video>; `mine` is drawn mirrored. */
-export interface VoiceVideo {
-  mine: boolean
-  attach(el: HTMLVideoElement): void
-  detach(el: HTMLVideoElement): void
-}
-
 export type VoiceEvent =
   | { type: 'room'; room: VoiceRoom }
-  /** The cameras on now, by user id (people on a seat only). */
-  | { type: 'videos'; videos: Record<string, VoiceVideo> }
   /** Null: no audio connection (nobody is on the stage, so the room is a chat room for now). */
   | { type: 'audio'; audio: VoiceAudioState | null }
   /** Audio level 0..1 per user id, several times a second (absent = silent). */
@@ -688,8 +679,6 @@ export type VoiceEvent =
 export type VoiceAction =
   | { type: 'hand'; up: boolean }
   | { type: 'mic'; on: boolean }
-  /** My camera, on a seat only (24). Throws 'camera_denied', 'camera_missing' or 'camera_busy'. */
-  | { type: 'camera'; on: boolean }
   /** Take this free seat (open rooms, host and co-hosts); in a hand-raise room it raises my hand. */
   | { type: 'seat'; seat: number }
   | { type: 'unseat' }
@@ -779,9 +768,6 @@ export type BackendErrorCode =
   | 'room_size'
   | 'voice_removed'
   | 'mic_denied'
-  | 'camera_denied'
-  | 'camera_missing'
-  | 'camera_busy'
   | 'queue_full'
   /** A vote on a poll that has closed. */
   | 'poll_closed'

@@ -605,7 +605,6 @@ const nl: Dict = {
   'pf.photoRequired': 'Voeg een profielfoto toe om te beginnen',
   'video.flip': 'Wissel camera',
   'chat.seeAll': 'Alles bekijken',
-  'voice.cameraNude': 'Je camera is uitgezet omdat het beeld op naaktheid leek',
   'pass.title': 'Genderpas',
   'pass.body': 'Ontmoet 24 uur lang alleen vrouwen of alleen mannen.',
   'pass.get': 'Pas nemen',

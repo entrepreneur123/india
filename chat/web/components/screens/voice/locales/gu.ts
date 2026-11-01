@@ -72,8 +72,6 @@ const gu: RoomDict = {
   'lost': 'કનેક્શન તૂટ્યું',
   'reconnecting': 'કનેક્શન તૂટ્યું · ફરી જોડાઈ રહ્યું છે…',
   'lostLeft': 'કનેક્શન તૂટવાથી તમે રૂમમાંથી બહાર થઈ ગયા',
-  videoBig: '{name}ને મોટું કરો',
-  videoSmall: 'રૂમ પર પાછા',
   volume: 'અવાજ',
   'volumeOf': "મારા માટે {name}નો અવાજ",
   'volumeMute': "ફક્ત મારા માટે મ્યૂટ",

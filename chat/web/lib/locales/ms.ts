@@ -615,7 +615,6 @@ const ms: Dict = {
   'pf.photoRequired': 'Tambah foto profil untuk bermula',
   'video.flip': 'Tukar kamera',
   'chat.seeAll': 'Lihat semua',
-  'voice.cameraNude': 'Kamera anda dimatikan kerana kelihatan seperti bogel',
   'pass.title': 'Pas jantina',
   'pass.body': 'Jumpa wanita sahaja atau lelaki sahaja selama 24 jam.',
   'pass.get': 'Dapatkan pas',

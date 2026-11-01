@@ -615,7 +615,6 @@ const tr: Dict = {
   'pf.photoRequired': 'Başlamak için bir profil fotoğrafı ekle',
   'video.flip': 'Kamerayı değiştir',
   'chat.seeAll': 'Tümünü gör',
-  'voice.cameraNude': 'Görüntü çıplaklık gibi göründüğü için kameran kapatıldı',
   'pass.title': 'Cinsiyet kartı',
   'pass.body': '24 saat boyunca yalnızca kadınlarla ya da yalnızca erkeklerle tanış.',
   'pass.get': 'Kartı al',

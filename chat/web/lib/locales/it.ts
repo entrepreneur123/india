@@ -605,7 +605,6 @@ const it: Dict = {
   'pf.photoRequired': 'Aggiungi una foto profilo per iniziare',
   'video.flip': 'Cambia fotocamera',
   'chat.seeAll': 'Mostra tutto',
-  'voice.cameraNude': 'La tua fotocamera è stata spenta perché sembrava mostrare nudità',
   'pass.title': 'Pass genere',
   'pass.body': 'Incontra solo donne o solo uomini per 24 ore.',
   'pass.get': 'Prendi il pass',

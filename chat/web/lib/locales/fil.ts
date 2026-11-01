@@ -615,7 +615,6 @@ const fil: Dict = {
   'pf.photoRequired': 'Magdagdag ng profile photo para makapagsimula',
   'video.flip': 'Palitan ang camera',
   'chat.seeAll': 'Tingnan lahat',
-  'voice.cameraNude': 'Pinatay ang camera mo dahil mukhang may kahubaran',
   'pass.title': 'Gender pass',
   'pass.body': 'Babae lang o lalaki lang ang makikilala mo sa loob ng 24 oras.',
   'pass.get': 'Kunin ang pass',

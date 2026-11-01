@@ -604,7 +604,6 @@ const ptBR: Dict = {
   'pf.photoRequired': 'Adicione uma foto de perfil para começar',
   'video.flip': 'Trocar câmera',
   'chat.seeAll': 'Ver tudo',
-  'voice.cameraNude': 'Sua câmera foi desligada porque parecia mostrar nudez',
   'pass.title': 'Passe de gênero',
   'pass.body': 'Conheça só mulheres ou só homens por 24 horas.',
   'pass.get': 'Pegar o passe',

@@ -615,7 +615,6 @@ const zhHans: Dict = {
   'pf.photoRequired': '请先设置头像才能开始',
   'video.flip': '切换摄像头',
   'chat.seeAll': '查看全部',
-  'voice.cameraNude': '画面疑似裸露，你的摄像头已关闭',
   'pass.title': '性别通行证',
   'pass.body': '24 小时内只遇见女生或只遇见男生。',
   'pass.get': '获取通行证',

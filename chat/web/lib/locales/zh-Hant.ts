@@ -615,7 +615,6 @@ const zhHant: Dict = {
   'pf.photoRequired': '請先設定大頭貼才能開始',
   'video.flip': '切換鏡頭',
   'chat.seeAll': '查看全部',
-  'voice.cameraNude': '畫面疑似裸露，你的鏡頭已關閉',
   'pass.title': '性別通行證',
   'pass.body': '24 小時內只遇見女生或只遇見男生。',
   'pass.get': '取得通行證',

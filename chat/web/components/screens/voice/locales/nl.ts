@@ -73,8 +73,6 @@ const nl: RoomDict = {
   lost: 'Verbinding weg',
   reconnecting: 'Verbinding verbroken · Opnieuw verbinden…',
   lostLeft: 'Je verbinding viel weg en je hebt de room verlaten',
-  videoBig: '{name} groot tonen',
-  videoSmall: 'Terug naar de ruimte',
   'volumeOf': "Volume van {name} voor mij",
   'volumeMute': "Dempen voor mij",
   'volumeUnmute': "Dempen opheffen",

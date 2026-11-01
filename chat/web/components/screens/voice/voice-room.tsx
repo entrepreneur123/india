@@ -4,7 +4,7 @@ import { NameText } from '@/components/looks/look-name'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, MessageSquareText, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, Volume2, VolumeX, WifiOff, X } from 'lucide-react'
+import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, MessageSquareText, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Volume2, VolumeX, WifiOff, X } from 'lucide-react'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
@@ -26,7 +26,7 @@ import { useRoomT } from './room-t'
 import type { Reaction, VoiceSession } from './voice-session'
 import { AudienceSheet, ClearChatSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, ThemeSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
-import { FocusVideo, latestReactions, LOST_FACE, LostBadge, ReactionBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
+import { latestReactions, LOST_FACE, LostBadge, ReactionBadge, ReactionLayer, SeatPerson, Stage } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
@@ -58,7 +58,6 @@ const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
  *    at the bottom. Links open in a tall sheet; a page shown to the room is a card to open.
  *  - Wide screens: the stage and music in the middle, the chat in a column at the end with a splitter between; a link,
  *    or the page shown to the room, takes the middle's place while it's open (44: the stage isn't needed then).
- *  - A camera on the stage can be made big (47, like Discord): it takes the middle's place (phones: the top's).
  */
 export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; onMinimise: () => void; onLeave: () => void }) {
   const { t, num, rtl } = useI18n()
@@ -78,13 +77,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   /** A link I opened from the chat. */
   const [viewer, setViewer] = useState<string | null>(null)
   const [, setClosedTick] = useState(0)
-  /** 47: whose camera fills the main area (until it's made small, or the camera goes off). */
-  const [focus, setFocus] = useState<string | null>(null)
-  const openLink = useCallback((url: string) => {
-    setFocus(null)
-    setViewer(url)
-  }, [])
-  const unfocus = useCallback(() => setFocus(null), [])
+  const openLink = useCallback((url: string) => setViewer(url), [])
   const { room, me } = s
   const split = useWideSplit(rootRef, wide && !!room)
   // A shared page that can't be framed is only a card that opens in a new tab (older apps could share any page).
@@ -188,16 +181,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       onToggle={() => setSeatsOpen((o) => !o)}
       onPerson={person}
       onEmpty={(seat) => void emptySeat(seat)}
-      onExpand={(id) => {
-        setViewer(null)
-        setFocus(id)
-      }}
     />
   )
-  const focused = focus ? room.members.find((x) => x.profile.id === focus && x.seat !== null) : undefined
-  const big = focused && s.videos[focused.profile.id] ? (
-    <FocusVideo member={focused} video={s.videos[focused.profile.id]} levels={s.levels} onClose={unfocus} className={wide ? 'min-h-0 flex-1' : 'aspect-video w-full'} />
-  ) : null
   const listeners = <Listeners room={room} me={me.profile.id} reactions={s.reactions} wide={wide} hands={hands} onAll={() => setSheet({ kind: 'audience' })} onPerson={person} />
 
   // Music: the slim "listen" bar (the player opens on a tap).
@@ -355,11 +340,11 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
             <div className="relative isolate flex min-h-0 flex-1">
               {/* 45: the room's wall, if the host or a co-host chose one, behind the stage. */}
               <Wall id={room.theme} />
-              {/* The stage stays mounted under a big camera or a page, so going back is instant. */}
-              <div className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-thin', (big || panelUrl) && 'hidden')}>
+              {/* The stage stays mounted under a page, so going back is instant. */}
+              <div className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-thin', panelUrl && 'hidden')}>
                 <div className="mx-auto flex max-w-3xl flex-col gap-3 pt-2 pb-6">{top}</div>
               </div>
-              {big ?? (panelUrl ? (
+              {panelUrl ? (
                 <m.div
                   key="panel"
                   initial={{ opacity: 0, x: rtl ? -16 : 16 }}
@@ -369,12 +354,12 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
                 >
                   {panel(panelUrl)}
                 </m.div>
-              ) : null)}
+              ) : null}
               <ReactionLayer reactions={s.reactions} />
             </div>
           ) : (
             top ? (
-              <PhoneSplit top={big ?? (room.theme ? <div className="relative isolate min-h-full py-1"><Wall id={room.theme} />{top}</div> : top)} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
+              <PhoneSplit top={room.theme ? <div className="relative isolate min-h-full py-1"><Wall id={room.theme} />{top}</div> : top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
             ) : (
               <div className="relative isolate flex min-h-0 flex-1 flex-col">
                 <Wall id={chatWall} />
@@ -600,7 +585,6 @@ function StageSection({
   onToggle,
   onPerson,
   onEmpty,
-  onExpand,
 }: {
   s: VoiceSession
   wide: boolean
@@ -608,7 +592,6 @@ function StageSection({
   onToggle: () => void
   onPerson: (userId: string) => void
   onEmpty: (seat: number) => void
-  onExpand: (userId: string) => void
 }) {
   const { t } = useI18n()
   const { rt } = useRoomT()
@@ -640,7 +623,6 @@ function StageSection({
           )
         }
       />
-      <VideoGrid room={room} videos={s.videos} levels={s.levels} onPerson={onPerson} onExpand={onExpand} />
       <AnimatePresence initial={false} mode="wait">
         {open ? (
           <m.div
@@ -899,7 +881,6 @@ function ControlBar({
   const me = s.me!
   const room = s.room!
   const onStage = me.seat !== null
-  const camOn = !!s.videos[me.profile.id]
   const mod = isMod(me)
   const joins = me.role === 'host' || room.mode === 'open' || mod
 
@@ -935,18 +916,6 @@ function ControlBar({
               {s.sound ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
               {s.sound ? null : <span className="@max-lg:sr-only">{t('voice.soundIsOff')}</span>}
             </Button>
-            {onStage ? (
-              <Button
-                size="icon"
-                variant={camOn ? 'brand' : 'secondary'}
-                onClick={() => void s.act({ type: 'camera', on: !camOn })}
-                aria-label={t(camOn ? 'video.camOff' : 'video.camOn')}
-                aria-pressed={camOn}
-                title={t(camOn ? 'video.camOff' : 'video.camOn')}
-              >
-                {camOn ? <Video className="size-5" aria-hidden /> : <VideoOff className="size-5" aria-hidden />}
-              </Button>
-            ) : null}
             {onStage ? (
               <Button variant="secondary" onClick={() => void s.act({ type: 'unseat' })} className="h-12 min-w-0 shrink px-4" title={t('voice.leaveStage')}>
                 <ArrowDownToLine className="size-5 shrink-0" aria-hidden /> <span className="truncate">{t('voice.leaveStage')}</span>

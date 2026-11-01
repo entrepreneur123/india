@@ -615,7 +615,6 @@ const sw: Dict = {
   'pf.photoRequired': 'Ongeza picha ya wasifu ili uanze',
   'video.flip': 'Badilisha kamera',
   'chat.seeAll': 'Ona yote',
-  'voice.cameraNude': 'Kamera yako imezimwa kwa sababu ilionekana kuonyesha uchi',
   'pass.title': 'Pasi ya jinsia',
   'pass.body': 'Kutana na wanawake tu au wanaume tu kwa saa 24.',
   'pass.get': 'Pata pasi',

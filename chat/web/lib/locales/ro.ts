@@ -606,7 +606,6 @@ const ro: Dict = {
   'pf.photoRequired': 'Adaugă o poză de profil ca să începi',
   'video.flip': 'Schimbă camera',
   'chat.seeAll': 'Vezi tot',
-  'voice.cameraNude': 'Camera ta a fost oprită pentru că imaginea părea să arate nuditate',
   'pass.title': 'Permis de gen',
   'pass.body': 'Cunoaște doar femei sau doar bărbați timp de 24 de ore.',
   'pass.get': 'Ia permisul',

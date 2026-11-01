@@ -73,8 +73,6 @@ const bn: RoomDict = {
   lost: 'সংযোগ বিচ্ছিন্ন',
   reconnecting: 'সংযোগ বিচ্ছিন্ন · আবার যুক্ত হচ্ছে…',
   lostLeft: 'সংযোগ বিচ্ছিন্ন হওয়ায় আপনি রুম থেকে বেরিয়ে গেছেন',
-  videoBig: '{name}-কে বড় করে দেখুন',
-  videoSmall: 'রুমে ফিরে যান',
   'volumeOf': "আমার জন্য {name}-এর ভলিউম",
   'volumeMute': "শুধু আমার জন্য মিউট",
   'volumeUnmute': "আনমিউট",
