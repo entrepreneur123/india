@@ -757,6 +757,10 @@ export type BackendErrorCode =
   | 'exit_locked'
   | 'premium_required'
   | 'banned'
+  /** 126: deleting the account while suspended. */
+  | 'banned_no_delete'
+  /** 126: a new profile on a number whose account was deleted less than 24 hours ago. */
+  | 'recently_deleted'
   | 'under_18'
   | 'slow_down'
   | 'not_allowed'

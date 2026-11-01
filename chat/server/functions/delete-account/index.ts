@@ -1,6 +1,7 @@
-// In-app account deletion (Google Play requirement). Removes the user's media, keeps only a hashed
-// phone number if they are currently banned (so a ban cannot be escaped), then deletes the auth user;
-// the database cascades to profile, posts, matches, messages and blocks (reports stay, without the person).
+// In-app account deletion (Google Play requirement). Refused while suspended (126: banned_no_delete); otherwise the
+// hashed number and ID document are kept for 24 hours so the same person can't sign up again at once (leave_account),
+// the user's media is removed, then the auth user; the database cascades to profile, posts, matches, messages and
+// blocks (reports stay, without the person).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { json, preflight } from "../_shared/cors.ts";
 
@@ -15,6 +16,8 @@ Deno.serve(async (req) => {
   if (!user) return json(401, { error: "not_signed_in" });
 
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const { error: leaveError } = await admin.rpc("leave_account", { uid: user.id });
+  if (leaveError) return leaveError.message.includes("banned_no_delete") ? json(403, { error: "banned_no_delete" }) : json(500, { error: "ban_check_failed" });
   const bucket = admin.storage.from("media");
   for (const folder of ["avatar", "chat", "posts"]) {
     for (;;) {
@@ -26,8 +29,6 @@ Deno.serve(async (req) => {
       if (files.length < 1000) break;
     }
   }
-  const { error: banError } = await admin.rpc("remember_ban", { uid: user.id });
-  if (banError) return json(500, { error: "ban_check_failed" });
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) return json(500, { error: "delete_failed" });
   return json(200, { deleted: true });

@@ -167,6 +167,11 @@ export function SettingsScreen() {
         description={t('settings.deleteBody')}
         dismissible={busy !== 'delete'}
       >
+        {/* 126: the server's two rules, said before the button. */}
+        <ul className="mx-6 mt-4 flex list-disc flex-col gap-1 ps-5 text-sm text-muted-foreground">
+          <li>{t('error.banned_no_delete')}</li>
+          <li>{t('settings.deleteWait')}</li>
+        </ul>
         <div className="flex gap-3 p-6 pt-5">
           <Button variant="outline" className="flex-1" disabled={busy === 'delete'} onClick={() => setDeleteOpen(false)}>
             {t('settings.keep')}

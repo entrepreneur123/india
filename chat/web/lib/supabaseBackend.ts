@@ -131,13 +131,14 @@ const PARTNER_JOIN_TIMEOUT_MS = 12_000
 /** Random chats: after the partner's app disconnects, how long they have to come back. Same values as the app. */
 const PARTNER_GRACE_MS = 20_000
 const CODES = [
-  'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
+  // First match wins: a code that contains another ('banned_no_delete' ⊃ 'banned') goes before it.
+  'banned_no_delete', 'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_password', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media', 'no_megaphone',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
-  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small', 'name_rude', 'spam',
+  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small', 'name_rude', 'spam', 'recently_deleted',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
