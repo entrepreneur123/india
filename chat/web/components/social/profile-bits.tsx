@@ -128,7 +128,7 @@ export function ProfileHero({
         <span aria-hidden>{flagEmoji(profile.country)}</span>
         {badge}
       </h2>
-      {isVip(profile) ? <p className="mt-0.5 text-xs font-semibold text-[#8a6510]">{lt('vip.seen')}</p> : null}
+      {isVip(profile) ? <p className="mt-0.5 text-xs font-semibold text-[#8a6510] dark:text-[#f5d27a]">{lt('vip.seen')}</p> : null}
       {profile.bio ? <p className="mt-1 text-sm leading-snug whitespace-pre-line text-pretty" dir="auto">{profile.bio}</p> : null}
     </section>
   )

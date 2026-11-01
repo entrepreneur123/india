@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* `dark:` follows the theme chosen in Settings (lib/theme.ts puts `dark` on <html>), not only the device's. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans: var(--font-stack);
 
@@ -99,7 +102,7 @@
     'Yu Gothic', 'Malgun Gothic', 'Noto Sans CJK SC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', sans-serif;
 
   /*
-   * White + orange, on one warm-grey (stone) ramp, light only. Orange #EA6A00 is a fill with white bold text on it
+   * White + orange, on one warm-grey (stone) ramp (dark: the `.dark` block below). Orange #EA6A00 is a fill with white bold text on it
    * (3.2:1, large-text AA) or a mark; as text on white it is the deep #B45309 (5.0:1; 4.5:1 on the #FFF1E0 tint).
    * Ink #1C1917 on white is 17.5:1, muted #57534E 7.6:1.
    */
@@ -137,6 +140,38 @@
   /* Room topic glyphs (components/ui/topic-icons.tsx): one grey, never a colour per topic. */
   --glyph: #57534e;
   color-scheme: light;
+}
+
+/*
+ * Dark (lib/theme.ts): the same stone ramp turned down and the same orange. Text #F5F5F4 on the page #0F0E0D is 17.7:1,
+ * muted #A8A29E 7.6:1 (6.0:1 on --muted); orange as text #FB923C 8.5:1; red #E5484D 4.9:1 as text and 3.9:1 under
+ * white bold text (like the orange fill, 3.2:1, which stays as in light).
+ */
+.dark {
+  --background: #0f0e0d;
+  --foreground: #f5f5f4;
+  --card: #1c1917;
+  --card-foreground: #f5f5f4;
+  --muted: #292524;
+  --muted-foreground: #a8a29e;
+  --border: #3a3430;
+  --input: #57534e;
+  --ring: #fb923c;
+  --primary-hover: #f97316;
+  --primary-text: #fb923c;
+  --primary-soft: #3a2412;
+  --destructive: #e5484d;
+  --online: #34c759;
+  --busy: #60a5fa;
+  --chat-wall: #0f0e0d;
+  --bubble-out: #4a2c12;
+  --bubble-in: #292524;
+  --bubble-text: #f5f5f4;
+  --bubble-meta: #a8a29e;
+  --tick-read: #fb923c;
+  --overlay: rgb(0 0 0 / 0.6);
+  --glyph: #a8a29e;
+  color-scheme: dark;
 }
 
 @layer base {
