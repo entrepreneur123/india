@@ -34,7 +34,8 @@ REGION = {"en": "en-IN", "bn": "bn-IN", "hi": "hi-IN"}
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
 # Until 12:30 IST the home page shows yesterday's results; then today's date and the draws to come
 # (the 1 PM result run publishes it then: FLIP in pipeline/lottery_pipeline/schedule.py).
-DAY_FLIP = dt.time(12, 30)
+DAY_FLIP = dt.time(0, 0)   # the home page shows today's date from midnight IST: people come for today's result
+                           # (owner, 1-11-2026); yesterday's numbers stay below the draws to come until the first one is out
 WEEKLY = [("NL1PM", "13:00", "1pm"), ("SK6PM", "18:00", "6pm"), ("NL8PM", "20:00", "8pm")]
 SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm", "KL": "kerala"}
 TAG = {"NL1PM": "tag_morning", "SK6PM": "tag_day", "NL8PM": "tag_night"}

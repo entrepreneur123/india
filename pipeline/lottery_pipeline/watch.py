@@ -22,7 +22,7 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 # Draw time and how long after it a result may take before it counts as late (Dear sheets land
 # 7-13 min after the draw; Kerala's copies ~1 h after its 3 PM draw).
 DUE = {"NL1PM": ("13:00", 30), "SK6PM": ("18:00", 30), "NL8PM": ("20:00", 30), "KL": ("15:00", 150)}
-FLIP = dt.time(12, 30)          # web/sitegen.py DAY_FLIP: the home page shows today's date from then on
+FLIP = dt.time(0, 0)            # web/sitegen.py DAY_FLIP: the home page shows today's date from midnight IST
 MH_READ_HOURS = 30              # a Maharashtra sheet still a PDF link this long after its draw day began
 _NUM = {"NL1PM": re.compile(r"^(\d{2}[A-L] )?\d{4,5}$"), "SK6PM": re.compile(r"^(\d{2}[A-L] )?\d{4,5}$"),
         "NL8PM": re.compile(r"^(\d{2}[A-L] )?\d{4,5}$"), "KL": re.compile(r"^([A-Z]{2} )?\d{4,6}$"),
@@ -99,7 +99,7 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
         home = fetch_text(f"{site}/")
         title = re.search(r"<title>(.*?)</title>", home, re.S)
         want = today.strftime("%d.%m.%Y")
-        if local.time() >= dt.time(12, 45) and (not title or want not in title.group(1)):
+        if local.time() >= dt.time(0, 30) and (not title or want not in title.group(1)):   # 30 min for the midnight run
             add(f"home:{today}:date", "wrong", "medium", f"home title {title.group(1) if title else None!r} lacks {want}")
     except Exception as e:  # noqa: BLE001
         add("home:unreachable", "unreachable", "high", f"home page: {type(e).__name__}: {e}")

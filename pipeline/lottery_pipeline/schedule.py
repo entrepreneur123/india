@@ -29,9 +29,10 @@ CRON_SLOT = {"47 5 * * *": "NL1PM", "17 7 * * *": "NL1PM", "17 9 * * *": "KL", "
              "17 12 * * *": "SK6PM", "47 12 * * *": "NL8PM", "17 14 * * *": "NL8PM"}
 DEEP = {"10 15 * * *", "40 15 * * *", "10 16 * * *", "0 3 * * *"}   # gazette OCR / overnight re-check
 WAKE_BEFORE = dt.timedelta(minutes=15)
-# The site shows yesterday's results until 12:30 IST, then today's date with the draws to come
-# (web/sitegen.py DAY_FLIP). The 1 PM run publishes that page at FLIP, so the relay starts it earlier.
-FLIP = "07:00"
+# The home page shows today's date from midnight IST (web/sitegen.py DAY_FLIP): the FLIP_CRON run at
+# 00:01 IST publishes it, and the 1 PM run publishes again at its start (FLIP: no waiting) as a backup.
+FLIP = "00:00"
+FLIP_CRON = "31 18 * * *"
 # The 8 PM run also reads the day's Maharashtra sheets (draws ~4-5 PM IST, ~2 min a sheet) before its
 # draw is due, so it starts at 19:10 IST.
 WAKE = {"NL1PM": "06:45", "NL8PM": "13:40"}
@@ -55,6 +56,12 @@ def _deep(backfill: int = 1) -> dict:
     return {"require": "", "from": "", "watch": 0, "deep": True, "ocr": True, "backfill": backfill, "mh": True, "flip": ""}
 
 
+def _flip() -> dict:
+    """Midnight IST: nothing to fetch, just the site with today's date (deployed even though no number changed)."""
+    return {"require": "", "from": "", "watch": 0, "deep": False, "ocr": False, "backfill": 1, "mh": False, "flip": "",
+            "force": True}
+
+
 def due(now: dt.datetime, done: set[str] = frozenset()) -> dict:
     """What is due at `now`: the first draw not published yet whose polling window has not ended,
     else the evening gazette check."""
@@ -70,6 +77,8 @@ def mode(now: dt.datetime, event: str, cron: str = "", target: str = "", done: s
         return _draw(target)
     if event == "workflow_dispatch":             # by hand: catalog refresh, all recent days
         return _deep()
+    if event == "schedule" and cron == FLIP_CRON:   # however late it starts, the new day's page is still due
+        return _flip()
     if event == "schedule" and cron:
         minute, hour = (int(x) for x in cron.split()[:2])
         planned = now.replace(hour=hour, minute=minute, second=0, microsecond=0)

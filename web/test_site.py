@@ -459,27 +459,28 @@ def test_kerala_in_malayalam(tmp_path, monkeypatch):
     assert "<loc>https://example.in/ml/kerala/</loc>" in sm and "/bn/ml/" not in sm
 
 
-def test_home_turns_to_today_30_minutes_before_the_first_draw(tmp_path, monkeypatch):
+def test_home_shows_todays_date_from_midnight(tmp_path, monkeypatch):
     monkeypatch.setenv("SITE_OG", "0")
     data = tmp_path / "data"
     (data / "v2/days").mkdir(parents=True)
     feed = json.loads(FEED.read_text())
     (data / "v2/days/2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18",
                                                               "draws": [d for d in feed["draws"] if d["date"] == "2026-10-18"]}))
-    def home(h, m):
-        out = tmp_path / f"out{h}{m}"
-        sitegen.Site(data, "https://example.in", now=dt.datetime(2026, 10, 19, h, m, tzinfo=sitegen.IST)).build(out)
+    def home(day, h, m):
+        out = tmp_path / f"out{day}{h}{m}"
+        sitegen.Site(data, "https://example.in", now=dt.datetime(2026, 10, day, h, m, tzinfo=sitegen.IST)).build(out)
         return (out / "index.html").read_text()
-    early = home(12, 29)   # still yesterday's results under yesterday's date
-    assert "Lottery Result Today <span class=\"d\">18.10.2026</span>" in early and 'data-at="2026-10-19T13:00' not in early
-    flip = home(12, 30)
+    late = home(18, 23, 59)   # the day of the results: its own date
+    assert "Lottery Result Today <span class=\"d\">18.10.2026</span>" in late and 'data-at="2026-10-19T13:00' not in late
+    flip = home(19, 0, 1)     # one minute into the next day: today's date, the draws to come, yesterday's numbers below
     assert "Lottery Result Today <span class=\"d\">19.10.2026</span>" in flip
     assert "Lottery Result Today 19.10.2026" in flip.split("</title>")[0]
     assert 'data-at="2026-10-19T13:00:00+05:30"' in flip and 'data-at="2026-10-19T20:00:00+05:30"' in flip
     assert 'data-live="2026-10-19"' in flip                          # reloads when the 1 PM result is in
     assert flip.index('data-at="2026-10-19T20:00') < flip.index("Result of 18.10.2026") < flip.index("74D 70698")
     assert '"date":"2026-10-18"' in flip                             # the checker still knows yesterday's numbers
-    assert '<b>Today</b>19.10' in flip
+    assert '<b>Today</b>19.10' in flip and 'href="/result/18-10-2026/"' in flip
+    assert home(19, 9, 0) == flip.replace("00:01", "09:00")          # the same page all morning (only the stamp differs)
 
 
 def test_a_maharashtra_draw_without_an_english_name_does_not_replace_the_hub(tmp_path):

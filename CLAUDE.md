@@ -8,7 +8,8 @@ Keep this in mind in every task: before finishing any change, ask whether it hel
 
 How we pursue it:
 - Be the fastest correct source: results go live minutes after each draw (relay workflow, IndexNow, sitemap lastmod).
-- On-page: home title/H1 lead with "Lottery Result Today {date}"; every page keeps a precise title, description, canonical, hreflang, schema.org (BreadcrumbList, WebPage with dateModified and primaryImageOfPage), result image in the image sitemap.
+- On-page: home title/H1 lead with "Lottery Result Today {date}" (today's IST date from midnight: the 18:31 UTC results run
+  deploys the new day's page, the 1 PM run publishes it again at its start; yesterday's numbers stay below the draws to come); every page keeps a precise title, description, canonical, hreflang, schema.org (BreadcrumbList, WebPage with dateModified and primaryImageOfPage), result image in the image sitemap.
 - Coverage: every draw and every state we can read correctly gets its own page (draw, day, game hub, state hub, language pages).
 - Speed and UX: small static pages, no layout shift, works on cheap Android phones on slow networks.
 - Never use black-hat methods (spam posts, fake reviews, link buying, cloaking, doorway pages, parasite pages): they risk a Google penalty and the AdSense account.
