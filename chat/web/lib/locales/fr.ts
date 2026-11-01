@@ -580,6 +580,8 @@ const fr: Dict = {
   'error.handle_taken': 'Cet identifiant est déjà pris. Choisissez-en un autre',
   'error.handle_cooldown': 'Vous pouvez changer d’identifiant une fois tous les 30 jours',
   'error.name_invalid': 'Écrivez votre nom en lettres normales : les lettres de polices fantaisie ne sont pas acceptées',
+  'error.name_rude': 'Ce nom n’est pas autorisé. Choisis-en un autre',
+  'error.spam': 'Non envoyé : le même message encore une fois ou trop de liens. Réessaie dans quelques minutes',
   'error.not_owned': 'Vous ne possédez pas encore ce look',
   'error.chat_closed': 'Ce chat est terminé. Ajoutez cette personne en ami pour continuer à discuter',
   'error.generic': 'Un problème est survenu. Veuillez réessayer',

@@ -588,6 +588,8 @@ const ja: Dict = {
   'error.handle_taken': 'このIDはすでに使われています。別のIDを選んでください',
   'error.handle_cooldown': 'IDの変更は30日に1回までです',
   'error.name_invalid': '名前は普通の文字で入力してください。装飾フォントの文字は使えません',
+  'error.name_rude': 'この名前は使えません。別の名前を選んでください',
+  'error.spam': '送信されませんでした：同じメッセージの繰り返し、またはリンクが多すぎます。数分後にもう一度お試しください',
   'error.not_owned': 'この着せかえはまだ持っていません',
   'error.chat_closed': 'このチャットは終了しました。話を続けるには友だちに追加してください',
   'error.generic': '問題が発生しました。もう一度お試しください',

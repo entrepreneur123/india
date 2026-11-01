@@ -588,6 +588,8 @@ const tr: Dict = {
   'error.handle_taken': 'Bu kimlik zaten alınmış. Lütfen başka bir tane seç',
   'error.handle_cooldown': 'Kimliğini 30 günde bir değiştirebilirsin',
   'error.name_invalid': 'Adını normal harflerle yaz: süslü yazı tipi harfleri kullanılamaz',
+  'error.name_rude': 'Bu isme izin verilmiyor. Lütfen başka bir isim seç',
+  'error.spam': 'Gönderilmedi: aynı mesaj tekrar ya da çok fazla bağlantı. Birkaç dakika sonra yeniden dene',
   'error.not_owned': 'Bu görünüme henüz sahip değilsin',
   'error.chat_closed': 'Bu sohbet bitti. Konuşmaya devam etmek için onu arkadaş olarak ekle',
   'error.generic': 'Bir şeyler ters gitti. Lütfen tekrar dene',

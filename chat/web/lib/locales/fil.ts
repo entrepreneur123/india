@@ -588,6 +588,8 @@ const fil: Dict = {
   'error.handle_taken': 'May gumagamit na ng ID na iyan. Pumili ng iba',
   'error.handle_cooldown': 'Puwede mong palitan ang ID mo isang beses kada 30 araw',
   'error.name_invalid': 'Isulat ang pangalan mo sa karaniwang letra: hindi puwede ang mga letra ng fancy font',
+  'error.name_rude': 'Hindi pinapayagan ang pangalang ito. Pumili ng iba',
+  'error.spam': 'Hindi naipadala: parehong mensahe ulit o sobrang daming link. Subukan ulit pagkalipas ng ilang minuto',
   'error.not_owned': 'Wala ka pang look na ito',
   'error.chat_closed': 'Tapos na ang chat na ito. I-add siya bilang kaibigan para makapag-usap pa kayo',
   'error.generic': 'May nangyaring mali. Subukan ulit',

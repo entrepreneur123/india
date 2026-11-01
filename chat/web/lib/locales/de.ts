@@ -579,6 +579,8 @@ const de: Dict = {
   'error.handle_taken': 'Diese ID ist schon vergeben. Bitte wähle eine andere',
   'error.handle_cooldown': 'Du kannst deine ID einmal alle 30 Tage ändern',
   'error.name_invalid': 'Schreib deinen Namen in normalen Buchstaben: Buchstaben aus Zierschriften gehen nicht',
+  'error.name_rude': 'Dieser Name ist nicht erlaubt. Bitte wähle einen anderen',
+  'error.spam': 'Nicht gesendet: dieselbe Nachricht erneut oder zu viele Links. Versuch es in ein paar Minuten noch einmal',
   'error.not_owned': 'Dieser Look gehört dir noch nicht',
   'error.chat_closed': 'Dieser Chat ist beendet. Füge die Person als Freund hinzu, um weiterzuschreiben',
   'error.generic': 'Etwas ist schiefgelaufen. Bitte versuch es noch mal',

@@ -587,6 +587,8 @@ const en = {
   'error.handle_taken': 'That ID is taken. Try another one',
   'error.handle_cooldown': 'You can change your ID once every 30 days',
   'error.name_invalid': 'Use plain letters in your name. Fancy-font letters aren’t allowed',
+  'error.name_rude': 'This name isn’t allowed. Please choose another',
+  'error.spam': 'Not sent: the same message again or too many links. Try again in a few minutes',
   'error.not_owned': 'You don’t own this look yet',
   'error.chat_closed': 'This chat has ended. Add them as a friend to keep talking',
   'error.generic': 'Something went wrong. Please try again',

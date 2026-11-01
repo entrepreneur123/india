@@ -107,7 +107,12 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
   }
 
   // As the 1:1 chat: the line shows at once, fails with Retry / Delete, and goes again when back online (092).
-  const outbox = useOutbox<GroupLine, string>(groupId, setLines, (id, text, clientId) => backend.sendGroup(id, text, clientId),
+  // group_send answers with an id only: if the stored line came over realtime first, it stays (125: the server may have
+  // starred a word in it); otherwise realtime's copy replaces this one by id when it comes.
+  const shown = useRef(lines)
+  shown.current = lines
+  const outbox = useOutbox<GroupLine, string>(groupId, setLines,
+    (id, text, clientId) => backend.sendGroup(id, text, clientId).then((l) => shown.current?.find((x) => x.id === l.id && !x.state) ?? l),
     (err) => errorCode(err) !== 'network' && toast.error(err))
   const send = async (text: string | null) => {
     const body = text?.trim()

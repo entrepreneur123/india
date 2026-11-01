@@ -137,7 +137,7 @@ const CODES = [
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media', 'no_megaphone',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
-  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small',
+  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small', 'name_rude', 'spam',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
