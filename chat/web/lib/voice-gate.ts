@@ -1,4 +1,5 @@
-import { RoomEvent, Track, type AudioProcessorOptions, type LocalAudioTrack, type LocalTrackPublication, type Room, type TrackProcessor } from 'livekit-client'
+// Type imports only: a P2P call loads this without the LiveKit SDK.
+import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-client'
 import { isAppleWebKit } from './rtc'
 
 /** Computers only: on iPhone/iPad and Android a second AudioContext beside the call's can crackle (lib/voice-audio). */
@@ -48,24 +49,4 @@ export function gate(): TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> 
     },
   }
   return p
-}
-
-/**
- * My microphone in [room], cleaned as Discord's is: LiveKit's Krisp noise filter with background voice cancellation
- * (on our LiveKit Cloud project: its /settings says enhancedNoiseCancellation). It keeps the voice of the person at the
- * phone and drops noise, music and other voices. Loaded only when the microphone goes on. Where Krisp can't run,
- * computers get the voice gate (sent only while someone talks); elsewhere the microphone goes out as before.
- */
-export function cleanMicrophone(room: Room) {
-  room.on(RoomEvent.LocalTrackPublished, async (pub: LocalTrackPublication) => {
-    if (pub.source !== Track.Source.Microphone || !pub.track) return
-    const track = pub.track as LocalAudioTrack
-    try {
-      const { KrispNoiseFilter, isKrispNoiseFilterSupported } = await import('@livekit/krisp-noise-filter')
-      if (isKrispNoiseFilterSupported()) return await track.setProcessor(KrispNoiseFilter({ useBVC: true }))
-    } catch {
-      /* not loaded or refused: the gate below */
-    }
-    if (canGate()) await track.setProcessor(gate()).catch(() => undefined)
-  })
 }
