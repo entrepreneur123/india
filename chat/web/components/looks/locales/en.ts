@@ -73,11 +73,11 @@ const en = {
 
   // IDs
   'id.label': 'ID',
-  'id.hint': 'Your own @ID, shown with your name everywhere. Letters, numbers and symbols like _ . - work.',
+  'id.hint': "Your own @ID, shown with your name everywhere. Use English letters (a–z), numbers, . and _.",
   'id.checking': 'Checking…',
   'id.ok': '@{handle} is available',
   'id.mine': 'This is your ID',
-  'id.invalid': 'Use 2 to 24 letters, numbers or symbols like _ . - (no spaces or emoji)',
+  'id.invalid': "Use 2 to 30 English letters (a–z), numbers, . or _ (no . at the start or end)",
   'id.reserved': 'This ID is reserved',
   'id.taken': '@{handle} is already taken',
   'id.cooldown': 'You can change your ID again on {date}, or sooner with an ID change from the Yaari app',

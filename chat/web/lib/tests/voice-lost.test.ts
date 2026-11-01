@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { beatsFast, droppedOut, nextHost, VOICE_BEAT_MS, VOICE_LISTENER_BEAT_MS } from '../voice-lost.ts'
+import { beatsFast, droppedOut, heirs, nextHost, VOICE_BEAT_MS, VOICE_LISTENER_BEAT_MS } from '../voice-lost.ts'
 import type { Profile, VoiceMember, VoiceRole } from '../backend.ts'
 
 const m = (id: string, role: VoiceRole, joinedAt?: number, lost = false, seat: number | null = null) =>
@@ -35,11 +35,17 @@ test('fast beats with the room in view; in the background only a seat, the host,
   assert.equal(beatsFast({ members: [m('s', 'listener')] }, 's', false), false)
 })
 
-test('the host’s heir: the first co-host to come in who is still connected; none ends the room', () => {
+test('the host’s heir (133): co-hosts first, then the stage, then who came in first; connected only; nobody ends it', () => {
   const room = (...members: VoiceMember[]) => ({ hostId: 'h', members })
-  assert.equal(nextHost(room(m('h', 'host'), m('a', 'speaker'), m('b', 'listener'))), null)
+  // No co-host: someone on the stage beats an earlier listener; only a listener: the listener.
+  assert.equal(nextHost(room(m('h', 'host'), m('l', 'listener', 5), m('s', 'speaker', 20, false, 2)))?.profile.id, 's')
+  assert.equal(nextHost(room(m('h', 'host'), m('l', 'listener', 5)))?.profile.id, 'l')
+  assert.equal(nextHost(room(m('h', 'host'), m('a', 'listener', 30), m('b', 'listener', 10)))?.profile.id, 'b')
+  // A co-host first, the earliest of them; a lost one is skipped.
+  assert.equal(nextHost(room(m('h', 'host'), m('s', 'speaker', 1, false, 2), m('c', 'cohost', 90)))?.profile.id, 'c')
   assert.equal(nextHost(room(m('h', 'host'), m('a', 'cohost', 30), m('b', 'cohost', 10)))?.profile.id, 'b')
   assert.equal(nextHost(room(m('h', 'host'), m('a', 'cohost', 30), m('b', 'cohost', 10, true)))?.profile.id, 'a')
   assert.equal(nextHost(room(m('h', 'host'), m('a', 'cohost', 10, true))), null)
-  assert.equal(nextHost(room(m('a', 'cohost'), m('b', 'cohost')))?.profile.id, 'a') // the demo: in order of arrival
+  assert.equal(nextHost(room(m('h', 'host'))), null)
+  assert.deepEqual(heirs(room(m('h', 'host'), m('l', 'listener', 1), m('s', 'speaker', 2, false, 1), m('c', 'cohost', 3))).map((x) => x.profile.id), ['c', 's', 'l'])
 })

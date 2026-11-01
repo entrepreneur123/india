@@ -66,7 +66,6 @@ import {
   type VoiceRoomSummary,
   type VoiceSystemEvent,
   type LinkMeta,
-  type PartyState,
   OAUTH_PROVIDERS,
   type OAuthProvider,
   type SignInKind,
@@ -139,7 +138,7 @@ const CODES = [
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media', 'no_megaphone',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
-  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small', 'name_rude', 'spam', 'recently_deleted',
+  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'name_rude', 'spam', 'recently_deleted',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
@@ -1069,19 +1068,6 @@ export class SupabaseBackend implements Backend {
     return this.toPosts(await this.rpc('posts_of', { p_user: userId, p_before: before ?? null, p_limit: 50 }))
   }
 
-  async partyState(groupId: string, ready: boolean): Promise<PartyState> {
-    const s = await this.rpc<{ ready: string[]; searching: boolean; matched: string | null }>('party_state', { p_group: groupId, p_ready: ready })
-    return { ready: s.ready ?? [], searching: !!s.searching, matched: s.matched ?? null }
-  }
-
-  async partySearch(groupId: string, everywhere: boolean) {
-    return this.rpc<string | null>('party_search', { p_group: groupId, p_global: everywhere })
-  }
-
-  async partyCancel(groupId: string) {
-    await this.rpc('party_cancel', { p_group: groupId })
-  }
-
   async postsByTag(tag: string, before?: string): Promise<FeedPost[]> {
     return this.toPosts(await this.rpc('posts_by_tag', { p_tag: tag, p_before: before ?? null }))
   }
@@ -1832,8 +1818,12 @@ export class SupabaseBackend implements Backend {
         break
       case 'makeHost':
         await this.rpc('voice_make_host', { ...room, p_user: a.userId })
-        this.voiceSync(roomId, a.userId) // both moved seats: their LiveKit rights follow
-        this.voiceSync(roomId, this.uid)
+        // Both moved seats: their LiveKit rights follow. Leaving (133), nothing: I'm gone before it lands, and the new
+        // host's own app asks for its rights when it gets seat 0 (as after voice_hand_over).
+        if (!a.leaving) {
+          this.voiceSync(roomId, a.userId)
+          this.voiceSync(roomId, this.uid)
+        }
         break
       case 'kick':
         await this.rpc('voice_kick', { ...room, p_user: a.userId })
@@ -2334,9 +2324,10 @@ export class SupabaseBackend implements Backend {
     const heartbeat = async () => {
       if (!joined || closed || over) return
       // Gone longer than the server waits: a beat would bring me back in silently. Once the network answers, the
-      // room closes instead. A host with no co-host to take over keeps their place (the room waits 2 minutes).
+      // room closes instead. A host with no co-host to take over keeps their place (voice_settle waits 2 minutes, then
+      // hands the room to anyone else in it).
       const r = live.room
-      const keepsPlace = r?.hostId === me && !nextHost(r)
+      const keepsPlace = r?.hostId === me && nextHost(r)?.role !== 'cohost'
       if (droppedOut(lastBeat, Date.now(), beatFast) && !keepsPlace) {
         const { error } = await this.client.from('voice_seq').select('seq').eq('room_id', roomId).maybeSingle()
         if (error || closed || over) return connection({ beat: true })

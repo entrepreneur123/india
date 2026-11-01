@@ -151,18 +151,6 @@ const sw: SocialDict = {
   'rooms.sortMembers': "Watu wengi",
   'rooms.sortRelevant': "Kwa ajili yako",
   'rooms.sortPopular': "Maarufu",
-  'party.button': "Linganisha vikundi",
-  'party.title': "Gumzo la nasibu kikundi kwa kikundi",
-  'party.desc': "Wote wanaogusa \"Nimo\" hutafuta pamoja na kukutana na kikundi kingine katika gumzo jipya.",
-  'party.in': "Yumo",
-  'party.notYet': "Bado",
-  'party.join': "Nimo",
-  'party.leave': "Sipo",
-  'party.find': "Tafuta kikundi",
-  'party.cancel': "Simama",
-  'party.searching': "Tunatafuta kikundi kingine…",
-  'party.needTwo': "Angalau 2 wanahitajika — marafiki pia wafungue Linganisha vikundi hapa.",
-  'party.ready': "{n} wamo — tayari",
   'hl.create': "Kivutio kipya",
 }
 

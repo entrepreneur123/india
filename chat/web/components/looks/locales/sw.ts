@@ -57,11 +57,11 @@ const sw: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'Kitambulisho',
-  'id.hint': '@Kitambulisho chako mwenyewe, kinaonekana na jina lako kila mahali. Herufi, namba na alama kama _ . - zinakubalika.',
+  'id.hint': "@ID yako mwenyewe, inaonekana pamoja na jina lako kila mahali. Tumia herufi za Kiingereza (a–z), namba, . na _.",
   'id.checking': 'Inakagua…',
   'id.ok': '@{handle} kinapatikana',
   'id.mine': 'Hiki ni kitambulisho chako',
-  'id.invalid': 'Tumia herufi, namba au alama kama _ . - kati ya 2 na 24 (bila nafasi wala emoji)',
+  'id.invalid': "Tumia herufi 2 hadi 30 za Kiingereza (a–z), namba, . au _ (bila . mwanzoni au mwishoni)",
   'id.reserved': 'Kitambulisho hiki kimehifadhiwa',
   'id.taken': '@{handle} kimeshachukuliwa',
   'id.cooldown': 'Unaweza kubadilisha kitambulisho chako tena tarehe {date}, au mapema zaidi kwa tiketi ya kubadilisha kitambulisho kutoka programu ya Yaari',

@@ -1,67 +1,26 @@
-// IDs ("handles", 040_handles_looks.sql) and plain names: the server's rules, mirrored for instant feedback while
-// typing. The server stays the judge (handle_check, set_handle, the name trigger). The code-point ranges below are
-// copied from handle_valid() and name_plain(); keep them in step with the migration. No imports, so the unit tests
-// run it directly (node --test).
+// IDs ("handles": handle_valid of 055) and plain names (name_plain): the server's rules, mirrored for instant feedback
+// while typing. The server stays the judge (handle_check, set_handle, the name trigger); keep these in step with the
+// migrations. No imports, so the unit tests run it directly (node --test).
 
 export const HANDLE_MIN = 2
-export const HANDLE_MAX = 24
+export const HANDLE_MAX = 30
 
 /** What handle_check answers ('mine': it already is my ID). */
 export type HandleCheck = 'ok' | 'mine' | 'invalid' | 'reserved' | 'taken'
 
-/** The spelling the server stores: trimmed, Unicode NFC. */
-export const handleSpelling = (raw: string) => raw.trim().normalize('NFC')
-
-/** ASCII specials an ID may have: no space " ' ` < > \ and no @ (the @ is how IDs are shown). */
-const SPECIALS = new Set([33, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 58, 59, 61, 63, 91, 93, 94, 95, 123, 124, 125, 126])
-/** The few IPA letters real alphabets use (Hausa, Yoruba, Azerbaijani…). */
-const IPA_LETTERS = new Set([595, 596, 599, 601, 603])
+/** The spelling the server stores (set_handle, handle_check): trimmed, lower case. */
+export const handleSpelling = (raw: string) => raw.trim().toLowerCase()
 
 const within = (c: number, ranges: [number, number][]) => ranges.some(([a, b]) => c >= a && c <= b)
 
-/** Letters of other real scripts (handle_valid's allow-list): none of them is Latin, Greek or Cyrillic. */
-const OTHER_SCRIPTS: [number, number][] = [
-  [1329, 1366], [1377, 1415], // Armenian
-  [1488, 1514], // Hebrew
-  [1568, 1610], [1632, 1641], [1649, 1747], [1776, 1785], // Arabic, Urdu, Persian
-  [2304, 3583], // Devanagari .. Sinhala
-  [3584, 3839], // Thai, Lao
-  [4096, 4255], // Myanmar
-  [4304, 4351], // Georgian
-  [4608, 4954], [4969, 4988], // Ethiopic
-  [6016, 6109], [6112, 6121], // Khmer
-  [12353, 12438], [12445, 12447], // Hiragana
-  [12449, 12538], [12540, 12543], // Katakana
-  [12593, 12686], // Hangul jamo
-  [13312, 19903], [19968, 40959], // CJK
-  [44032, 55203], // Hangul
-]
+/** The few IPA letters real alphabets use (Hausa, Yoruba, Azerbaijani…), allowed in names. */
+const IPA_LETTERS = new Set([595, 596, 599, 601, 603])
 
 /**
- * handle_valid(): 2–24 characters (code points) of the input as given (already NFC), letters of real scripts, ASCII
- * digits and specials, at least one letter or digit, and at most one of Latin / Greek / Cyrillic.
+ * handle_valid() (055, Instagram's rule): 2–30 of English letters a–z, digits, "." and "_", at least one letter or
+ * digit, no "." first, last or twice in a row. Given the stored spelling (handleSpelling).
  */
-export function handleValid(p: string): boolean {
-  if (p !== p.normalize('NFC')) return false
-  const chars = [...p]
-  if (chars.length < HANDLE_MIN || chars.length > HANDLE_MAX) return false
-  let word = false
-  let latin = false
-  let greek = false
-  let cyr = false
-  for (const ch of chars) {
-    const c = ch.codePointAt(0)!
-    if (c >= 48 && c <= 57) word = true
-    else if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) word = latin = true
-    else if (SPECIALS.has(c)) continue
-    else if ((c >= 192 && c <= 591 && c !== 215 && c !== 247) || (c >= 7680 && c <= 7935) || IPA_LETTERS.has(c)) word = latin = true
-    else if (c >= 902 && c <= 974 && c !== 903) word = greek = true
-    else if (c >= 1024 && c <= 1279) word = cyr = true
-    else if (within(c, OTHER_SCRIPTS)) word = true
-    else return false
-  }
-  return word && Number(latin) + Number(greek) + Number(cyr) <= 1
-}
+export const handleValid = (p: string) => /^[a-z0-9._]{2,30}$/.test(p) && /[a-z0-9]/.test(p) && !/^\.|\.$|\.\./.test(p)
 
 const RESERVED = new Set(['support', 'staff', 'help', 'team', 'system', 'security', 'root', 'null', 'undefined'])
 
@@ -83,29 +42,16 @@ export function handleProblem(raw: string, mine?: string | null): 'invalid' | 'r
 }
 
 /**
- * An ID to offer from a name: its letters and digits in lower case, words joined with "_", cut to fit; empty when
- * nothing usable is left (a name of emoji). `digits` (e.g. "482") is added after "_" to try another one.
+ * An ID to offer from a name: its English letters and digits in lower case, words joined with "_", cut to fit; empty
+ * when nothing usable is left (a name in another script: the server's free ID stays). `digits` (e.g. "482") is added
+ * after "_" to try another one.
  */
 export function suggestHandle(name: string, digits = ''): string {
   const tail = digits ? `_${digits}` : ''
-  const room = HANDLE_MAX - tail.length
-  // A letter or digit of an allowed script (the "0" only pads it to the two-character minimum).
-  const wordChar = (ch: string) => !SPECIALS.has(ch.codePointAt(0)!) && handleValid(`${ch}0`)
-  const words = name
-    .normalize('NFC')
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => [...w].filter(wordChar).join(''))
-    .filter(Boolean)
-  // Whole words while they fit, and one alphabet of Latin / Greek / Cyrillic at most (words that would mix are left out).
-  let base = ''
-  for (const w of words) {
-    const next = base ? `${base}_${w}` : w
-    if ([...next].length <= room && handleValid([...next].length < HANDLE_MIN ? `${next}0` : next)) base = next
-  }
-  if (!base && words.length) base = [...words[0]].slice(0, room).join('')
+  const words = name.toLowerCase().split(/\s+/).map((w) => w.replace(/[^a-z0-9]/g, '')).filter(Boolean)
+  const base = words.join('_').slice(0, HANDLE_MAX - tail.length).replace(/_$/, '')
   const out = base + tail
-  return handleValid(out) && !handleReserved(out) ? out : ''
+  return base && handleValid(out) && !handleReserved(out) ? out : ''
 }
 
 /** Fancy-font letters (𝓛𝓲𝓼𝓪, Ｌｉｓａ, ʟɪsᴀ, ⓛⓘⓢⓐ, ℒ, Cherokee and Canadian look-alikes…), name_plain()'s list. */

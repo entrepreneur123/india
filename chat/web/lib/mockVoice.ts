@@ -568,7 +568,7 @@ export class VoiceSim {
     await wait(100)
     r.room.members = r.room.members.filter((m) => m.profile.id !== me.id)
     if (r.room.hostId === me.id) {
-      // As the server (voice_hand_over): the first co-host still here takes over; with none the room ends.
+      // As the server (voice_hand_over): the first heir (co-host, then stage, then first in) takes over; none ends it.
       const heir = nextHost(r.room)
       if (!heir) return this.end(r)
       Object.assign(heir, { role: 'host', seat: 0, hand: false })
@@ -990,8 +990,8 @@ export class VoiceSim {
         if (a.on) this.system(r, 'cohost', target!.profile.name)
         break
       case 'makeHost': {
-        // As the server (079): only to a co-host; they swap seats, I stay a co-host (in the audience if they had none).
-        need(isHost && !!target && target.role === 'cohost' && !target.lost)
+        // As the server (133): to anyone connected; they swap seats, I stay a co-host (in the audience if they had none).
+        need(isHost && !!target && target.role !== 'host' && !target.lost)
         const seat = target!.seat
         Object.assign(target!, { role: 'host', seat: 0, hand: false })
         Object.assign(me, { role: 'cohost', seat, muted: seat === null ? true : me.muted })

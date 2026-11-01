@@ -23,10 +23,13 @@ export const beatsFast = (r: Pick<VoiceRoom, 'members'> | null, me: string, visi
 export const droppedOut = (lastBeat: number, now: number, fast = true) => now - lastBeat > (fast ? 13_000 : 85_000)
 
 /**
- * Who takes over when the host leaves (voice_hand_over): the co-host who came in first and is still connected. None:
- * leaving ends the room.
+ * Who may take over from the host, in voice_hand_over's order (133): connected people other than the host, co-hosts
+ * first, then those on the stage, then whoever came in first. The first one takes over when the host leaves; none: the
+ * room ends.
  */
-export const nextHost = (r: Pick<VoiceRoom, 'hostId' | 'members'>) =>
+export const heirs = (r: Pick<VoiceRoom, 'hostId' | 'members'>) =>
   r.members
-    .filter((m) => m.role === 'cohost' && !m.lost && m.profile.id !== r.hostId)
-    .sort((a, b) => (a.joinedAt ?? 0) - (b.joinedAt ?? 0))[0] ?? null
+    .filter((m) => !m.lost && m.profile.id !== r.hostId)
+    .sort((a, b) => +(b.role === 'cohost') - +(a.role === 'cohost') || +(b.seat !== null) - +(a.seat !== null) || (a.joinedAt ?? 0) - (b.joinedAt ?? 0))
+
+export const nextHost = (r: Pick<VoiceRoom, 'hostId' | 'members'>) => heirs(r)[0] ?? null

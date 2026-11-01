@@ -349,13 +349,6 @@ export interface PersonRow {
   photoUrl: string | null
 }
 
-/** 49 (076): a group's party search — who said "I'm in", whether it is searching, and the chat it was paired into. */
-export interface PartyState {
-  ready: string[]
-  searching: boolean
-  matched: string | null
-}
-
 /** 069: a group chat's lines: messages, and the server's notes ('created' / 'added': names, 'renamed': the title). */
 export type GroupLineKind = 'text' | 'created' | 'added' | 'left' | 'renamed'
 export interface GroupLine {
@@ -691,7 +684,8 @@ export type VoiceAction =
   // host only
   | { type: 'cohost'; userId: string; on: boolean }
   /** 079: the host hands the room to a co-host; they swap places. */
-  | { type: 'makeHost'; userId: string }
+  /** `leaving`: the host hands over on the way out (133); the new host's app fetches its own LiveKit rights. */
+  | { type: 'makeHost'; userId: string; leaving?: boolean }
   // music: anyone adds a song request and votes; the host and co-hosts (036) play, remove, seek and control
   /** `title`: the video's real title (lib/youtube.ts videoTitle), empty when it couldn't be looked up. */
   | { type: 'addTrack'; videoId: string; title?: string }
@@ -1024,14 +1018,6 @@ export interface Backend {
   postsOf(userId: string, before?: string): Promise<FeedPost[]>
   /** 072: posts I may see with this hashtag (with or without "#"), newest first, 30 at a time. */
   postsByTag(tag: string, before?: string): Promise<FeedPost[]>
-  /**
-   * 49 (076): a friends' group as a party. partyState is also my heartbeat ("I'm in" while `ready`, every few
-   * seconds); partySearch searches with everyone in (2 or more, else party_small) and returns the new chat with the
-   * other party once paired; partyCancel stops.
-   */
-  partyState(groupId: string, ready: boolean): Promise<PartyState>
-  partySearch(groupId: string, everywhere: boolean): Promise<string | null>
-  partyCancel(groupId: string): Promise<void>
   /** Null: gone, or not mine to see. */
   post(postId: string): Promise<FeedPost | null>
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>

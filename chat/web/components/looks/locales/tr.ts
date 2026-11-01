@@ -57,11 +57,11 @@ const tr: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'Kimlik',
-  'id.hint': 'Sana ait @kimlik, her yerde adınla birlikte görünür. Harfler, rakamlar ve _ . - gibi işaretler kullanılabilir.',
+  'id.hint': "Her yerde adınla birlikte görünen kendi @ID'n. İngilizce harfler (a–z), rakamlar, . ve _ kullanabilirsin.",
   'id.checking': 'Kontrol ediliyor…',
   'id.ok': '@{handle} müsait',
   'id.mine': 'Bu senin kimliğin',
-  'id.invalid': '2 ile 24 arası harf, rakam ya da _ . - gibi işaret kullan (boşluk ya da emoji olmadan)',
+  'id.invalid': "2 ile 30 arası İngilizce harf (a–z), rakam, . veya _ kullan (başta veya sonda . olmaz)",
   'id.reserved': 'Bu kimlik ayrılmış',
   'id.taken': '@{handle} zaten alınmış',
   'id.cooldown': 'Kimliğini {date} tarihinde yeniden değiştirebilirsin ya da Yaari uygulamasındaki kimlik değiştirme hakkıyla daha önce',

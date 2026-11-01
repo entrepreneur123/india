@@ -218,7 +218,7 @@ export function PersonSheet({
               onClick={() => void run({ type: 'cohost', userId: target.profile.id, on: target.role !== 'cohost' })}
             />
           ) : null}
-          {host && target.role === 'cohost' && !target.lost ? <Row icon={<Crown />} label={rt('makeHost')} onClick={() => setConfirm('host')} /> : null}
+          {host && target.role !== 'host' && !target.lost ? <Row icon={<Crown />} label={rt('makeHost')} onClick={() => setConfirm('host')} /> : null}
           {manage ? <Row icon={<UserX />} label={t('voice.kick')} danger onClick={() => setConfirm('kick')} /> : null}
           {self ? null : <Row icon={<Flag />} label={t('voice.report')} danger onClick={() => setReportOpen(true)} />}
         </div>

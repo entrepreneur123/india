@@ -57,11 +57,11 @@ const fil: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'ID',
-  'id.hint': 'Ang sarili mong @ID, kasama ng pangalan mo kahit saan. Puwede ang mga letra, numero at simbolong tulad ng _ . -',
+  'id.hint': "Ang sarili mong @ID, makikita kasama ng pangalan mo kahit saan. Gumamit ng English na letra (a–z), numero, . at _.",
   'id.checking': 'Sinusuri…',
   'id.ok': 'Bakante ang @{handle}',
   'id.mine': 'Ito ang ID mo',
-  'id.invalid': 'Gumamit ng 2 hanggang 24 na letra, numero o simbolong tulad ng _ . - (walang space o emoji)',
+  'id.invalid': "Gumamit ng 2 hanggang 30 English na letra (a–z), numero, . o _ (walang . sa simula o dulo)",
   'id.reserved': 'Nakareserba ang ID na ito',
   'id.taken': 'May gumagamit na ng @{handle}',
   'id.cooldown': 'Puwede mong palitan ulit ang ID mo sa {date}, o mas maaga gamit ang ID change mula sa Yaari app',

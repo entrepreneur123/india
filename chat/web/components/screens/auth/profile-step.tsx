@@ -161,7 +161,6 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
           options={[
             { value: 'female', label: t('pf.woman') },
             { value: 'male', label: t('pf.man') },
-            { value: 'other', label: t('pf.other') },
           ]}
         />
         {touched && gender === '' ? (

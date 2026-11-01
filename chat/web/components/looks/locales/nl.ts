@@ -57,11 +57,11 @@ const nl: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'ID',
-  'id.hint': 'Je eigen @ID, overal naast je naam te zien. Letters, cijfers en tekens als _ . - werken.',
+  'id.hint': "Je eigen @ID, overal naast je naam. Gebruik Engelse letters (a–z), cijfers, . en _.",
   'id.checking': 'Controleren…',
   'id.ok': '@{handle} is vrij',
   'id.mine': 'Dit is je ID',
-  'id.invalid': 'Gebruik 2 tot 24 letters, cijfers of tekens als _ . - (geen spaties of emoji)',
+  'id.invalid': "Gebruik 2 tot 30 Engelse letters (a–z), cijfers, . of _ (geen . aan het begin of eind)",
   'id.reserved': 'Deze ID is gereserveerd',
   'id.taken': '@{handle} is al bezet',
   'id.cooldown': 'Je kunt je ID weer wijzigen op {date}, of eerder met een ID-wijziging uit de Yaari-app',

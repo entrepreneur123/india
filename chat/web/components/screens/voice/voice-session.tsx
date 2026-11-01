@@ -12,7 +12,7 @@ import { retryImport } from '@/lib/retry-import'
 import { laterReads, movesReads, readByOthers } from '@/lib/voice-chat'
 import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
 import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
-import { nextHost } from '@/lib/voice-lost'
+import { heirs } from '@/lib/voice-lost'
 import { crowdChange, playRoomSound, type Crowd } from '@/lib/room-sounds'
 import { useApp, useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -506,8 +506,10 @@ export function VoiceHost({
   const [confirmEnd, setConfirmEnd] = useState(false)
   const [busy, setBusy] = useState(false)
   const isHost = s.me?.role === 'host'
-  // A co-host takes over when the host leaves (the server's voice_hand_over); with none, leaving ends the room.
-  const heir = isHost && s.room ? nextHost(s.room) : null
+  // Leaving, the host picks who takes over (first in voice_hand_over's order unless picked); nobody else in it: it ends.
+  const candidates = isHost && s.room ? heirs(s.room) : []
+  const [picked, setPicked] = useState<string | null>(null)
+  const heir = candidates.find((c) => c.profile.id === picked) ?? candidates[0] ?? null
 
   /** `quiet`: the shell says it its own way (a random search took me out of my room). */
   const end = async (quiet = false) => {
@@ -529,8 +531,15 @@ export function VoiceHost({
       setConfirmEnd(false)
     }
   }
-  // The host is asked first: hand the room to a co-host, or end it for everyone.
-  const leave = () => (isHost ? setConfirmEnd(true) : onClose())
+  // The host is asked first: hand the room to someone in it, or end it for everyone.
+  const leave = () => (isHost ? (setPicked(null), setConfirmEnd(true)) : onClose())
+  const handOver = async (to: VoiceMember) => {
+    setBusy(true)
+    const ok = await s.act({ type: 'makeHost', userId: to.profile.id, leaving: true }) // then I leave as a co-host
+    setBusy(false)
+    setConfirmEnd(false)
+    if (ok) onClose()
+  }
 
   const title = s.room?.title ?? ''
   useEffect(() => {
@@ -567,7 +576,26 @@ export function VoiceHost({
       >
         {heir ? (
           <div className="flex flex-col gap-2 p-6 pt-5">
-            <Button variant="brand" size="lg" disabled={busy} onClick={onClose}>
+            {candidates.length > 1 ? (
+              <div role="radiogroup" aria-label={t('voice.handOverPick')} className="-mx-2 mb-2 flex max-h-56 flex-col overflow-y-auto scrollbar-thin">
+                <p className="px-2 pb-1 text-sm font-semibold">{t('voice.handOverPick')}</p>
+                {candidates.slice(0, 30).map((c) => (
+                  <button
+                    key={c.profile.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={c === heir}
+                    onClick={() => setPicked(c.profile.id)}
+                    className={cn('flex items-center gap-3 rounded-xl px-2 py-2 text-start transition-colors hover:bg-muted', c === heir && 'bg-primary-soft')}
+                  >
+                    <UserAvatar userId={c.profile.id} name={c.profile.name} src={c.profile.photoUrl} size={36} />
+                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{c.profile.name}</span>
+                    <span className={cn('size-4.5 shrink-0 rounded-full border-2', c === heir ? 'border-[5px] border-primary' : 'border-border')} aria-hidden />
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <Button variant="brand" size="lg" loading={busy} onClick={() => void handOver(heir)}>
               {t('voice.handOverLeave', { name: heir.profile.name })}
             </Button>
             <Button variant="outline" size="lg" className="text-destructive hover:text-destructive" loading={busy} onClick={() => void end()}>

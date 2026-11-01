@@ -57,11 +57,11 @@ const ptBR: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'ID',
-  'id.hint': 'Seu @ID único, que aparece com o seu nome em todo lugar. Vale letras, números e símbolos como _ . -',
+  'id.hint': "Seu próprio @ID, mostrado com seu nome em todo lugar. Use letras do inglês (a–z), números, . e _.",
   'id.checking': 'Verificando…',
   'id.ok': '@{handle} está disponível',
   'id.mine': 'Este é o seu ID',
-  'id.invalid': 'Use de 2 a 24 letras, números ou símbolos como _ . - (sem espaços nem emoji)',
+  'id.invalid': "Use de 2 a 30 letras do inglês (a–z), números, . ou _ (sem . no início ou no fim)",
   'id.reserved': 'Este ID é reservado',
   'id.taken': '@{handle} já está em uso',
   'id.cooldown': 'Você poderá mudar seu ID de novo em {date}, ou antes com uma troca de ID do app Yaari',

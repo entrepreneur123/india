@@ -57,11 +57,11 @@ const id: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'ID',
-  'id.hint': '@ID milikmu sendiri, tampil bersama namamu di mana saja. Boleh huruf, angka, dan simbol seperti _ . -',
+  'id.hint': "@ID milikmu, tampil bersama namamu di mana saja. Gunakan huruf Inggris (a–z), angka, . dan _.",
   'id.checking': 'Memeriksa…',
   'id.ok': '@{handle} tersedia',
   'id.mine': 'Ini ID-mu',
-  'id.invalid': 'Gunakan 2 sampai 24 huruf, angka, atau simbol seperti _ . - (tanpa spasi atau emoji)',
+  'id.invalid': "Gunakan 2 sampai 30 huruf Inggris (a–z), angka, . atau _ (tanpa . di awal atau akhir)",
   'id.reserved': 'ID ini dicadangkan',
   'id.taken': '@{handle} sudah dipakai',
   'id.cooldown': 'Kamu bisa mengganti ID lagi pada {date}, atau lebih cepat dengan tiket ganti ID dari aplikasi Yaari',

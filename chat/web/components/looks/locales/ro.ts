@@ -57,11 +57,11 @@ const ro: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'ID',
-  'id.hint': '@ID-ul tău, afișat peste tot lângă nume. Merg litere, cifre și simboluri ca _ . -',
+  'id.hint': "@ID-ul tău, afișat peste tot lângă nume. Folosește litere englezești (a–z), cifre, . și _.",
   'id.checking': 'Se verifică…',
   'id.ok': '@{handle} e liber',
   'id.mine': 'Acesta e ID-ul tău',
-  'id.invalid': 'Folosește 2–24 de litere, cifre sau simboluri ca _ . - (fără spații sau emoji)',
+  'id.invalid': "Folosește între 2 și 30 de litere englezești (a–z), cifre, . sau _ (fără . la început sau la sfârșit)",
   'id.reserved': 'Acest ID e rezervat',
   'id.taken': '@{handle} e deja luat',
   'id.cooldown': 'Îți poți schimba din nou ID-ul pe {date} sau mai devreme cu o schimbare de ID din aplicația Yaari',

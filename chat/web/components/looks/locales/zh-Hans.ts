@@ -57,11 +57,11 @@ const zhHans: LooksDict = {
   'item.frame_sakura': '樱花',
 
   'id.label': 'ID',
-  'id.hint': '你专属的 @ID，会随你的名字显示在各处。可以使用字母、数字以及 _ . - 等符号。',
+  'id.hint': "你专属的 @ID，会和名字一起显示在各处。可使用英文字母（a–z）、数字、. 和 _。",
   'id.checking': '正在检查…',
   'id.ok': '@{handle} 可以使用',
   'id.mine': '这是你的 ID',
-  'id.invalid': '请使用 2 到 24 个字母、数字或 _ . - 等符号（不能有空格或表情）',
+  'id.invalid': "请使用 2 到 30 个英文字母（a–z）、数字、. 或 _（不能以 . 开头或结尾）",
   'id.reserved': '此 ID 已被保留',
   'id.taken': '@{handle} 已被占用',
   'id.cooldown': '你可以在 {date} 再次更改 ID，或使用 Yaari App 中的 ID 更改券提前更改',

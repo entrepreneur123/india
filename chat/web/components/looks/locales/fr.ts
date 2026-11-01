@@ -57,11 +57,11 @@ const fr: LooksDict = {
   'item.frame_sakura': 'Sakura',
 
   'id.label': 'Identifiant',
-  'id.hint': 'Votre @identifiant à vous, affiché partout avec votre nom. Lettres, chiffres et symboles comme _ . - acceptés.',
+  'id.hint': "Ton @ID, affiché partout avec ton nom. Lettres anglaises (a–z), chiffres, . et _ autorisés.",
   'id.checking': 'Vérification…',
   'id.ok': '@{handle} est disponible',
   'id.mine': 'C’est votre identifiant',
-  'id.invalid': 'Utilisez 2 à 24 lettres, chiffres ou symboles comme _ . - (sans espace ni emoji)',
+  'id.invalid': "Utilise 2 à 30 lettres anglaises (a–z), chiffres, . ou _ (pas de . au début ni à la fin)",
   'id.reserved': 'Cet identifiant est réservé',
   'id.taken': '@{handle} est déjà pris',
   'id.cooldown': 'Vous pourrez changer d’identifiant à nouveau le {date}, ou plus tôt avec un changement d’identifiant depuis l’app Yaari',

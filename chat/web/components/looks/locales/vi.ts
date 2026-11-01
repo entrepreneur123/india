@@ -57,11 +57,11 @@ const vi: LooksDict = {
   'item.frame_sakura': 'Hoa anh đào',
 
   'id.label': 'ID',
-  'id.hint': '@ID riêng của bạn, hiện cùng tên bạn ở mọi nơi. Có thể dùng chữ cái, chữ số và ký hiệu như _ . -',
+  'id.hint': "@ID của riêng bạn, hiển thị cùng tên bạn ở mọi nơi. Dùng chữ cái tiếng Anh (a–z), số, . và _.",
   'id.checking': 'Đang kiểm tra…',
   'id.ok': '@{handle} còn trống',
   'id.mine': 'Đây là ID của bạn',
-  'id.invalid': 'Dùng 2 đến 24 chữ cái, chữ số hoặc ký hiệu như _ . - (không có khoảng trắng hay emoji)',
+  'id.invalid': "Dùng 2 đến 30 chữ cái tiếng Anh (a–z), số, . hoặc _ (không có . ở đầu hoặc cuối)",
   'id.reserved': 'ID này đã được giữ trước',
   'id.taken': '@{handle} đã có người dùng',
   'id.cooldown': 'Bạn có thể đổi ID lần nữa vào {date}, hoặc sớm hơn bằng lượt đổi ID từ ứng dụng Yaari',
