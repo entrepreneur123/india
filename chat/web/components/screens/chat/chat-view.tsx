@@ -192,9 +192,11 @@ export function ChatView({
   useEffect(() => {
     if (ended) playRoomSound('leave', true)
   }, [ended])
-  // 040: a thread whose chat ended goes on only between friends; until then a friends bar replaces the composer.
+  // A thread goes on while the server's chat_open says so (the rule its message policy checks, 127: friends, or the other
+  // person takes messages from anyone or has written here); else a friends bar replaces the composer. Asked again when
+  // the friendship changes, the chat ends or a line is refused.
   const friendship = useFriendship(partner.id, partner.name)
-  const gated = !live && chat.ended && friendship.state !== null && friendship.state !== 'friends'
+  const gated = useSWR(live ? null : ['chat_open', matchId, friendship.state, chat.ended], () => backend.chatOpen(matchId)).data === false
   // Calls: only a thread between friends (the server's call_open, 070).
   const callable = !live && friendship.state === 'friends'
   // 40: a friend is called only while online (the panel's presence, same request); the server refuses it too.
