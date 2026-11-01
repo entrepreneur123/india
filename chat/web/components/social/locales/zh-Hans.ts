@@ -82,6 +82,9 @@ const zhHans: SocialDict = {
   'chatbar.end': '结束聊天',
   'chatbar.live': '聊天进行中 · 点按打开',
   'chatbar.minimise': '最小化聊天',
+  'chatbar.openSearch': '返回搜索',
+  'chatbar.stopSearch': '停止搜索',
+  'chatbar.hideSearch': '搜索时浏览其他页面',
   // messenger contacts
   'contacts.title': '聊天软件联系方式',
   'contacts.note': '只有你选择的好友才能看到。',

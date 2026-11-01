@@ -82,6 +82,9 @@ const tr: SocialDict = {
   'chatbar.end': 'Sohbeti bitir',
   'chatbar.live': 'Canlı sohbet · açmak için dokun',
   'chatbar.minimise': 'Sohbeti küçült',
+  'chatbar.openSearch': 'Aramaya dön',
+  'chatbar.stopSearch': 'Aramayı durdur',
+  'chatbar.hideSearch': 'Ararken etrafa göz at',
   // messenger contacts
   'contacts.title': 'Mesajlaşma bağlantıları',
   'contacts.note': 'Bunları yalnızca seçtiğin arkadaşlar görebilir.',

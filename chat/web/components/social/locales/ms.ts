@@ -81,6 +81,9 @@ const ms: SocialDict = {
   'chatbar.end': 'Tamatkan sembang',
   'chatbar.live': 'Sembang langsung · ketik untuk buka',
   'chatbar.minimise': 'Kecilkan sembang',
+  'chatbar.openSearch': 'Kembali ke carian',
+  'chatbar.stopSearch': 'Berhenti mencari',
+  'chatbar.hideSearch': 'Lihat-lihat sambil mencari',
   // messenger contacts
   'contacts.title': 'Kenalan aplikasi mesej',
   'contacts.note': 'Hanya rakan yang anda pilih boleh melihatnya.',

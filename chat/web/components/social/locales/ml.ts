@@ -76,6 +76,9 @@ const ml: SocialDict = {
   'chatbar.end': 'ചാറ്റ് അവസാനിപ്പിക്കുക',
   'chatbar.live': 'ലൈവ് ചാറ്റ് · തുറക്കാൻ ടാപ്പ് ചെയ്യുക',
   'chatbar.minimise': 'ചാറ്റ് ചെറുതാക്കുക',
+  'chatbar.openSearch': 'തിരയലിലേക്ക് മടങ്ങുക',
+  'chatbar.stopSearch': 'തിരയൽ നിർത്തുക',
+  'chatbar.hideSearch': 'തിരയുമ്പോൾ ചുറ്റും നോക്കുക',
   // messenger contacts
   'contacts.title': 'മെസഞ്ചർ കോൺടാക്റ്റുകൾ',
   'contacts.note': 'നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന സുഹൃത്തുക്കൾക്ക് മാത്രമേ ഇവ കാണാനാകൂ.',

@@ -76,6 +76,9 @@ const nl: SocialDict = {
   'chatbar.end': 'Chat beëindigen',
   'chatbar.live': 'Live chat · tik om te openen',
   'chatbar.minimise': 'Chat minimaliseren',
+  'chatbar.openSearch': 'Terug naar het zoeken',
+  'chatbar.stopSearch': 'Stoppen met zoeken',
+  'chatbar.hideSearch': 'Rondkijken tijdens het zoeken',
   // messenger contacts
   'contacts.title': 'Messenger-contacten',
   'contacts.note': 'Alleen vrienden die jij kiest kunnen ze zien.',

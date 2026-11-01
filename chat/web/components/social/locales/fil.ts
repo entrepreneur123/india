@@ -81,6 +81,9 @@ const fil: SocialDict = {
   'chatbar.end': 'Tapusin ang chat',
   'chatbar.live': 'Live chat · i-tap para buksan',
   'chatbar.minimise': 'I-minimize ang chat',
+  'chatbar.openSearch': 'Bumalik sa paghahanap',
+  'chatbar.stopSearch': 'Itigil ang paghahanap',
+  'chatbar.hideSearch': 'Mag-browse habang naghahanap',
   // messenger contacts
   'contacts.title': 'Mga contact sa messenger',
   'contacts.note': 'Ang mga kaibigang pipiliin mo lang ang makakakita nito.',

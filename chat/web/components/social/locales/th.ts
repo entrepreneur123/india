@@ -81,6 +81,9 @@ const th: SocialDict = {
   'chatbar.end': 'จบแชท',
   'chatbar.live': 'แชทสด · แตะเพื่อเปิด',
   'chatbar.minimise': 'ย่อแชท',
+  'chatbar.openSearch': 'กลับไปที่การค้นหา',
+  'chatbar.stopSearch': 'หยุดค้นหา',
+  'chatbar.hideSearch': 'ดูหน้าอื่นระหว่างค้นหา',
   // messenger contacts
   'contacts.title': 'ช่องทางติดต่อในแอปแชท',
   'contacts.note': 'เฉพาะเพื่อนที่คุณเลือกเท่านั้นที่เห็นได้',

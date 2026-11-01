@@ -81,6 +81,9 @@ const ja: SocialDict = {
   'chatbar.end': 'チャットを終了',
   'chatbar.live': 'チャット中・タップして開く',
   'chatbar.minimise': 'チャットを最小化',
+  'chatbar.openSearch': '検索に戻る',
+  'chatbar.stopSearch': '検索をやめる',
+  'chatbar.hideSearch': '検索中にほかの画面を見る',
   // messenger contacts
   'contacts.title': 'メッセンジャーの連絡先',
   'contacts.note': '選んだ友達だけが見られます。',

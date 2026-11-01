@@ -76,6 +76,9 @@ const ta: SocialDict = {
   'chatbar.end': 'சாட்டை முடி',
   'chatbar.live': 'லைவ் சாட் · திறக்கத் தட்டுங்கள்',
   'chatbar.minimise': 'சாட்டைச் சிறிதாக்கு',
+  'chatbar.openSearch': 'தேடலுக்குத் திரும்பு',
+  'chatbar.stopSearch': 'தேடலை நிறுத்து',
+  'chatbar.hideSearch': 'தேடும்போது சுற்றிப் பார்',
   // messenger contacts
   'contacts.title': 'மெசஞ்சர் தொடர்புகள்',
   'contacts.note': 'நீங்கள் தேர்ந்தெடுக்கும் நண்பர்கள் மட்டுமே இவற்றைப் பார்க்க முடியும்.',

@@ -82,6 +82,9 @@ const ko: SocialDict = {
   'chatbar.end': '채팅 종료',
   'chatbar.live': '채팅 중 · 탭해서 열기',
   'chatbar.minimise': '채팅 최소화',
+  'chatbar.openSearch': '검색 화면으로 돌아가기',
+  'chatbar.stopSearch': '검색 중지',
+  'chatbar.hideSearch': '찾는 동안 둘러보기',
   // messenger contacts
   'contacts.title': '메신저 연락처',
   'contacts.note': '내가 고른 친구만 볼 수 있어요.',

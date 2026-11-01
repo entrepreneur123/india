@@ -71,6 +71,9 @@ const ur: SocialDict = {
   'chatbar.end': 'چیٹ ختم کریں',
   'chatbar.live': 'لائیو چیٹ · کھولنے کے لیے ٹیپ کریں',
   'chatbar.minimise': 'چیٹ چھوٹی کریں',
+  'chatbar.openSearch': 'تلاش پر واپس جائیں',
+  'chatbar.stopSearch': 'تلاش روکیں',
+  'chatbar.hideSearch': 'تلاش کے دوران ادھر اُدھر دیکھیں',
   // messenger contacts
   'contacts.title': 'میسنجر رابطے',
   'contacts.note': 'انہیں صرف وہی دوست دیکھ سکتے ہیں جنہیں آپ چنیں۔',

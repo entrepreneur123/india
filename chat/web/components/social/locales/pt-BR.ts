@@ -77,6 +77,9 @@ const ptBR: SocialDict = {
   'chatbar.end': 'Encerrar chat',
   'chatbar.live': 'Chat ao vivo · toque para abrir',
   'chatbar.minimise': 'Minimizar chat',
+  'chatbar.openSearch': 'Voltar à busca',
+  'chatbar.stopSearch': 'Parar de buscar',
+  'chatbar.hideSearch': 'Explorar enquanto busca',
   // messenger contacts
   'contacts.title': 'Contatos de mensageiros',
   'contacts.note': 'Só os amigos que você escolher podem ver.',

@@ -81,6 +81,9 @@ const id: SocialDict = {
   'chatbar.end': 'Akhiri chat',
   'chatbar.live': 'Chat live · ketuk untuk membuka',
   'chatbar.minimise': 'Perkecil chat',
+  'chatbar.openSearch': 'Kembali ke pencarian',
+  'chatbar.stopSearch': 'Berhenti mencari',
+  'chatbar.hideSearch': 'Jelajahi sambil mencari',
   // messenger contacts
   'contacts.title': 'Kontak messenger',
   'contacts.note': 'Hanya teman yang kamu pilih yang bisa melihatnya.',
