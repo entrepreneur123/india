@@ -904,6 +904,8 @@ export interface Backend {
   answerFriend(userId: string, accept: boolean): Promise<void>
   removeFriend(userId: string): Promise<void>
   friendThread(userId: string): Promise<string> // a matchId to open the chat in
+  /** Whether I may write in this thread now (the server's chat_open, the rule its message policy checks). */
+  chatOpen(matchId: string): Promise<boolean>
   /** 042: people whose ID starts with q (@ and case ignored), up to 20; found people can be viewed for a day. */
   searchHandles(q: string): Promise<PersonRow[]>
   /** `country` (ISO 2) null: mine. */

@@ -1,22 +1,25 @@
 'use client'
 
 import { Avatar, type AvatarProps } from '@/components/ui/avatar'
-import { FrameRing, frameOf } from './frame-ring'
+import { frameOf } from './frame-ring'
+import { FrameOverlay } from './frames'
 import { useLook } from './look-name'
 
 /**
- * Someone's photo as every screen shows it: their photo gradient when they have one (062) and the frame they wear
- * round it. `frame={false}` where the frame is already drawn bigger around it (FrameAvatar).
+ * Someone's photo as every screen shows it: their photo gradient when they have one (062) and the frame they wear,
+ * moving, round it (FrameOverlay: the ring under the photo, the decorations over it).
  */
-export function UserAvatar({ userId, frame = true, ...props }: AvatarProps & { userId: string; frame?: boolean }) {
+export function UserAvatar({ userId, ...props }: AvatarProps & { userId: string }) {
   const look = useLook(userId)
-  const worn = frame ? frameOf(look?.frame) : null
+  const worn = frameOf(look?.frame)
   const avatar = <Avatar {...props} srcs={look?.cycle} />
   if (!worn) return avatar
+  const size = props.size ?? 40
   return (
     <span className="relative inline-flex shrink-0 rounded-full">
-      <FrameRing frame={worn} size={props.size ?? 40} />
+      <FrameOverlay frame={worn} size={size} part="under" />
       {avatar}
+      <FrameOverlay frame={worn} size={size} part="over" />
     </span>
   )
 }

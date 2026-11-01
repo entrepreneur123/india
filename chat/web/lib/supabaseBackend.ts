@@ -1177,6 +1177,10 @@ export class SupabaseBackend implements Backend {
     return this.rpc<string>('friend_thread', { p_user: userId })
   }
 
+  async chatOpen(matchId: string) {
+    return this.rpc<boolean>('chat_open', { mid: matchId })
+  }
+
   async searchHandles(q: string) {
     return this.personRows(await this.rpc<PersonRowRaw[]>('search_handles', { p_q: q }))
   }

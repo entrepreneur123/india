@@ -34,8 +34,8 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
   /** The call asked for (or on) is a video call; false: voice. */
   const [camera, setCamera] = useState(true)
   const [partnerLeft, setPartnerLeft] = useState(false)
-  /** Threads: the chat is over (040: only friends write on). */
-  const [ended, setEnded] = useState(false)
+  /** Threads: bumped each time the chat is over or the server refused a line in it; the view then asks the server whether it is still open (chatOpen). */
+  const [ended, setEnded] = useState(0)
   const [partnerRead, setPartnerRead] = useState(0)
   /** 35: the partner's card after they turned VIP off or on (null: as the chat opened with). */
   const [partner, setPartner] = useState<Profile | null>(null)
@@ -50,7 +50,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     setTyping(false)
     setVideo('none')
     setPartnerLeft(false)
-    setEnded(false)
+    setEnded(0)
     setPartnerRead(0)
 
     backend
@@ -89,7 +89,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
           setPartnerRead((r) => Math.max(r, e.upto))
           break
         case 'ended':
-          if (!live) setEnded(true)
+          if (!live) setEnded((n) => n + 1)
           break
         case 'partner':
           setPartner(e.partner)
@@ -140,8 +140,8 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     setMessages,
     (id, line, clientId) => backend.send(id, line.text, line.media, clientId),
     (err) => {
-      // The server refused a line in a chat that ended between non-friends: the friends bar takes the composer's place.
-      if (!live && errorCode(err) === 'chat_closed') setEnded(true)
+      // The server refused a line in an ended chat: ask again whether it is open (the friends bar may take the composer's place).
+      if (!live && errorCode(err) === 'chat_closed') setEnded((n) => n + 1)
       // Offline is already said by the connection bar and the line's own "Not sent"; anything else is explained.
       if (errorCode(err) !== 'network') toast.error(err)
     },
