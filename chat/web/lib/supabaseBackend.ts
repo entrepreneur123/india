@@ -1200,6 +1200,18 @@ export class SupabaseBackend implements Backend {
     return this.personRows(await this.rpc<PersonRowRaw[]>('search_handles', { p_q: q }))
   }
 
+  async searchRecents() {
+    return this.personRows(await this.rpc<PersonRowRaw[]>('search_recents'))
+  }
+
+  async pickSearch(userId: string) {
+    await this.rpc('search_recent_pick', { p_user: userId })
+  }
+
+  async forgetSearch(userId?: string) {
+    await this.rpc('search_recent_forget', { p_user: userId ?? null })
+  }
+
   async blocks() {
     return this.personRows(await this.rpc<PersonRowRaw[]>('my_blocks'))
   }

@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { RefreshCw, Search, UserCheck, Users } from 'lucide-react'
-import type { ExploreKind, ExplorePerson, FeedItem, PersonRow } from '@/lib/backend'
+import { RefreshCw, UserCheck, Users } from 'lucide-react'
+import type { ExploreKind, ExplorePerson, FeedItem } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { COUNTRIES } from '@/lib/countries'
 import { flagEmoji } from '@/lib/format'
@@ -11,7 +11,7 @@ import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { LookName, NameText, useLook } from '@/components/looks/look-name'
 import { Avatar, useCycle } from '@/components/ui/avatar'
-import { Segmented, Skeleton, TextInput } from '@/components/ui/bits'
+import { Segmented, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { cn } from '@/lib/utils'
@@ -19,31 +19,31 @@ import { FadeImg } from '@/components/ui/fade-img'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { FriendNotes } from './friend-notes'
 import { TagPosts } from '@/components/social/hashtags'
+import { PeopleSearch } from '@/components/social/people-find'
 import { hashtagsOf } from '@/lib/hashtags'
 import { PostCard } from '@/components/social/posts/post-card'
 import { ScrollRow } from '@/components/ui/scroll-row'
 
-// Explore (059): search by ID or name on top; under it Feed (posts, highlights and status lines of friends and people
+// Explore (059): the search bar on top (ID, name or #tag, with my recent searches); under it Feed (posts, highlights and status lines of friends and people
 // I follow), For you (50 random people of a country: everyone, online or offline, 126) and Ranking (followers or friends).
 
 type Section = 'feed' | 'recommend' | 'ranking'
+
+const tagPosts = (q: string) => {
+  const tag = q.startsWith('#') ? hashtagsOf(q)[0] : undefined
+  return tag ? <TagPosts tag={tag} /> : null
+}
 type Presence = 'recommend' | 'online' | 'offline'
 
 export function ExploreScreen() {
   const backend = useBackend()
   const { t, locale } = useI18n()
   const app = useApp()
-  const [q, setQ] = useState('')
-  const [asked, setAsked] = useState('')
   const [section, setSection] = useState<Section>('recommend')
   const [rank, setRank] = useState<'likes' | 'friends'>('likes')
   const [presence, setPresence] = useState<Presence>('recommend')
   const [country, setCountry] = useState<string>(app.me?.country ?? '')
   const [round, setRound] = useState(0)
-  useEffect(() => {
-    const timer = setTimeout(() => setAsked(q.trim().replace(/^@/, '')), 300)
-    return () => clearTimeout(timer)
-  }, [q])
 
   const names = useMemo(() => {
     const dn = new Intl.DisplayNames([locale], { type: 'region' })
@@ -51,47 +51,16 @@ export function ExploreScreen() {
   }, [locale])
 
   const kind: ExploreKind | null = section === 'feed' ? null : section === 'ranking' ? rank : presence
-  // 072: "#word" looks for posts with that hashtag instead of people.
-  const tag = asked.startsWith('#') ? hashtagsOf(asked)[0] ?? null : null
-  const found = useSWR(asked && !tag ? ['explore-find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
-  const people = useSWR(!asked && kind ? ['explore', kind, country, section === 'recommend' ? round : 0] : null, () => backend.explorePeople(kind!, country || null), {
+  const people = useSWR(kind ? ['explore', kind, country, section === 'recommend' ? round : 0] : null, () => backend.explorePeople(kind!, country || null), {
     revalidateOnFocus: false,
   })
-  const feed = useSWR(!asked && section === 'feed' ? 'explore-feed' : null, () => backend.exploreFeed())
+  const feed = useSWR(section === 'feed' ? 'explore-feed' : null, () => backend.exploreFeed())
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 sm:px-8">
-        <label className="relative block">
-          <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <TextInput
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={t('explore.search')}
-            aria-label={t('explore.search')}
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-            maxLength={30}
-            className="ps-9"
-          />
-        </label>
-
-        {tag ? (
-          <TagPosts tag={tag} />
-        ) : asked ? (
-          !found.data ? (
-            <Skeleton className="h-14 w-full rounded-xl" />
-          ) : found.data.length ? (
-            <ul className="flex flex-col">
-              {found.data.map((p) => (
-                <PersonLine key={p.id} p={p} onOpen={() => app.openProfile(p.id)} />
-              ))}
-            </ul>
-          ) : (
-            <p className="py-10 text-center text-sm text-muted-foreground">{t('explore.noResults')}</p>
-          )
-        ) : (
+        {/* The bar and my recent searches (people-find.tsx); 072: "#word" looks for posts with that hashtag instead. */}
+        <PeopleSearch placeholder={t('explore.search')} other={tagPosts}>
           <>
             <Segmented
               label={t('nav.explore')}
@@ -157,23 +126,9 @@ export function ExploreScreen() {
               <People list={people.data} ranked={section === 'ranking'} rank={rank} />
             )}
           </>
-        )}
+        </PeopleSearch>
       </div>
     </div>
-  )
-}
-
-function PersonLine({ p, onOpen }: { p: PersonRow; onOpen: () => void }) {
-  return (
-    <li>
-      <button type="button" onClick={onOpen} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-start transition-colors hover:bg-muted">
-        <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
-        <span className="flex min-w-0 flex-col">
-          <LookName userId={p.id} handle={p.handle} className="truncate text-[15px] font-semibold" />
-          <NameText userId={p.id} className="truncate text-sm text-muted-foreground">{p.name}</NameText>
-        </span>
-      </button>
-    </li>
   )
 }
 

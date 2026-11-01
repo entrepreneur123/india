@@ -910,6 +910,10 @@ export interface Backend {
   chatOpen(matchId: string): Promise<boolean>
   /** 042: people whose ID starts with q (@ and case ignored), up to 20; found people can be viewed for a day. */
   searchHandles(q: string): Promise<PersonRow[]>
+  /** 131: people I opened from a search, newest first (20); pick moves one to the top, forget drops one or all (no id). */
+  searchRecents(): Promise<PersonRow[]>
+  pickSearch(userId: string): Promise<void>
+  forgetSearch(userId?: string): Promise<void>
   /** `country` (ISO 2) null: mine. */
   explorePeople(kind: ExploreKind, country?: string | null): Promise<ExplorePerson[]>
   /** Posts and highlights newest first, and status lines newest change first. */

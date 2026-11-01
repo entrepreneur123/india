@@ -5,7 +5,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { AtSign, Flag, MessageCircle, UserMinus, X } from 'lucide-react'
+import { Flag, MessageCircle, UserMinus, X } from 'lucide-react'
 import type { Friend, Profile, RecentMatch } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
 import { LookName, PersonName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
-import { FindSheet } from '@/components/social/people-find'
+import { PeopleSearch } from '@/components/social/people-find'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { GroupList, useGroups } from './groups'
 import { lastRecentSegment, showRecentSegment, type RecentSegment } from './segment'
@@ -34,7 +34,6 @@ export function RecentScreen() {
   const { t, setTab } = useApp()
   const [segment, setSegmentState] = useState<Segment>(lastRecentSegment)
   const setSegment = (s: Segment) => (showRecentSegment(s), setSegmentState(s))
-  const [findOpen, setFindOpen] = useState(false)
   const { lt } = useLooksT()
   const friends = useSWR('friends', () => backend.friends())
   const recents = useSWR('recents', () => backend.recents())
@@ -54,14 +53,10 @@ export function RecentScreen() {
       <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('recent.title')}</h1>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={() => setFindOpen(true)} aria-label={lt('find.title')}>
-              <AtSign className="size-5" aria-hidden />
-            </Button>
-            <BellButton className="md:hidden" />
-          </div>
+          <BellButton className="md:hidden" />
         </div>
-        <FindSheet open={findOpen} onClose={() => setFindOpen(false)} />
+        {/* Finding someone by ID or name (042) is a bar in sight, not an @ button; under it my recent searches (131). */}
+        <PeopleSearch placeholder={lt('find.placeholder')}>
         <Segmented
           className="w-full"
           size="lg"
@@ -129,6 +124,7 @@ export function RecentScreen() {
             )}
           </m.div>
         </AnimatePresence>
+        </PeopleSearch>
       </div>
     </div>
   )

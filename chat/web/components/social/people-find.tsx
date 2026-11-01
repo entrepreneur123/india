@@ -1,22 +1,25 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
-import { AtSign, Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import type { PersonRow } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { LookName, NameText } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
-import { Skeleton, TextInput } from '@/components/ui/bits'
+import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
+import { useI18n } from '@/components/i18n'
+import { useSocialT } from '@/components/social/social-text'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
-// Finding someone by @ID (042), and Settings' list of people I blocked.
+// The search bar over Recent and Explore, with my recent searches (131); Settings' list of people I blocked.
 
-function PersonLine({ p, children, onOpen }: { p: PersonRow; children?: React.ReactNode; onOpen?: () => void }) {
+export function PersonLine({ p, children, onOpen }: { p: PersonRow; children?: React.ReactNode; onOpen?: () => void }) {
   const body = (
     <>
       <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
@@ -26,73 +29,143 @@ function PersonLine({ p, children, onOpen }: { p: PersonRow; children?: React.Re
       </span>
     </>
   )
+  const row = 'flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-2 text-start'
   return (
-    <li className="flex items-center gap-3 rounded-xl px-3 py-2">
+    <li className="flex items-center gap-2">
       {onOpen ? (
-        <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-start">
+        <button type="button" onClick={onOpen} className={cn(row, 'transition-colors hover:bg-muted')}>
           {body}
         </button>
       ) : (
-        body
+        <div className={row}>{body}</div>
       )}
       {children}
     </li>
   )
 }
 
-export function FindSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+/**
+ * A search bar on top of a screen (owner 2026-11-01, as Instagram, X and Facebook do): tapped, it shows the people I
+ * opened from a search, newest first, each with an X and "Clear all"; typed, who matches by ID or name. Cancel or
+ * Escape goes back to the screen, which stays mounted under it. `other`: the screen's own answer to a query (Explore's
+ * #tags), or null for people.
+ */
+export function PeopleSearch({ placeholder, other, children }: { placeholder: string; other?: (q: string) => React.ReactNode; children: React.ReactNode }) {
   const backend = useBackend()
   const { openProfile } = useApp()
   const { lt } = useLooksT()
+  const { st } = useSocialT()
+  const { t } = useI18n()
+  const input = useRef<HTMLInputElement>(null)
   const [q, setQ] = useState('')
   const [asked, setAsked] = useState('')
+  const [active, setActive] = useState(false)
   useEffect(() => {
     const timer = setTimeout(() => setAsked(q.trim().replace(/^@/, '')), 300)
     return () => clearTimeout(timer)
   }, [q])
-  useEffect(() => {
-    if (!open) setQ('')
-  }, [open])
-  const found = useSWR(open && asked ? ['find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
+  const own = asked && other ? other(asked) : null
+  const found = useSWR(asked && !own ? ['find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
+  const recents = useSWR(active ? 'search-recents' : null, () => backend.searchRecents())
+
+  // Opening someone from a search puts them on top of the recent ones (also when opened from that list).
+  const pick = (p: PersonRow) => {
+    openProfile(p.id)
+    void backend.pickSearch(p.id).then(() => recents.mutate(), () => undefined)
+  }
+  const forget = (id?: string) => {
+    void recents.mutate((l) => (id ? l?.filter((p) => p.id !== id) : []), { revalidate: false })
+    backend.forgetSearch(id).catch(() => void recents.mutate())
+  }
+  const close = () => {
+    setQ('')
+    setAsked('')
+    setActive(false)
+    input.current?.blur()
+  }
+
+  const failed = <p className="px-1 text-sm text-destructive">{lt('find.failed')}</p>
+  const loading = <Skeleton className="h-14 w-full rounded-xl" />
+  const results = own ?? (asked ? (
+    found.error ? failed : !found.data ? loading : found.data.length ? (
+      <ul className="flex flex-col" aria-busy={found.isValidating}>
+        {found.data.map((p) => <PersonLine key={p.id} p={p} onOpen={() => pick(p)} />)}
+      </ul>
+    ) : (
+      <p className="py-10 text-center text-sm text-muted-foreground">{t('explore.noResults')}</p>
+    )
+  ) : (
+    <section className="flex flex-col gap-1" aria-label={lt('find.recent')}>
+      <div className="flex min-h-9 items-center justify-between gap-2 px-1">
+        <h2 className="text-[15px] font-semibold">{lt('find.recent')}</h2>
+        {recents.data?.length ? (
+          <button type="button" onClick={() => forget()} className="rounded-full px-2 py-1 text-sm font-semibold text-primary-text hover:bg-muted">
+            {lt('find.clearAll')}
+          </button>
+        ) : null}
+      </div>
+      {recents.error ? failed : !recents.data ? loading : recents.data.length ? (
+        <ul className="flex flex-col">
+          {recents.data.map((p) => (
+            <PersonLine key={p.id} p={p} onOpen={() => pick(p)}>
+              <button
+                type="button"
+                onClick={() => forget(p.id)}
+                aria-label={lt('find.remove', { name: p.name })}
+                className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X className="size-4.5" aria-hidden />
+              </button>
+            </PersonLine>
+          ))}
+        </ul>
+      ) : (
+        <p className="px-1 py-6 text-center text-sm text-muted-foreground">{lt('find.hint')}</p>
+      )}
+    </section>
+  ))
 
   return (
-    <Modal open={open} onClose={onClose} variant="sheet" title={lt('find.title')}>
-      <div className="flex flex-col gap-3 p-4 pb-6">
-        <label className="relative block">
-          <AtSign className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <TextInput
+    <>
+      <div className="flex items-center gap-2">
+        <label className="relative flex h-11 min-w-0 flex-1 items-center rounded-full border border-input bg-card transition-colors duration-150 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+          <Search className="pointer-events-none absolute inset-s-3.5 size-4.5 text-muted-foreground" aria-hidden />
+          <input
+            ref={input}
+            type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={lt('find.placeholder')}
-            aria-label={lt('find.title')}
+            onFocus={() => setActive(true)}
+            onKeyDown={(e) => e.key === 'Escape' && close()}
+            placeholder={placeholder}
+            aria-label={placeholder}
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
-            maxLength={25}
-            className="ps-9"
-            data-autofocus
+            enterKeyHint="search"
+            maxLength={30}
+            className={cn('h-full min-w-0 flex-1 rounded-full bg-transparent ps-10 text-[15px] text-ellipsis outline-none [&::-webkit-search-cancel-button]:hidden', q ? 'pe-10' : 'pe-3')}
           />
+          {q ? (
+            <button
+              type="button"
+              onClick={() => (setQ(''), input.current?.focus())}
+              className="absolute inset-e-1.5 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted"
+              aria-label={st('rooms.clear')}
+            >
+              <X className="size-4" aria-hidden />
+            </button>
+          ) : null}
         </label>
-        {!asked ? (
-          <p className="flex items-center gap-2 px-1 text-sm text-muted-foreground">
-            <Search className="size-4" aria-hidden />
-            {lt('find.hint')}
-          </p>
-        ) : found.error ? (
-          <p className="px-1 text-sm text-destructive">{lt('find.failed')}</p>
-        ) : !found.data ? (
-          <Skeleton className="h-14 w-full rounded-xl" />
-        ) : found.data.length === 0 ? (
-          <p className="px-1 text-sm text-muted-foreground">{lt('find.none', { q: asked })}</p>
-        ) : (
-          <ul className="flex flex-col" aria-busy={found.isValidating}>
-            {found.data.map((p) => (
-              <PersonLine key={p.id} p={p} onOpen={() => openProfile(p.id)} />
-            ))}
-          </ul>
-        )}
+        {active ? (
+          <Button variant="ghost" onClick={close} className="shrink-0">
+            {t('common.cancel')}
+          </Button>
+        ) : null}
       </div>
-    </Modal>
+      {active ? results : null}
+      <div className={active ? 'hidden' : 'contents'}>{children}</div>
+    </>
   )
 }
 

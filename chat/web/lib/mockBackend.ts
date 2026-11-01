@@ -649,6 +649,25 @@ export class MockBackend implements Backend {
       .filter((r) => r.handle.startsWith(low)).sort((a, b) => (a.handle < b.handle ? -1 : 1)).slice(0, 20)
   }
 
+  /** 131: who I opened from a search, newest first. */
+  private searched: string[] = []
+
+  async searchRecents() {
+    await wait(150)
+    return this.searched.flatMap((id) => {
+      const p = this.blocked.has(id) ? null : this.person(id)
+      return p ? [this.personRow(p)] : []
+    })
+  }
+
+  async pickSearch(userId: string) {
+    this.searched = [userId, ...this.searched.filter((id) => id !== userId)].slice(0, 20)
+  }
+
+  async forgetSearch(userId?: string) {
+    this.searched = userId ? this.searched.filter((id) => id !== userId) : []
+  }
+
   async blocks() {
     await wait(250)
     return [...this.blocked].sort((a, b) => b[1] - a[1]).flatMap(([id]) => {
