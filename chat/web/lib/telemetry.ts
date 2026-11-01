@@ -36,7 +36,8 @@ export function track(name: FunnelEvent) {
 export function reportError(err: unknown, where?: string) {
   const e = err instanceof Error ? err : null
   const message = e?.message ?? String(err)
-  if (/ResizeObserver loop|chrome-extension:|moz-extension:/.test(`${message} ${e?.stack ?? ''}`)) return
+  // A media play() cut short by pause() or a new source rejects with AbortError: normal, nothing broke (YAARI-WEB-2).
+  if (/ResizeObserver loop|chrome-extension:|moz-extension:|play\(\) request was interrupted/.test(`${message} ${e?.stack ?? ''}`)) return
   const key = `${where}|${e?.name}|${message.slice(0, 200)}`
   if (seen.has(key) || errorsSent >= 30) return // the same error once per page; a broken page doesn't flood
   seen.add(key)
