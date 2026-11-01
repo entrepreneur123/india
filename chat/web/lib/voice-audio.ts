@@ -20,9 +20,8 @@ import {
   type VideoTrack,
 } from 'livekit-client'
 import type { VoiceVideo } from './backend'
-import { FINAL } from './livekit'
+import { cleanMicrophone, FINAL } from './livekit'
 import { connectOptions, deviceProblem, isAppleWebKit, preferRelay, RELAY_AFTER, videoCodecFor } from './rtc'
-import { cleanMicrophone } from './voice-gate'
 import { rms, silenceDetector, talkDetector } from './mic-hints'
 import { savedVolumes } from './voice-volumes'
 

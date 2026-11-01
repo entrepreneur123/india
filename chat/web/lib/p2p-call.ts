@@ -11,6 +11,7 @@
 import type { CallMsg, CallSignal } from './backend'
 import type { Call, CallEvents } from './livekit'
 import { deviceProblem, type DeviceProblem, pathQuality, preferRed, withOpusParams } from './rtc'
+import { canGate, voiceOnly } from './voice-gate'
 
 const ICE: RTCIceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }]
 /** No direct path by then: the server carries the call. */
@@ -97,6 +98,26 @@ export async function joinP2P(
 
   // One audio and one video slot from the start, so a camera turned on later needs no new offer.
   const senders: Record<'audio' | 'video', RTCRtpSender | null> = { audio: null, video: null }
+  // Computers send the microphone through the voice gate (lib/voice-gate, as the rooms do where Krisp can't run):
+  // the raw microphone goes out until the gate is ready, then the gated one replaces it.
+  let closed = false
+  const ctx = canGate() ? new AudioContext() : null
+  let gated: Awaited<ReturnType<typeof voiceOnly>> | null = null
+  let micTurn = 0
+  const sendMic = async () => {
+    const turn = ++micTurn
+    gated?.stop()
+    gated = null
+    const t = tracks.audio
+    await senders.audio?.replaceTrack(t)
+    // Not awaited: the context may wait for a tap before it runs (autoplay rules), and the call mustn't wait with it.
+    if (t && ctx)
+      void ctx.resume().then(() => voiceOnly(t, ctx)).then(async (g) => {
+        if (turn !== micTurn || closed) return g.stop()
+        gated = g
+        await senders.audio?.replaceTrack(g.track)
+      }).catch(() => undefined)
+  }
   const fill = async () => {
     for (const tr of pc.getTransceivers()) {
       const kind = tr.receiver.track.kind as 'audio' | 'video'
@@ -104,7 +125,7 @@ export async function joinP2P(
       tr.direction = 'sendrecv'
       if (kind === 'audio') preferRed(tr) // the rooms' loss protection, on this path too (lib/rtc OPUS_PARAMS)
       senders[kind] = tr.sender
-      await tr.sender.replaceTrack(tracks[kind])
+      await (kind === 'audio' ? sendMic() : tr.sender.replaceTrack(tracks[kind]))
     }
   }
   if (offerer) {
@@ -113,7 +134,6 @@ export async function joinP2P(
     await fill()
   }
 
-  let closed = false
   let connected = false
   let partnerCam = video
   const timers: ReturnType<typeof setTimeout>[] = []
@@ -126,6 +146,8 @@ export async function joinP2P(
     sig.send(relay ? { t: 'relay' } : { t: 'bye' })
     sig.close()
     pc.close()
+    gated?.stop()
+    void ctx?.close()
     tracks.audio?.stop()
     tracks.video?.stop()
     els.remote.srcObject = null
@@ -247,7 +269,7 @@ export async function joinP2P(
   const setTrack = async (kind: 'audio' | 'video', t: MediaStreamTrack | null) => {
     tracks[kind]?.stop()
     tracks[kind] = t
-    await senders[kind]?.replaceTrack(t)
+    await (kind === 'audio' ? sendMic() : senders[kind]?.replaceTrack(t))
   }
   const device = async (c: MediaStreamConstraints) => {
     try {

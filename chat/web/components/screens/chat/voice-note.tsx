@@ -4,22 +4,33 @@ import { useEffect, useRef, useState } from 'react'
 import { Pause, Play, SendHorizontal, Trash2 } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { useToast } from '@/components/ui/toast'
+import { isAppleWebKit } from '@/lib/rtc'
 import { cn } from '@/lib/utils'
 
 // Voice messages (099): the composer's "+" menu starts one (as KakaoTalk's); it records
-// (up to 30 s, the owner 2026-10-31), the bar shows the time with Delete and Send; the clip goes out as chat media of kind 'audio'.
+// (up to 30 s, the owner 2026-10-31), the bar shows my voice as moving bars (WhatsApp's recording waveform) and the time,
+// with Delete and Send; the clip goes out as chat media of kind 'audio'.
 
 const MAX_MS = 30_000
 const MIN_MS = 800
-/** Opus in WebM where the browser has it (Chrome, Firefox, Android), else AAC in MP4 (Safari, iPhone). */
-const TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus']
-const clock = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}`
+/**
+ * Opus in WebM on Chrome, Firefox and Android; AAC in MP4 on iPhone, iPad and Mac Safari, which every browser plays.
+ * (WebKit records WebM too since 18.4, so asking for WebM first gave iPads WebM clips: the production logs of
+ * 2026-10-31 show one from an iPad.)
+ */
+const types = () =>
+  isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints)
+    ? ['audio/mp4', 'audio/webm;codecs=opus']
+    : ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus']
+const BARS = 32
+const clock = (ms: number) =>
+  Number.isFinite(ms) ? `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}` : '0:00'
 
 export function canRecord() {
   return typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia
 }
 
-/** The recording bar in place of the text field: a red dot and the time, Delete, Send. */
+/** The recording bar in place of the text field: Delete, my voice as moving bars, the time, Send. */
 export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Promise<boolean>; onDone: () => void }) {
   const { t } = useI18n()
   const toast = useToast()
@@ -27,27 +38,42 @@ export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Prom
   const rec = useRef<MediaRecorder | null>(null)
   const chunks = useRef<Blob[]>([])
   const started = useRef(0)
+  const bars = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     let stream: MediaStream | null = null
     let timer: ReturnType<typeof setInterval> | undefined
+    let ctx: AudioContext | undefined
     let gone = false
     void navigator.mediaDevices
       .getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } })
       .then((s) => {
         stream = s
         if (gone) return s.getTracks().forEach((x) => x.stop())
-        const mimeType = TYPES.find((x) => MediaRecorder.isTypeSupported(x))
+        const mimeType = types().find((x) => MediaRecorder.isTypeSupported(x))
         const r = new MediaRecorder(s, mimeType ? { mimeType, audioBitsPerSecond: 32_000 } : undefined)
         r.ondataavailable = (e) => e.data.size && chunks.current.push(e.data)
         r.start(250)
         rec.current = r
         started.current = Date.now()
+        // The level of my voice: a new bar on the right every 80 ms, the rest move left (-60..-10 dBFS → 10..100%).
+        ctx = new AudioContext()
+        void ctx.resume()
+        const meter = ctx.createAnalyser()
+        meter.fftSize = 1024
+        ctx.createMediaStreamSource(s).connect(meter)
+        const wave = new Float32Array(meter.fftSize)
         timer = setInterval(() => {
           const now = Date.now() - started.current
           setMs(Math.min(now, MAX_MS))
           if (now >= MAX_MS && r.state === 'recording') r.pause() // the limit: it waits for Send or Delete
-        }, 200)
+          if (r.state !== 'recording' || !bars.current) return
+          meter.getFloatTimeDomainData(wave)
+          const db = 10 * Math.log10(wave.reduce((sum, v) => sum + v * v, 0) / wave.length + 1e-10)
+          const kids = bars.current.children as HTMLCollectionOf<HTMLElement>
+          for (let i = 0; i < BARS - 1; i++) kids[i].style.height = kids[i + 1].style.height
+          kids[BARS - 1].style.height = `${Math.round(10 + 90 * Math.min(1, Math.max(0, (db + 60) / 50)))}%`
+        }, 80)
       })
       .catch(() => {
         toast.show(t('video.micDenied'), 'error')
@@ -56,6 +82,7 @@ export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Prom
     return () => {
       gone = true
       clearInterval(timer)
+      void ctx?.close()
       if (rec.current && rec.current.state !== 'inactive') rec.current.stop()
       stream?.getTracks().forEach((x) => x.stop())
     }
@@ -86,7 +113,12 @@ export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Prom
         <Trash2 className="size-5" aria-hidden />
       </button>
       <span className="size-2.5 shrink-0 animate-pulse rounded-full bg-destructive" aria-hidden />
-      <span className="flex-1 text-[15px] tabular-nums">
+      <span ref={bars} className="flex h-6 min-w-0 flex-1 items-center justify-end gap-[2px] overflow-hidden" aria-hidden>
+        {Array.from({ length: BARS }, (_, i) => (
+          <span key={i} className="w-[3px] shrink-0 rounded-full bg-primary transition-[height] duration-75" style={{ height: '10%' }} />
+        ))}
+      </span>
+      <span className="shrink-0 text-[15px] tabular-nums">
         {clock(ms)} <span className="text-muted-foreground">/ {clock(MAX_MS)}</span>
       </span>
       <button
@@ -111,7 +143,7 @@ export function AudioBubble({ url, mine }: { url: string; mine: boolean }) {
   const onMeta = () => {
     const a = ref.current!
     // A recorder's WebM carries no length: seeking far makes the browser find it, then back to the start.
-    if (a.duration === Infinity) {
+    if (!Number.isFinite(a.duration)) {
       a.currentTime = 1e101
       a.ontimeupdate = () => {
         a.ontimeupdate = null
