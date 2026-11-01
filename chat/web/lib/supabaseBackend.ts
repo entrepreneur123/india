@@ -37,6 +37,7 @@ import {
   type ExploreKind,
   type ExplorePerson,
   type FeedItem,
+  type FeedNote,
   type ProfileSocial,
   type Gender,
   type Match,
@@ -65,7 +66,6 @@ import {
   type VoiceRoomSummary,
   type VoiceSystemEvent,
   type LinkMeta,
-  type LookingPost,
   type PartyState,
   OAUTH_PROVIDERS,
   type OAuthProvider,
@@ -1068,28 +1068,6 @@ export class SupabaseBackend implements Backend {
     await this.rpc('party_cancel', { p_group: groupId })
   }
 
-  async lookingFor(country?: string | null): Promise<LookingPost[]> {
-    type Row = { id: number; body: string; created_at: string; expires_at: string; mine: boolean; author_id: string } & Omit<CardRow, 'id' | 'city' | 'bio'>
-    const rows = (await this.rpc<Row[] | null>('lfg_list', { p_country: country || null })) ?? []
-    await this.signMany(rows.map((r) => r.photo_path))
-    return rows.map((r) => ({
-      id: r.id, text: r.body, at: time(r.created_at), expiresAt: time(r.expires_at), mine: r.mine,
-      author: this.cardProfile({ ...r, id: r.author_id, city: '', bio: '' }),
-    }))
-  }
-
-  async postLooking(text: string) {
-    await this.rpc('lfg_create', { p_body: text })
-  }
-
-  async hideLooking(id: number) {
-    await this.rpc('lfg_hide', { p_id: id })
-  }
-
-  async replyLooking(id: number) {
-    return this.rpc<string>('lfg_reply', { p_id: id })
-  }
-
   async postsByTag(tag: string, before?: string): Promise<FeedPost[]> {
     return this.toPosts(await this.rpc('posts_by_tag', { p_tag: tag, p_before: before ?? null }))
   }
@@ -1170,11 +1148,10 @@ export class SupabaseBackend implements Backend {
   }
 
   async friendActivity(): Promise<FriendActivity[]> {
-    const rows = await this.rpc<{ id: string; presence: string; status: string | null; status_at: string | null; room_id: string | null; room_private: boolean | null }[]>('friend_activity2')
+    const rows = await this.rpc<{ id: string; presence: string; room_id: string | null; room_private: boolean | null }[]>('friend_activity2')
     const kinds: Presence[] = ['offline', 'online', 'matching', 'chat', 'room']
     return rows.map((r) => ({
       id: r.id, presence: kinds.includes(r.presence as Presence) ? (r.presence as Presence) : 'online',
-      status: r.status, statusAt: r.status_at ? time(r.status_at) : null,
       roomId: r.room_id && !r.room_private ? r.room_id : null,
     }))
   }
@@ -1236,11 +1213,13 @@ export class SupabaseBackend implements Backend {
   async explorePeople(kind: ExploreKind, country?: string | null): Promise<ExplorePerson[]> {
     const rows = (await this.rpc<(PersonRowRaw & { age: number; country: string | null; n: number | null })[] | null>('explore_people', { p_kind: kind, p_country: country ?? null })) ?? []
     const people = await this.personRows(rows)
-    return people.map((p, i) => ({ ...p, age: rows[i].age, country: rows[i].country, count: rows[i].n }))
+    // `n`: the ranking's count, or for For you 1 when online (126).
+    const ranked = kind === 'likes' || kind === 'friends'
+    return people.map((p, i) => ({ ...p, age: rows[i].age, country: rows[i].country, count: ranked ? rows[i].n : null, online: ranked ? null : rows[i].n === 1 }))
   }
 
-  async exploreFeed(): Promise<FeedItem[]> {
-    type Row = { kind: 'post' | 'highlight'; item: string; user_id: string; handle: string; name: string; photo_path: string | null; body: string | null; photos: string[]; at: string; post: unknown }
+  async exploreFeed() {
+    type Row = { kind: 'post' | 'highlight' | 'status'; item: string; user_id: string; handle: string; name: string; photo_path: string | null; body: string | null; photos: string[]; at: string; post: unknown }
     const [rows0, { mediaPaths }] = await Promise.all([this.rpc<Row[] | null>('explore_feed2'), this.social()])
     const rows = rows0 ?? []
     // Every file of the feed (photos, faces, posts' media) signed in one request: one round trip instead of three.
@@ -1250,11 +1229,16 @@ export class SupabaseBackend implements Backend {
       this.toPosts(rows.flatMap((r) => r.post ?? [])),
     ])
     const byId = new Map(posts.map((p) => [p.id, p]))
-    return rows.map((r, i) => ({
-      kind: r.kind, id: r.item, user: users[i], text: r.body ?? '', at: r.at,
-      photos: r.photos.flatMap((x) => this.signedUrls.get(x)?.url ?? []),
-      post: r.kind === 'post' ? byId.get(r.item) ?? null : null,
-    }))
+    const items: FeedItem[] = [], notes: FeedNote[] = []
+    rows.forEach((r, i) => {
+      if (r.kind === 'status') notes.push({ user: users[i], text: r.body ?? '', at: r.at ? time(r.at) : null })
+      else items.push({
+        kind: r.kind, id: r.item, user: users[i], text: r.body ?? '', at: r.at,
+        photos: r.photos.flatMap((x) => this.signedUrls.get(x)?.url ?? []),
+        post: r.kind === 'post' ? byId.get(r.item) ?? null : null,
+      })
+    })
+    return { items, notes: notes.sort((a, b) => (b.at ?? 0) - (a.at ?? 0)) }
   }
 
   async profileSocial(userId: string): Promise<ProfileSocial> {

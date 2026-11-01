@@ -352,9 +352,9 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   useEffect(() => {
     if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return
     const timer = setTimeout(() => {
-      void mutate('explore-feed', backend.exploreFeed().then((items) => {
-        for (const url of items.flatMap((it) => it.photos.length ? it.photos : it.post?.imageUrl ? [it.post.imageUrl] : []).slice(0, 6)) new Image().src = url
-        return items
+      void mutate('explore-feed', backend.exploreFeed().then((feed) => {
+        for (const url of feed.items.flatMap((it) => it.photos.length ? it.photos : it.post?.imageUrl ? [it.post.imageUrl] : []).slice(0, 6)) new Image().src = url
+        return feed
       }), { revalidate: false }).catch(() => undefined)
     }, 3_000)
     return () => clearTimeout(timer)
