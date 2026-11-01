@@ -174,7 +174,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                       {t('profile.add')}
                     </Button>
                   )}
-                  {state === 'friends' || social.data?.canMessage ? (
+                  {/* The server's can_message (profile_social2): the button is there only when a message would go through. */}
+                  {social.data?.canMessage ? (
                     <Button className={ACTION} onClick={() => openThread(shown)}>
                       {t('profile.message')}
                     </Button>

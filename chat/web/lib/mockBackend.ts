@@ -1067,6 +1067,12 @@ export class MockBackend implements Backend {
     return id
   }
 
+  async chatOpen(matchId: string) {
+    // As chat_open (127), less its "they have written here": an ended thread goes on to whom a message would go (profileSocial).
+    const m = this.matches.get(matchId)
+    return !!m && (!m.ended || (await this.profileSocial(m.partner.id)).canMessage)
+  }
+
   // ---- voice rooms ----
 
   private voice() {
