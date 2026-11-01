@@ -17,6 +17,9 @@ const pl: Dict = {
   'net.offline': 'Brak internetu. Łączenie ponownie…',
   'error.screenTitle': 'Nie udało się wczytać tego ekranu',
   'common.loading': 'Wczytywanie yaari',
+  'window.elsewhere': "Yaari jest otwarte w innym oknie",
+  'window.elsewhereBody': "Yaari działa naraz tylko w jednym oknie. Dotknij „Użyj tutaj”, aby używać go w tym oknie.",
+  'window.useHere': "Użyj tutaj",
 
   'boot.offlineTitle': 'Nie można teraz połączyć się z yaari',
   'boot.offlineBody': 'Sprawdź połączenie z internetem i spróbuj ponownie.',

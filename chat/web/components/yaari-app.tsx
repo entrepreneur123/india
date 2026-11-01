@@ -15,6 +15,7 @@ import { retryImport } from '@/lib/retry-import'
 import { InAppBanner } from '@/components/shell/in-app-banner'
 import { identify, installErrorReporting } from '@/lib/telemetry'
 import { applyTheme, followDevice, savedTheme } from '@/lib/theme'
+import { useSingleWindow } from '@/lib/single-window'
 
 // The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
 const loadAuth = () => retryImport(() => import('@/components/screens/auth/auth-screen'))
@@ -159,6 +160,7 @@ function Root({ landing }: { landing?: ReactNode }) {
 
   const me = boot.stage === 'app' ? boot.me : null
   useEffect(() => identify(me, lang), [me, lang])
+  const win = useSingleWindow(boot.stage === 'app')
 
   // Stage changes fade in with CSS, so the first screen never waits for Motion's animation code to download.
   const fade = 'animate-in fade-in duration-150 motion-reduce:animate-none'
@@ -187,6 +189,19 @@ function Root({ landing }: { landing?: ReactNode }) {
       ) : boot.stage === 'auth' ? (
         <div key="auth" className={fade}>
           <AuthScreen initialStep={boot.step} onPhoneVerified={setPhone} onComplete={(p) => void enterApp(p)} />
+        </div>
+      ) : win.state === 'checking' ? (
+        <Splash key="window" label={t('common.loading')} />
+      ) : win.state === 'elsewhere' ? (
+        <div key="elsewhere" className={`grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground ${fade}`}>
+          <div className="flex max-w-sm flex-col items-center gap-4">
+            <Logo />
+            <h1 className="text-xl font-bold text-balance">{t('window.elsewhere')}</h1>
+            <p className="text-sm text-muted-foreground text-balance">{t('window.elsewhereBody')}</p>
+            <Button variant="brand" size="lg" onClick={win.useHere}>
+              {t('window.useHere')}
+            </Button>
+          </div>
         </div>
       ) : (
         <div key="app" className={fade}>

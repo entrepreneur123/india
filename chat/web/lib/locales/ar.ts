@@ -18,6 +18,9 @@ const ar: Dict = {
   'net.offline': 'لا يوجد اتصال بالإنترنت. جارٍ إعادة الاتصال…',
   'error.screenTitle': 'تعذّر تحميل هذه الشاشة',
   'common.loading': 'جارٍ تحميل yaari',
+  'window.elsewhere': "ياري مفتوح في نافذة أخرى",
+  'window.elsewhereBody': "يمكن استخدام ياري في نافذة واحدة في كل مرة. اضغط «استخدم هنا» لاستخدامه في هذه النافذة.",
+  'window.useHere': "استخدم هنا",
 
   'boot.offlineTitle': 'تعذّر الوصول إلى yaari الآن',
   'boot.offlineBody': 'تحقق من اتصالك بالإنترنت، ثم حاول مرة أخرى.',

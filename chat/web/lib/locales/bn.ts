@@ -17,6 +17,9 @@ const bn: Dict = {
   'net.offline': 'ইন্টারনেট নেই। আবার যুক্ত হচ্ছে…',
   'error.screenTitle': 'এই স্ক্রিনটি লোড হয়নি',
   'common.loading': 'yaari খুলছে',
+  'window.elsewhere': "Yaari অন্য একটি উইন্ডোতে খোলা আছে",
+  'window.elsewhereBody': "Yaari একবারে একটি উইন্ডোতেই ব্যবহার করা যায়। এই উইন্ডোতে ব্যবহার করতে \"এখানে ব্যবহার করুন\" চাপুন।",
+  'window.useHere': "এখানে ব্যবহার করুন",
 
   'boot.offlineTitle': 'এখন yaari-তে সংযোগ করা যাচ্ছে না',
   'boot.offlineBody': 'ইন্টারনেট সংযোগ দেখুন, তারপর আবার চেষ্টা করুন।',

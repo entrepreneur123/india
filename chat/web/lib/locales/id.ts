@@ -18,6 +18,9 @@ const id: Dict = {
   'net.offline': 'Tidak ada internet. Menyambungkan ulang…',
   'error.screenTitle': 'Layar ini gagal dimuat',
   'common.loading': 'Memuat yaari',
+  'window.elsewhere': "Yaari terbuka di jendela lain",
+  'window.elsewhereBody': "Yaari hanya bisa dipakai di satu jendela dalam satu waktu. Ketuk Gunakan di sini untuk memakainya di jendela ini.",
+  'window.useHere': "Gunakan di sini",
 
   'boot.offlineTitle': 'yaari tidak bisa dijangkau sekarang',
   'boot.offlineBody': 'Cek koneksi internetmu, lalu coba lagi.',

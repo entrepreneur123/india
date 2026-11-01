@@ -18,6 +18,9 @@ const fa: Dict = {
   'net.offline': 'اینترنت قطع است. در حال اتصال دوباره…',
   'error.screenTitle': 'این صفحه باز نشد',
   'common.loading': 'در حال بارگذاری yaari',
+  'window.elsewhere': "یاری در پنجرهٔ دیگری باز است",
+  'window.elsewhereBody': "یاری هر بار فقط در یک پنجره کار می‌کند. برای استفاده در این پنجره «استفاده در اینجا» را بزنید.",
+  'window.useHere': "استفاده در اینجا",
 
   'boot.offlineTitle': 'فعلاً به yaari دسترسی نداریم',
   'boot.offlineBody': 'اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.',

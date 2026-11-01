@@ -18,6 +18,9 @@ const ms: Dict = {
   'net.offline': 'Tiada internet. Menyambung semula…',
   'error.screenTitle': 'Skrin ini tidak dapat dimuatkan',
   'common.loading': 'Memuatkan yaari',
+  'window.elsewhere': "Yaari dibuka dalam tetingkap lain",
+  'window.elsewhereBody': "Yaari hanya berfungsi dalam satu tetingkap pada satu masa. Ketik Guna di sini untuk menggunakannya dalam tetingkap ini.",
+  'window.useHere': "Guna di sini",
 
   'boot.offlineTitle': 'Tidak dapat menghubungi yaari sekarang',
   'boot.offlineBody': 'Semak sambungan internet anda, kemudian cuba lagi.',

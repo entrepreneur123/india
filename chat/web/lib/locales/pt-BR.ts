@@ -17,6 +17,9 @@ const ptBR: Dict = {
   'net.offline': 'Sem internet. Reconectando…',
   'error.screenTitle': 'Não foi possível carregar esta tela',
   'common.loading': 'Abrindo o yaari',
+  'window.elsewhere': "O Yaari está aberto em outra janela",
+  'window.elsewhereBody': "O Yaari funciona em uma janela por vez. Toque em Usar aqui para usá-lo nesta janela.",
+  'window.useHere': "Usar aqui",
 
   'boot.offlineTitle': 'Não foi possível conectar ao yaari',
   'boot.offlineBody': 'Confira sua conexão com a internet e tente de novo.',

@@ -17,6 +17,9 @@ const de: Dict = {
   'net.offline': 'Kein Internet. Verbindung wird wiederhergestellt…',
   'error.screenTitle': 'Diese Seite konnte nicht geladen werden',
   'common.loading': 'yaari wird geladen',
+  'window.elsewhere': "Yaari ist in einem anderen Fenster geöffnet",
+  'window.elsewhereBody': "Yaari kann immer nur in einem Fenster genutzt werden. Tippe auf „Hier verwenden“, um es in diesem Fenster zu nutzen.",
+  'window.useHere': "Hier verwenden",
 
   'boot.offlineTitle': 'yaari ist gerade nicht erreichbar',
   'boot.offlineBody': 'Prüfe deine Internetverbindung und versuch es dann noch mal.',

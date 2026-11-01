@@ -18,6 +18,9 @@ const he: Dict = {
   'net.offline': 'אין אינטרנט. מתחברים מחדש…',
   'error.screenTitle': 'לא הצלחנו לטעון את המסך הזה',
   'common.loading': 'yaari נטענת',
+  'window.elsewhere': "Yaari פתוח בחלון אחר",
+  'window.elsewhereBody': "Yaari פועל בחלון אחד בכל פעם. הקישו \"השתמש כאן\" כדי להשתמש בו בחלון הזה.",
+  'window.useHere': "השתמש כאן",
 
   'boot.offlineTitle': 'אין גישה ל-yaari כרגע',
   'boot.offlineBody': 'כדאי לבדוק את החיבור לאינטרנט ולנסות שוב.',

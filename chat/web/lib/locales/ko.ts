@@ -18,6 +18,9 @@ const ko: Dict = {
   'net.offline': '인터넷 연결이 없어요. 다시 연결하는 중…',
   'error.screenTitle': '화면을 불러오지 못했어요',
   'common.loading': 'yaari 불러오는 중',
+  'window.elsewhere': "Yaari가 다른 창에서 열려 있어요",
+  'window.elsewhereBody': "Yaari는 한 번에 한 창에서만 쓸 수 있어요. 이 창에서 쓰려면 '여기서 사용'을 누르세요.",
+  'window.useHere': "여기서 사용",
 
   'boot.offlineTitle': '지금 yaari에 연결할 수 없어요',
   'boot.offlineBody': '인터넷 연결을 확인한 다음 다시 시도해 주세요.',

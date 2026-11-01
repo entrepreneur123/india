@@ -17,6 +17,9 @@ const kn: Dict = {
   'net.offline': 'ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ. ಮತ್ತೆ ಸಂಪರ್ಕಿಸುತ್ತಿದೆ…',
   'error.screenTitle': 'ಈ ಸ್ಕ್ರೀನ್ ಲೋಡ್ ಆಗಲಿಲ್ಲ',
   'common.loading': 'yaari ತೆರೆಯುತ್ತಿದೆ',
+  'window.elsewhere': "Yaari ಬೇರೆ ವಿಂಡೋದಲ್ಲಿ ತೆರೆದಿದೆ",
+  'window.elsewhereBody': "Yaari ಒಮ್ಮೆಗೆ ಒಂದೇ ವಿಂಡೋದಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ. ಈ ವಿಂಡೋದಲ್ಲಿ ಬಳಸಲು \"ಇಲ್ಲಿ ಬಳಸಿ\" ಒತ್ತಿ.",
+  'window.useHere': "ಇಲ್ಲಿ ಬಳಸಿ",
 
   'boot.offlineTitle': 'ಈಗ yaari ಗೆ ಸಂಪರ್ಕಿಸಲು ಆಗುತ್ತಿಲ್ಲ',
   'boot.offlineBody': 'ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',

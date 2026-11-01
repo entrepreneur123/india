@@ -18,6 +18,9 @@ const ja: Dict = {
   'net.offline': 'インターネットに接続されていません。再接続しています…',
   'error.screenTitle': 'この画面を読み込めませんでした',
   'common.loading': 'yaariを読み込み中',
+  'window.elsewhere': "Yaariは別のウィンドウで開いています",
+  'window.elsewhereBody': "Yaariは一度に1つのウィンドウでのみ使えます。このウィンドウで使うには「ここで使う」をタップしてください。",
+  'window.useHere': "ここで使う",
 
   'boot.offlineTitle': '現在yaariに接続できません',
   'boot.offlineBody': 'インターネット接続を確認してから、もう一度お試しください。',

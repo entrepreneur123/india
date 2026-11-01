@@ -18,6 +18,9 @@ const zhHant: Dict = {
   'net.offline': '沒有網路，正在重新連線…',
   'error.screenTitle': '此頁面無法載入',
   'common.loading': '正在載入 yaari',
+  'window.elsewhere': "Yaari 已在另一個視窗中開啟",
+  'window.elsewhereBody': "Yaari 一次只能在一個視窗中使用。點按「在此使用」即可在此視窗中使用。",
+  'window.useHere': "在此使用",
 
   'boot.offlineTitle': '暫時連不上 yaari',
   'boot.offlineBody': '請檢查網路連線，然後重試。',

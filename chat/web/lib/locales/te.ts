@@ -17,6 +17,9 @@ const te: Dict = {
   'net.offline': 'ఇంటర్నెట్ లేదు. మళ్లీ కనెక్ట్ అవుతోంది…',
   'error.screenTitle': 'ఈ స్క్రీన్ లోడ్ కాలేదు',
   'common.loading': 'yaari తెరుచుకుంటోంది',
+  'window.elsewhere': "Yaari వేరే విండోలో తెరిచి ఉంది",
+  'window.elsewhereBody': "Yaari ఒకేసారి ఒక విండోలో మాత్రమే పనిచేస్తుంది. ఈ విండోలో వాడటానికి \"ఇక్కడ వాడండి\" నొక్కండి.",
+  'window.useHere': "ఇక్కడ వాడండి",
 
   'boot.offlineTitle': 'ప్రస్తుతం yaariకి కనెక్ట్ కాలేకపోతున్నాం',
   'boot.offlineBody': 'మీ ఇంటర్నెట్ కనెక్షన్ చెక్ చేసి, మళ్లీ ప్రయత్నించండి.',

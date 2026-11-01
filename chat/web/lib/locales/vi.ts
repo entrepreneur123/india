@@ -17,6 +17,9 @@ const vi: Dict = {
   'net.offline': 'Không có mạng. Đang kết nối lại…',
   'error.screenTitle': 'Không tải được màn hình này',
   'common.loading': 'Đang mở yaari',
+  'window.elsewhere': "Yaari đang mở ở một cửa sổ khác",
+  'window.elsewhereBody': "Yaari chỉ dùng được trong một cửa sổ mỗi lúc. Nhấn Dùng ở đây để dùng trong cửa sổ này.",
+  'window.useHere': "Dùng ở đây",
 
   'boot.offlineTitle': 'Chưa kết nối được với yaari',
   'boot.offlineBody': 'Kiểm tra kết nối Internet rồi thử lại.',

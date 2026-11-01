@@ -17,6 +17,9 @@ const it: Dict = {
   'net.offline': 'Nessuna connessione. Riconnessione in corso…',
   'error.screenTitle': 'Impossibile caricare questa schermata',
   'common.loading': 'Caricamento di yaari',
+  'window.elsewhere': "Yaari è aperto in un’altra finestra",
+  'window.elsewhereBody': "Yaari funziona in una sola finestra alla volta. Tocca «Usa qui» per usarlo in questa finestra.",
+  'window.useHere': "Usa qui",
 
   'boot.offlineTitle': 'Al momento yaari non è raggiungibile',
   'boot.offlineBody': 'Controlla la connessione a internet, poi riprova.',

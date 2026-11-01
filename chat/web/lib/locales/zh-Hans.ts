@@ -18,6 +18,9 @@ const zhHans: Dict = {
   'net.offline': '没有网络，正在重新连接…',
   'error.screenTitle': '此页面无法加载',
   'common.loading': '正在加载 yaari',
+  'window.elsewhere': "Yaari 已在另一个窗口中打开",
+  'window.elsewhereBody': "Yaari 一次只能在一个窗口中使用。点按“在此使用”即可在此窗口中使用。",
+  'window.useHere': "在此使用",
 
   'boot.offlineTitle': '暂时连不上 yaari',
   'boot.offlineBody': '请检查网络连接，然后重试。',

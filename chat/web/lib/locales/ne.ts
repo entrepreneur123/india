@@ -17,6 +17,9 @@ const ne: Dict = {
   'net.offline': 'इन्टरनेट छैन। फेरि जोडिँदै…',
   'error.screenTitle': 'यो स्क्रिन लोड हुन सकेन',
   'common.loading': 'yaari लोड हुँदै',
+  'window.elsewhere': "Yaari अर्को विन्डोमा खुला छ",
+  'window.elsewhereBody': "Yaari एक पटकमा एउटै विन्डोमा चल्छ। यो विन्डोमा प्रयोग गर्न \"यहाँ प्रयोग गर्नुहोस्\" थिच्नुहोस्।",
+  'window.useHere': "यहाँ प्रयोग गर्नुहोस्",
 
   'boot.offlineTitle': 'अहिले yaari मा पुग्न सकिएन',
   'boot.offlineBody': 'आफ्नो इन्टरनेट कनेक्सन जाँच गर्नुहोस्, अनि फेरि प्रयास गर्नुहोस्।',

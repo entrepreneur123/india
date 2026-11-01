@@ -18,6 +18,9 @@ const sw: Dict = {
   'net.offline': 'Hakuna intaneti. Inaunganisha upya…',
   'error.screenTitle': 'Skrini hii haikufunguka',
   'common.loading': 'Inapakia yaari',
+  'window.elsewhere': "Yaari imefunguliwa kwenye dirisha jingine",
+  'window.elsewhereBody': "Yaari hufanya kazi kwenye dirisha moja kwa wakati. Gusa Tumia hapa ili kuitumia kwenye dirisha hili.",
+  'window.useHere': "Tumia hapa",
 
   'boot.offlineTitle': 'Hatuwezi kufikia yaari kwa sasa',
   'boot.offlineBody': 'Angalia muunganisho wako wa intaneti, kisha ujaribu tena.',

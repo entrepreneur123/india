@@ -18,6 +18,9 @@ const ru: Dict = {
   'net.offline': 'Нет интернета. Переподключаемся…',
   'error.screenTitle': 'Не удалось загрузить экран',
   'common.loading': 'Загрузка yaari',
+  'window.elsewhere': "Yaari открыт в другом окне",
+  'window.elsewhereBody': "Yaari работает только в одном окне одновременно. Нажмите «Использовать здесь», чтобы открыть его в этом окне.",
+  'window.useHere': "Использовать здесь",
 
   'boot.offlineTitle': 'Сейчас не удаётся подключиться к yaari',
   'boot.offlineBody': 'Проверьте подключение к интернету и попробуйте снова.',

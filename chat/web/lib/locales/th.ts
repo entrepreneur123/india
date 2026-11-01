@@ -18,6 +18,9 @@ const th: Dict = {
   'net.offline': 'ไม่มีอินเทอร์เน็ต กำลังเชื่อมต่อใหม่…',
   'error.screenTitle': 'โหลดหน้านี้ไม่ได้',
   'common.loading': 'กำลังโหลด yaari',
+  'window.elsewhere': "Yaari เปิดอยู่ในหน้าต่างอื่น",
+  'window.elsewhereBody': "Yaari ใช้ได้ทีละหนึ่งหน้าต่าง แตะ \"ใช้ที่นี่\" เพื่อใช้ในหน้าต่างนี้",
+  'window.useHere': "ใช้ที่นี่",
 
   'boot.offlineTitle': 'ตอนนี้เข้าถึง yaari ไม่ได้',
   'boot.offlineBody': 'ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองอีกครั้ง',

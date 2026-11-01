@@ -17,6 +17,9 @@ const ro: Dict = {
   'net.offline': 'Nu există internet. Se reconectează…',
   'error.screenTitle': 'Acest ecran nu s-a putut încărca',
   'common.loading': 'Se încarcă yaari',
+  'window.elsewhere': "Yaari este deschis în altă fereastră",
+  'window.elsewhereBody': "Yaari funcționează într-o singură fereastră o dată. Atinge „Folosește aici” ca să-l folosești în această fereastră.",
+  'window.useHere': "Folosește aici",
 
   'boot.offlineTitle': 'Nu ne putem conecta acum la yaari',
   'boot.offlineBody': 'Verifică-ți conexiunea la internet, apoi încearcă din nou.',

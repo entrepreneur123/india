@@ -18,6 +18,9 @@ const fil: Dict = {
   'net.offline': 'Walang internet. Kumokonekta ulit…',
   'error.screenTitle': 'Hindi ma-load ang screen na ito',
   'common.loading': 'Nilo-load ang yaari',
+  'window.elsewhere': "Bukas ang Yaari sa ibang window",
+  'window.elsewhereBody': "Gumagana ang Yaari sa isang window lang sa bawat pagkakataon. I-tap ang Gamitin dito para gamitin ito sa window na ito.",
+  'window.useHere': "Gamitin dito",
 
   'boot.offlineTitle': 'Hindi maabot ang yaari ngayon',
   'boot.offlineBody': 'Tingnan ang internet connection mo, tapos subukan ulit.',

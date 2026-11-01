@@ -17,6 +17,9 @@ const nl: Dict = {
   'net.offline': 'Geen internet. Opnieuw verbinden…',
   'error.screenTitle': 'Dit scherm kon niet laden',
   'common.loading': 'yaari laden',
+  'window.elsewhere': "Yaari is geopend in een ander venster",
+  'window.elsewhereBody': "Yaari werkt in één venster tegelijk. Tik op Hier gebruiken om het in dit venster te gebruiken.",
+  'window.useHere': "Hier gebruiken",
 
   'boot.offlineTitle': 'yaari is nu niet bereikbaar',
   'boot.offlineBody': 'Controleer je internetverbinding en probeer het opnieuw.',

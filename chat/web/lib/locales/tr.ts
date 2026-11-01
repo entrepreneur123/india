@@ -18,6 +18,9 @@ const tr: Dict = {
   'net.offline': 'İnternet yok. Yeniden bağlanılıyor…',
   'error.screenTitle': 'Bu ekran yüklenemedi',
   'common.loading': 'yaari yükleniyor',
+  'window.elsewhere': "Yaari başka bir pencerede açık",
+  'window.elsewhereBody': "Yaari aynı anda tek bir pencerede çalışır. Bu pencerede kullanmak için Burada kullan’a dokun.",
+  'window.useHere': "Burada kullan",
 
   'boot.offlineTitle': 'Şu anda yaari’ye ulaşılamıyor',
   'boot.offlineBody': 'İnternet bağlantını kontrol et, sonra tekrar dene.',

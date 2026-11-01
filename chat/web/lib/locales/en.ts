@@ -17,6 +17,9 @@ const en = {
   'net.offline': 'No internet. Reconnecting…',
   'error.screenTitle': 'This screen couldn’t load',
   'common.loading': 'Loading Yaari',
+  'window.elsewhere': "Yaari is open in another window",
+  'window.elsewhereBody': "Yaari works in one window at a time. Tap Use here to use it in this window.",
+  'window.useHere': "Use here",
 
   'boot.offlineTitle': 'Can’t reach Yaari right now',
   'boot.offlineBody': 'Check your internet connection, then try again.',
