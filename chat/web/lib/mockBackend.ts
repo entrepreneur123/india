@@ -1,7 +1,5 @@
 import {
   type GroupChat,
-  type LookingPost,
-  LOOKING_MAX,
   type GroupLine,
   type Backend,
   BackendError,
@@ -13,6 +11,7 @@ import {
   type Highlight,
   type ExploreKind,
   type FeedItem,
+  type FeedNote,
   type RoomQuery,
   type VoiceRoom,
   type VoiceRoomSummary,
@@ -79,6 +78,8 @@ const pick = <T,>(list: T[]): T => list[Math.floor(Math.random() * list.length)]
 const uid = () => Math.random().toString(36).slice(2, 10)
 const HOUR = 3_600_000
 const DAY = 24 * HOUR
+/** How long ago the demo people last changed their status line. */
+const STATUS_CHANGED: Record<string, number> = { u_riya: 20 * 60_000, u_arjun: 2 * HOUR, u_sofia: 5 * HOUR, u_yuki: 2 * DAY }
 
 const EXIT_LOCK_MS = 5000
 /** The demo friend's call (Arjun, voice) rings this long after the app opens. */
@@ -258,9 +259,6 @@ export class MockBackend implements Backend {
   private searchTarget: string | null = null
   private matches = new Map<string, MatchState>()
   private recentList: RecentMatch[] = []
-  /** 52: "looking for" lines, and the threads they opened (those stay open, friends or not). */
-  private looking: LookingPost[] | null = null
-  private lookingThreads = new Set<string>()
   /** People taken off my recents, and when (048): a later meeting brings them back. */
   private recentHidden = new Map<string, number>()
   private friendMap = new Map<string, FriendState>()
@@ -575,7 +573,7 @@ export class MockBackend implements Backend {
     if (!navigator.onLine) throw new BackendError('network')
     const sent = m.messages.find((x) => x.clientId === clientId)
     if (sent) return sent
-    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends' && !this.lookingThreads.has(m.id)) throw new BackendError('chat_closed')
+    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('chat_closed')
     const msg: Message = {
       id: this.msgSeq++,
       fromMe: true,
@@ -906,26 +904,34 @@ export class MockBackend implements Backend {
   async explorePeople(kind: ExploreKind, country?: string | null) {
     await wait(300)
     const c = country ?? this.me?.country ?? null
-    let list = PEOPLE.filter((p) => !this.blocked.has(p.id) && !isVip(p) && (kind === 'liked' ? this.likedIds.has(p.id) : !c || p.country === c))
-    // 087: no friends or pending requests among the recommendations.
-    if (kind === 'recommend') list = list.filter((p) => (this.friendMap.get(p.id) ?? 'none') === 'none').sort(() => Math.random() - 0.5)
-    if (kind === 'online') list = list.filter((_, i) => i % 2 === 0)
+    const ranked = kind === 'likes' || kind === 'friends'
+    // A steady made-up presence: every other demo person is online.
+    const online = (id: string) => id.charCodeAt(id.length - 1) % 2 === 0
+    let list = PEOPLE.filter((p) => !this.blocked.has(p.id) && !isVip(p) && (!c || p.country === c))
+    // 087: no friends or pending requests among the recommendations; 126: all, online or offline.
+    if (!ranked) list = list.filter((p) => (this.friendMap.get(p.id) ?? 'none') === 'none' && (kind === 'recommend' || (kind === 'online') === online(p.id))).sort(() => Math.random() - 0.5)
     // Rankings show me too (078).
-    if ((kind === 'likes' || kind === 'friends') && this.me && (!c || this.me.country === c)) list = [...list, this.me]
+    if (ranked && this.me && (!c || this.me.country === c)) list = [...list, this.me]
     // Rankings: a steady made-up count per person, highest first.
-    const count = (id: string) => (kind === 'likes' || kind === 'friends' ? [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 97 : null)
+    const count = (id: string) => (ranked ? [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 97 : null)
     return list
-      .map((p) => ({ ...this.personRow(p), age: p.age, country: p.country ?? null, count: count(p.id) }))
+      .map((p) => ({ ...this.personRow(p), age: p.age, country: p.country ?? null, count: count(p.id), online: ranked ? null : online(p.id) }))
       .sort((a, b) => (b.count ?? 0) - (a.count ?? 0))
       .slice(0, 50)
   }
 
-  async exploreFeed(): Promise<FeedItem[]> {
+  async exploreFeed() {
     await wait(300)
     const feed = await this.feedChunk()
     const friends = [...this.friendMap].filter(([, s]) => s === 'friends').map(([id]) => id)
+    const who = [...new Set([...friends, ...this.likedIds])]
+    // 126: their status lines, newest change first.
+    const notes: FeedNote[] = who.flatMap((id) => {
+      const p = this.person(id), text = feed.style(id).status
+      return p && text ? [{ user: this.personRow(p), text, at: STATUS_CHANGED[id] ? Date.now() - STATUS_CHANGED[id] : null }] : []
+    }).sort((a, b) => (b.at ?? 0) - (a.at ?? 0))
     // 117: friends and people I follow; a followed person's friends-only posts stay out (post_visible).
-    return [...new Set([...friends, ...this.likedIds])].flatMap((id, i) => {
+    const items: FeedItem[] = who.flatMap((id, i) => {
       const p = this.person(id)
       const friend = friends.includes(id)
       // A friend's latest post in full (081); a friend without one shows their photo, as before.
@@ -933,6 +939,7 @@ export class MockBackend implements Backend {
       if (p && post) return [{ kind: 'post' as const, id: post.id, user: this.personRow(p), text: post.text, photos: post.imageUrl ? [post.imageUrl] : [], at: new Date(post.createdAt).toISOString(), post }]
       return friend && p?.photoUrl ? [{ kind: 'post' as const, id: `f_${id}`, user: this.personRow(p), text: p.bio, photos: [p.photoUrl], at: new Date(Date.now() - i * 3_600_000).toISOString() }] : []
     })
+    return { items, notes }
   }
 
   async profileSocial(userId: string) {
@@ -998,14 +1005,11 @@ export class MockBackend implements Backend {
   private presence: Record<string, FriendActivity['presence']> = { u_sofia: 'online', u_arjun: 'room', u_riya: 'matching', u_omar: 'chat' }
 
   async friendActivity(): Promise<FriendActivity[]> {
-    const feed = await this.feedChunk()
     const presence = this.presence
     const demoRoom = (await (await this.voice()).list())[0]?.id ?? null // the demo friend 'in a room' is in the first one
-    const changed: Record<string, number> = { u_riya: 20 * 60_000, u_arjun: 2 * HOUR, u_sofia: 5 * HOUR, u_yuki: 2 * DAY }
     return [...this.friendMap].flatMap(([id, state]) => {
       if (state !== 'friends') return []
-      const status = feed.style(id).status || null
-      return [{ id, presence: presence[id] ?? 'offline', status, statusAt: status && changed[id] ? Date.now() - changed[id] : null, roomId: presence[id] === 'room' ? demoRoom : null }]
+      return [{ id, presence: presence[id] ?? 'offline', roomId: presence[id] === 'room' ? demoRoom : null }]
     })
   }
 
@@ -1048,46 +1052,6 @@ export class MockBackend implements Backend {
   async removeFriend(userId: string) {
     await wait(400)
     this.unfriend(userId)
-  }
-
-  private lookingNow() {
-    const at = Date.now()
-    this.looking ??= [
-      ['u_arjun', 'Anyone up for BGMI tonight? Need 2 more for a squad', 20],
-      ['u_riya', 'Looking for someone to practise Spanish with 🇪🇸', 75],
-      ['u_ananya', 'Who wants to watch the match in the cricket room at 7?', 140],
-    ].flatMap(([id, text, min]) => {
-      const author = this.person(id as string)
-      return author ? [{ id: Math.round(at / 1000) - (min as number), text: text as string, at: at - (min as number) * 60_000, expiresAt: at + 86_400_000, mine: false, author }] : []
-    })
-    return this.looking.filter((p) => p.expiresAt > at)
-  }
-
-  async lookingFor(country?: string | null) {
-    await wait(300)
-    const c = country || this.me?.country
-    return this.lookingNow().filter((p) => p.author.country === c).sort((a, b) => b.id - a.id)
-  }
-
-  async postLooking(text: string) {
-    await wait(300)
-    const body = text.trim()
-    if (!this.me || body.length < 2 || body.length > LOOKING_MAX) throw new BackendError('bad_request')
-    if (this.lookingNow().filter((p) => p.mine).length >= 3) throw new BackendError('slow_down')
-    this.looking!.push({ id: Math.round(Date.now() / 1000), text: body, at: Date.now(), expiresAt: Date.now() + 86_400_000, mine: true, author: this.me })
-  }
-
-  async hideLooking(id: number) {
-    await wait(200)
-    this.looking = this.lookingNow().filter((p) => !(p.id === id && p.mine))
-  }
-
-  async replyLooking(id: number) {
-    const p = this.lookingNow().find((x) => x.id === id)
-    if (!p) throw new BackendError('not_found')
-    const thread = await this.friendThread(p.author.id)
-    this.lookingThreads.add(thread)
-    return thread
   }
 
   async friendThread(userId: string) {
