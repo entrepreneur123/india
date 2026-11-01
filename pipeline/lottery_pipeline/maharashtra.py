@@ -1260,6 +1260,16 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
     def known(date, url):
         return next((x for x in load(date)[1]["draws"] if x["sources"][0]["url"] == url), None)
 
+    # The official list keeps only the last day or two (01-11-2026: 30 and 31.10 only), but an older sheet we
+    # list as a PDF link is still downloadable: keep trying it from its stored address for KEEP_TRYING_DAYS.
+    listed = {url for _, _, url in sheets}
+    for back in range(KEEP_TRYING_DAYS + 1):
+        date = today - dt.timedelta(days=back)
+        for x in load(date)[1]["draws"]:
+            url = x["sources"][0]["url"]
+            if x.get("status") != "OK" and url not in listed:
+                sheets.append((date, x.get("nameLocal", ""), url))
+                listed.add(url)
     for date, local, url in sheets:  # every draw is on the site at once, as its official sheet
         k = known(date, url)
         if k is None or k.get("status") != "OK":

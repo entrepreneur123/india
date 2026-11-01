@@ -143,6 +143,21 @@ def test_strays_in_a_row_of_their_own_are_refused_not_a_crash():
     assert mh._printed_order(nums, case["count"]) is None
 
 
+def test_a_sheet_no_longer_on_the_official_list_is_still_read(tmp_path, monkeypatch):
+    # 01-11-2026: the list showed only 30-31.10; four 25-26.10 sheets that read correctly were never tried again.
+    page = (F / "mh_results_list.html").read_text()
+    good = mh._agree([reading()] * 3)
+    monkeypatch.setattr(mh, "read", lambda pdf, warn=print: good)
+    mh.update(tmp_path, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page, fetch_pdf=lambda u: b"x", ocr=False)
+    assert json.loads((tmp_path / "v2/mh/days/2026-10-25.json").read_text())["draws"][0]["status"] == "PDF"
+    asked = []
+    mh.update(tmp_path, dt.date(2026, 10, 30), warn=lambda s: None, fetch_list=lambda: "<html></html>",
+              fetch_pdf=lambda u: asked.append(u) or b"x")
+    assert any("Gajlaxmi%20Ravi" in u for u in asked)
+    d = json.loads((tmp_path / "v2/mh/days/2026-10-25.json").read_text())["draws"][0]
+    assert d["status"] == "OK" and d["tiers"][0]["numbers"] == ["GL-00 2142"]
+
+
 def test_a_sheet_for_another_date_is_not_published(tmp_path, monkeypatch):
     other = mh._agree([reading()] * 3) | {}
     other = {"head": dict(other["head"], date="2026-10-18"), "tiers": other["tiers"]}
