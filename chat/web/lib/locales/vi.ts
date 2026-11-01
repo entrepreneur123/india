@@ -41,6 +41,8 @@ const vi: Dict = {
   'auth.guest': 'Tiếp tục với tư cách khách',
 
   'auth.guestBody': 'Không cần số điện thoại. Hồ sơ khách chỉ tồn tại trên trình duyệt này.',
+
+  'auth.with': 'Tiếp tục với {name}',
   'auth.verifiedBadge': 'Nhận huy hiệu đã xác minh: giấy tờ + ảnh selfie',
   'auth.everyoneVerified': 'Mọi người ở đây đều đã xác minh danh tính',
   'trust.verified': 'Đã xác minh danh tính',
@@ -497,6 +499,7 @@ const vi: Dict = {
   'settings.account': 'Tài khoản',
   'settings.phone': 'Số điện thoại',
   'settings.verified': 'Đã xác minh',
+  'settings.via': 'Đã đăng nhập bằng {name}',
   'settings.guest': 'Tài khoản khách (chỉ trình duyệt này)',
   'settings.language': 'Ngôn ngữ',
   'settings.theme': 'Giao diện',
@@ -579,6 +582,8 @@ const vi: Dict = {
   'error.handle_taken': 'ID này đã có người dùng. Hãy chọn ID khác',
   'error.handle_cooldown': 'Bạn có thể đổi ID 30 ngày một lần',
   'error.name_invalid': 'Hãy viết tên bằng chữ cái thông thường: không dùng được chữ của phông cách điệu',
+  'error.name_rude': 'Tên này không được phép. Hãy chọn tên khác',
+  'error.spam': 'Chưa gửi: lặp lại cùng một tin nhắn hoặc quá nhiều liên kết. Hãy thử lại sau vài phút',
   'error.not_owned': 'Bạn chưa có phong cách này',
   'error.chat_closed': 'Cuộc trò chuyện này đã kết thúc. Kết bạn với người đó để tiếp tục nói chuyện',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',

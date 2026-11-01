@@ -41,6 +41,8 @@ const es: Dict = {
   'auth.guest': 'Continuar como invitado',
 
   'auth.guestBody': 'Sin número de teléfono. Tu perfil de invitado vive solo en este navegador.',
+
+  'auth.with': 'Continuar con {name}',
   'auth.verifiedBadge': 'Consigue tu insignia de verificación: documento + selfie',
   'auth.everyoneVerified': 'Aquí todos verificaron su identidad',
   'trust.verified': 'Identidad verificada',
@@ -498,6 +500,7 @@ const es: Dict = {
   'settings.account': 'Cuenta',
   'settings.phone': 'Número de teléfono',
   'settings.verified': 'Verificado',
+  'settings.via': 'Sesión iniciada con {name}',
   'settings.guest': 'Cuenta de invitado (solo este navegador)',
   'settings.language': 'Idioma',
   'settings.theme': 'Tema',
@@ -581,6 +584,8 @@ const es: Dict = {
   'error.handle_taken': 'Ese ID ya está en uso. Elige otro',
   'error.handle_cooldown': 'Puedes cambiar tu ID una vez cada 30 días',
   'error.name_invalid': 'Escribe tu nombre con letras normales: no se pueden usar letras de fuentes decorativas',
+  'error.name_rude': 'Este nombre no está permitido. Elige otro',
+  'error.spam': 'No enviado: el mismo mensaje otra vez o demasiados enlaces. Inténtalo de nuevo en unos minutos',
   'error.not_owned': 'Todavía no tienes este estilo',
   'error.chat_closed': 'Este chat terminó. Agrégale como amigo para seguir hablando',
   'error.generic': 'Algo salió mal. Inténtalo de nuevo',

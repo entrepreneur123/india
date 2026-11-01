@@ -41,6 +41,8 @@ const ro: Dict = {
   'auth.guest': 'Continuă ca oaspete',
 
   'auth.guestBody': 'Fără număr de telefon. Profilul de oaspete rămâne doar în acest browser.',
+
+  'auth.with': 'Continuă cu {name}',
   'auth.verifiedBadge': 'Obține insigna de verificare: act + selfie',
   'auth.everyoneVerified': 'Toată lumea de aici are actul verificat',
   'trust.verified': 'Act verificat',
@@ -498,6 +500,7 @@ const ro: Dict = {
   'settings.account': 'Cont',
   'settings.phone': 'Număr de telefon',
   'settings.verified': 'Verificat',
+  'settings.via': 'Conectat cu {name}',
   'settings.guest': 'Cont de oaspete (doar acest browser)',
   'settings.language': 'Limbă',
   'settings.theme': 'Temă',
@@ -581,6 +584,8 @@ const ro: Dict = {
   'error.handle_taken': 'Acest ID e deja luat. Alege altul',
   'error.handle_cooldown': 'Îți poți schimba ID-ul o dată la 30 zile',
   'error.name_invalid': 'Scrie-ți numele cu litere obișnuite: literele din fonturi decorative nu sunt permise',
+  'error.name_rude': 'Acest nume nu este permis. Alege altul',
+  'error.spam': 'Nu s-a trimis: același mesaj din nou sau prea multe linkuri. Încearcă din nou peste câteva minute',
   'error.not_owned': 'Încă nu ai acest stil',
   'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',
   'error.generic': 'Ceva n-a mers. Încearcă din nou',

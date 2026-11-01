@@ -41,6 +41,8 @@ const nl: Dict = {
   'auth.guest': 'Doorgaan als gast',
 
   'auth.guestBody': 'Geen telefoonnummer nodig. Je gastprofiel blijft alleen in deze browser.',
+
+  'auth.with': 'Doorgaan met {name}',
   'auth.verifiedBadge': 'Krijg je verificatiebadge: ID + selfie',
   'auth.everyoneVerified': 'Iedereen hier is met ID geverifieerd',
   'trust.verified': 'ID geverifieerd',
@@ -497,6 +499,7 @@ const nl: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Telefoonnummer',
   'settings.verified': 'Geverifieerd',
+  'settings.via': 'Ingelogd met {name}',
   'settings.guest': 'Gastaccount (alleen deze browser)',
   'settings.language': 'Taal',
   'settings.theme': 'Thema',
@@ -580,6 +583,8 @@ const nl: Dict = {
   'error.handle_taken': 'Die ID is al bezet. Kies een andere',
   'error.handle_cooldown': 'Je kunt je ID eens per 30 dagen wijzigen',
   'error.name_invalid': 'Schrijf je naam in gewone letters: letters uit sierlettertypen kunnen niet',
+  'error.name_rude': 'Deze naam is niet toegestaan. Kies een andere',
+  'error.spam': 'Niet verzonden: hetzelfde bericht opnieuw of te veel links. Probeer het over een paar minuten opnieuw',
   'error.not_owned': 'Deze look is nog niet van jou',
   'error.chat_closed': 'Deze chat is afgelopen. Voeg de persoon toe als vriend om verder te praten',
   'error.generic': 'Er ging iets mis. Probeer het opnieuw',

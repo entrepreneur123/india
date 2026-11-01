@@ -41,6 +41,8 @@ const fr: Dict = {
   'auth.guest': 'Continuer en invité',
 
   'auth.guestBody': 'Pas de numéro de téléphone. Votre profil invité reste dans ce navigateur uniquement.',
+
+  'auth.with': 'Continuer avec {name}',
   'auth.verifiedBadge': 'Obtenez votre badge vérifié : pièce d’identité + selfie',
   'auth.everyoneVerified': 'Ici, tout le monde a vérifié son identité',
   'trust.verified': 'Identité vérifiée',
@@ -498,6 +500,7 @@ const fr: Dict = {
   'settings.account': 'Compte',
   'settings.phone': 'Numéro de téléphone',
   'settings.verified': 'Vérifié',
+  'settings.via': 'Connecté avec {name}',
   'settings.guest': 'Compte invité (ce navigateur uniquement)',
   'settings.language': 'Langue',
   'settings.theme': 'Thème',
@@ -581,6 +584,8 @@ const fr: Dict = {
   'error.handle_taken': 'Cet identifiant est déjà pris. Choisissez-en un autre',
   'error.handle_cooldown': 'Vous pouvez changer d’identifiant une fois tous les 30 jours',
   'error.name_invalid': 'Écrivez votre nom en lettres normales : les lettres de polices fantaisie ne sont pas acceptées',
+  'error.name_rude': 'Ce nom n’est pas autorisé. Choisis-en un autre',
+  'error.spam': 'Non envoyé : le même message encore une fois ou trop de liens. Réessaie dans quelques minutes',
   'error.not_owned': 'Vous ne possédez pas encore ce look',
   'error.chat_closed': 'Ce chat est terminé. Ajoutez cette personne en ami pour continuer à discuter',
   'error.generic': 'Un problème est survenu. Veuillez réessayer',

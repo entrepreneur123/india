@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { cn } from '@/lib/utils'
+import { NameText } from '@/components/looks/look-name'
 
 /** A post's text with its #tags as links (072): a tag opens the posts that carry it. */
 export function TagText({ text, className, tagClass = 'text-primary-text' }: { text: string; className?: string; tagClass?: string }) {
@@ -82,7 +83,7 @@ export function TagPosts({ tag, onOpen }: { tag: string; onOpen?: () => void }) 
             <UserAvatar userId={p.author.id} name={p.author.name} src={p.author.photoUrl} size={40} />
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline gap-2">
-                <span className="truncate text-sm font-bold">{p.author.name}</span>
+                <NameText userId={p.author.id} className="truncate text-sm font-bold">{p.author.name}</NameText>
                 <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(p.createdAt)}</span>
               </span>
               <span className={cn('mt-0.5 line-clamp-2 text-sm text-pretty', !p.text && 'text-muted-foreground')}>{p.text}</span>

@@ -793,6 +793,10 @@ export type BackendErrorCode =
   | 'handle_cooldown'
   /** 040: a name with fancy-font letters (𝓛𝓲𝓼𝓪) or stacked accents. */
   | 'name_invalid'
+  /** 125: a name with a swear word or slur (chat lines and bios are masked instead). */
+  | 'name_rude'
+  /** 125: the same line again and again, the same line in many chats, or many links to people who aren't friends. */
+  | 'spam'
   | 'too_many_posts'
   /** 040: wearing a look I don't own (046: also a wall or incognito). */
   | 'not_owned'
@@ -825,15 +829,23 @@ export interface CallSignal {
   close(): void
 }
 
+/** Sign-in providers the site can offer; each shows only once it is turned on in Supabase (Authentication → Providers). */
+export const OAUTH_PROVIDERS = ['google', 'kakao', 'facebook', 'apple'] as const
+export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number]
+export type SignInKind = 'phone' | 'guest' | OAuthProvider
+
 export interface Backend {
   sendOtp(phone: string): Promise<void> // digits incl. country code, e.g. "919876543210"
   verifyOtp(phone: string, code: string): Promise<boolean>
   isSignedIn(): Promise<boolean>
   /** 123: a guest account (no phone; lives in this browser's storage). Refused while the server's switch is off. */
   signInAsGuest(): Promise<void>
-  isGuest(): Promise<boolean>
-  /** What the sign-in screen needs before anyone is signed in: whether guests may enter. */
-  config(): Promise<{ guests: boolean }>
+  /** Leaves for the provider's sign-in page; the site opens again signed in (then the profile step, as for a guest). */
+  signInWith(provider: OAuthProvider): Promise<void>
+  /** How the signed-in account signed in: only a phone account has its country from its number. */
+  signInKind(): Promise<SignInKind>
+  /** What the sign-in screen needs before anyone is signed in: whether guests may enter, which providers are on. */
+  config(): Promise<{ guests: boolean; providers: OAuthProvider[] }>
   myProfile(): Promise<Profile | null>
   createProfile(p: NewProfile): Promise<Profile>
   signOut(): Promise<void>

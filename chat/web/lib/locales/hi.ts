@@ -41,6 +41,8 @@ const hi: Dict = {
   'auth.guest': 'गेस्ट के रूप में जारी रखें',
 
   'auth.guestBody': 'फ़ोन नंबर की ज़रूरत नहीं। गेस्ट प्रोफ़ाइल सिर्फ़ इसी ब्राउज़र में रहती है।',
+
+  'auth.with': '{name} से जारी रखें',
   'auth.verifiedBadge': 'अपना वेरिफ़ाइड बैज पाएँ: ID + सेल्फ़ी',
   'auth.everyoneVerified': 'यहाँ हर कोई ID से वेरिफ़ाइड है',
   'trust.verified': 'ID वेरिफ़ाइड',
@@ -497,6 +499,7 @@ const hi: Dict = {
   'settings.account': 'अकाउंट',
   'settings.phone': 'फ़ोन नंबर',
   'settings.verified': 'वेरिफ़ाइड',
+  'settings.via': '{name} से साइन इन',
   'settings.guest': 'गेस्ट खाता (सिर्फ़ यह ब्राउज़र)',
   'settings.language': 'भाषा',
   'settings.theme': 'थीम',
@@ -579,6 +582,8 @@ const hi: Dict = {
   'error.handle_taken': 'यह ID पहले से ली जा चुकी है। कृपया कोई और चुनें',
   'error.handle_cooldown': 'आप अपनी ID 30 दिन में एक बार बदल सकते हैं',
   'error.name_invalid': 'अपना नाम सादे अक्षरों में लिखें: फ़ैंसी फ़ॉन्ट वाले अक्षर नहीं चलेंगे',
+  'error.name_rude': 'यह नाम इस्तेमाल नहीं किया जा सकता। कृपया कोई दूसरा नाम चुनें',
+  'error.spam': 'नहीं भेजा गया: वही मैसेज बार-बार या बहुत ज़्यादा लिंक। कुछ मिनट बाद फिर कोशिश करें',
   'error.not_owned': 'यह लुक अभी आपके पास नहीं है',
   'error.chat_closed': 'यह चैट ख़त्म हो चुकी है। बात जारी रखने के लिए उन्हें दोस्त बनाएँ',
   'error.generic': 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें',

@@ -23,10 +23,10 @@ import { canManage, isMod, memberOf, roleLabel } from './voice-text'
 import { useRoomT } from './room-t'
 import { LOST_FACE, LostBadge } from './voice-stage'
 import { TrustBadge } from '@/components/trust/badge'
-import { LookName, NameText } from '@/components/looks/look-name'
+import { GenderAge, LookName, NameText } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FriendButton, useFriendship } from '@/components/social/friend-button'
-import { ageText, WALLS, type ItemId } from '@/lib/looks'
+import { WALLS, type ItemId } from '@/lib/looks'
 import { useShop } from '@/components/looks/use-shop'
 import { Wall } from '@/components/looks/wall'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -97,7 +97,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
             className="font-semibold"
             fallback={
               <span className="truncate text-muted-foreground">
-                {ageText(m.profile)} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
+                <GenderAge p={m.profile} /> <span aria-hidden>{flagEmoji(m.profile.country)}</span>
               </span>
             }
           />}
@@ -170,7 +170,7 @@ export function PersonSheet({
           </h2>
           <LookName userId={target.profile.id} handle={target.profile.handle} className="-mt-1.5 text-sm font-semibold" />
           <p className="text-sm text-muted-foreground">
-            {ageText(target.profile)} <span aria-hidden>{flagEmoji(target.profile.country)}</span>
+            <GenderAge p={target.profile} /> <span aria-hidden>{flagEmoji(target.profile.country)}</span>
           </p>
           <p className="flex flex-wrap justify-center gap-1.5">
             {roleLabel(target, t) ? (

@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { EyeOff, Flag, ShieldCheck } from 'lucide-react'
-import type { Profile } from '@/lib/backend'
+import type { OAuthProvider, Profile } from '@/lib/backend'
 import type { TKey } from '@/lib/i18n'
 import { Rich, useI18n } from '@/components/i18n'
 import { Logo, Skeleton } from '@/components/ui/bits'
@@ -54,11 +54,11 @@ export function AuthScreen({
   // "Everyone here is ID-verified" only once the server has said verification is required (seen on this browser).
   const [required] = useState(requiredCached)
   // 123: guests may enter once the server's switch is on (asked once per visit; the door stays hidden until then).
-  const [guests, setGuests] = useState(false)
-  const [guest, setGuest] = useState(false)
+  const [config, setConfig] = useState<{ guests: boolean; providers: OAuthProvider[] }>({ guests: false, providers: [] })
+  const guests = config.guests
   useEffect(() => {
     let alive = true
-    backend.config().then((c) => alive && setGuests(c.guests), () => undefined)
+    backend.config().then((c) => alive && setConfig(c), () => undefined)
     return () => {
       alive = false
     }
@@ -136,14 +136,9 @@ export function AuthScreen({
                     setStep('otp')
                     void loadProfileStep().catch(() => undefined)
                   }}
-                  onGuest={
-                    guests
-                      ? () => {
-                          setGuest(true)
-                          setStep('profile')
-                        }
-                      : undefined
-                  }
+                  guests={guests}
+                  providers={config.providers}
+                  onSignedIn={() => setStep('profile')}
                 />
               ) : step === 'otp' && phone ? (
                 <OtpStep
@@ -167,7 +162,7 @@ export function AuthScreen({
                     </div>
                   }
                 >
-                  <ProfileStep onCreated={onComplete} guest={guest} />
+                  <ProfileStep onCreated={onComplete} />
                 </Suspense>
               )}
             </m.div>

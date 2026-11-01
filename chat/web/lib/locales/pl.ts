@@ -41,6 +41,8 @@ const pl: Dict = {
   'auth.guest': 'Kontynuuj jako gość',
 
   'auth.guestBody': 'Bez numeru telefonu. Profil gościa istnieje tylko w tej przeglądarce.',
+
+  'auth.with': 'Kontynuuj z {name}',
   'auth.verifiedBadge': 'Zdobądź odznakę weryfikacji: dokument + selfie',
   'auth.everyoneVerified': 'Każdy tutaj ma zweryfikowany dokument',
   'trust.verified': 'Zweryfikowany dokument',
@@ -499,6 +501,7 @@ const pl: Dict = {
   'settings.account': 'Konto',
   'settings.phone': 'Numer telefonu',
   'settings.verified': 'Zweryfikowany',
+  'settings.via': 'Zalogowano przez {name}',
   'settings.guest': 'Konto gościa (tylko ta przeglądarka)',
   'settings.language': 'Język',
   'settings.theme': 'Motyw',
@@ -582,6 +585,8 @@ const pl: Dict = {
   'error.handle_taken': 'To ID jest już zajęte. Wybierz inne',
   'error.handle_cooldown': 'ID możesz zmieniać raz na 30 dni',
   'error.name_invalid': 'Wpisz imię zwykłymi literami: litery z ozdobnych czcionek są niedozwolone',
+  'error.name_rude': 'Ta nazwa jest niedozwolona. Wybierz inną',
+  'error.spam': 'Nie wysłano: ta sama wiadomość ponownie lub za dużo linków. Spróbuj ponownie za kilka minut',
   'error.not_owned': 'Nie masz jeszcze tego dodatku',
   'error.chat_closed': 'Ten czat się zakończył. Dodaj tę osobę do znajomych, aby dalej rozmawiać',
   'error.generic': 'Coś poszło nie tak. Spróbuj ponownie',

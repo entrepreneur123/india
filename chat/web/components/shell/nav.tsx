@@ -13,6 +13,7 @@ import { useSocialT } from '@/components/social/social-text'
 import type { Badges } from '@/lib/backend'
 import { cn } from '@/lib/utils'
 import { preloadScreen } from './lazy-screens'
+import { NameText } from '@/components/looks/look-name'
 
 interface NavItem {
   tab: Tab
@@ -117,7 +118,7 @@ export function Sidebar({ className }: { className?: string }) {
           className="flex items-center justify-center gap-3 rounded-full p-1.5 text-start transition-colors duration-150 hover:bg-muted lg:justify-start lg:p-2"
         >
           <UserAvatar userId={me.id} name={me.name} src={me.photoUrl} size={36} />
-          <span className="hidden min-w-0 truncate text-sm font-semibold lg:block">{me.name}</span>
+          <NameText userId={me.id} className="hidden min-w-0 truncate text-sm font-semibold lg:block">{me.name}</NameText>
         </button>
       </div>
     </aside>

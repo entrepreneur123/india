@@ -55,16 +55,25 @@ export interface BubbleDesign { bg: string; top: string; text: string; meta: str
 const STARS = [
   [18, 28, 1], [72, 20, 1], [42, 72, 1.5], [88, 64, 1], [8, 82, 1], [58, 44, 1], [30, 12, 1.5],
 ].map(([x, y, r]) => `radial-gradient(${r}px ${r}px at ${x}% ${y}%, rgb(255 255 255 / 0.7) 99%, transparent)`).join(', ')
+/** A soft light from the top-left corner (as on glass), over every bubble's fill. */
+const GLOSS = 'radial-gradient(130% 90% at 18% 0%, rgb(255 255 255 / 0.42), transparent 55%)'
+/** Fainter on bubbles with white text, so the text keeps its contrast under the light. */
+const GLOSS_DIM = 'radial-gradient(130% 90% at 18% 0%, rgb(255 255 255 / 0.18), transparent 55%)'
+/** A raised bubble: a thin light rim on top and a soft shadow in its own colour underneath. */
+const depth = (tint: string) => `inset 0 1px 0 rgb(255 255 255 / 0.35), 0 1px 1.5px rgb(0 0 0 / 0.08), 0 6px 14px -8px ${tint}`
 export const BUBBLE_DESIGNS: Record<BubbleId, BubbleDesign> = {
-  bubble_peach: { bg: 'linear-gradient(160deg, #FFE3D3, #FFC2D4 60%, #FFB1CF)', top: '#FFE3D3', text: '#4A1530', meta: '#8A3B5C' },
-  bubble_ocean: { bg: 'linear-gradient(160deg, #1976D2, #3346C4 60%, #4A2FB8)', top: '#1976D2', text: '#FFFFFF', meta: 'rgb(255 255 255 / 0.8)' },
-  bubble_mint: { bg: 'linear-gradient(160deg, #E6FCEE, #BDF3D8 60%, #A6EBD0)', top: '#E6FCEE', text: '#053D2E', meta: '#2F7A60' },
-  bubble_galaxy: { bg: `${STARS}, linear-gradient(160deg, #3B1D8F, #24186B 55%, #15123F)`, top: '#3B1D8F', text: '#F3F0FF', meta: '#BBA9FF' },
-  bubble_gold: {
-    bg: 'linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.7) 50%, transparent 62%), linear-gradient(160deg, #FFF3C4, #F6CB5C 55%, #E2A72B)',
-    top: '#FFF3C4', text: '#3A2600', meta: '#6E4D0B', shadow: '0 1px 2px rgb(120 80 0 / 0.35)', motion: 'bubble-sheen',
+  bubble_peach: { bg: `${GLOSS}, linear-gradient(135deg, #FFDCC8 0%, #FFB8CB 55%, #FF9FC2 100%)`, top: '#FFDCC8', text: '#4A1530', meta: '#8A3B5C', shadow: depth('rgb(255 110 160 / 0.55)') },
+  bubble_ocean: { bg: `${GLOSS_DIM}, linear-gradient(135deg, #1A6BD9 0%, #3858E6 50%, #5B34D8 100%)`, top: '#1A6BD9', text: '#FFFFFF', meta: 'rgb(255 255 255 / 0.82)', shadow: depth('rgb(60 80 230 / 0.6)') },
+  bubble_mint: { bg: `${GLOSS}, linear-gradient(135deg, #E4FFF0 0%, #B6F2D6 55%, #95E6C9 100%)`, top: '#E4FFF0', text: '#053D2E', meta: '#2F7A60', shadow: depth('rgb(40 170 120 / 0.5)') },
+  bubble_galaxy: {
+    bg: `${STARS}, radial-gradient(90% 120% at 85% 10%, rgb(236 72 153 / 0.45), transparent 60%), radial-gradient(80% 110% at 10% 100%, rgb(56 189 248 / 0.3), transparent 60%), linear-gradient(160deg, #3F1F99 0%, #251870 55%, #14113D 100%)`,
+    top: '#3F1F99', text: '#F3F0FF', meta: '#C4B5FF', shadow: depth('rgb(110 60 230 / 0.65)'),
   },
-  bubble_neon: { bg: 'linear-gradient(160deg, #111A2E, #0B1120)', top: '#111A2E', text: '#E6FDFF', meta: '#6FE7F5', motion: 'bubble-glow' },
+  bubble_gold: {
+    bg: 'linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.75) 50%, transparent 62%), linear-gradient(135deg, #FFF6D6 0%, #F8D77E 28%, #E5AC3C 52%, #FFE9A8 74%, #CF9026 100%)',
+    top: '#FFF6D6', text: '#3A2600', meta: '#6E4D0B', shadow: depth('rgb(170 110 0 / 0.6)'), motion: 'bubble-sheen',
+  },
+  bubble_neon: { bg: 'radial-gradient(120% 100% at 50% 0%, rgb(34 211 238 / 0.16), transparent 60%), linear-gradient(160deg, #121C33 0%, #0A101F 100%)', top: '#121C33', text: '#E6FDFF', meta: '#6FE7F5', motion: 'bubble-glow' },
 }
 
 export const COLOR_DESIGNS: Record<ColorId, ColorDesign> = {
@@ -166,5 +175,3 @@ export const isVip = (p: { name: string; age?: number; photoUrl?: string | null 
 
 /** "Name, 24", or only the name when the age is hidden (0: VIP incognito). */
 export const nameAge = (name: string, age: number) => (age > 0 ? `${name}, ${age}` : name)
-/** The age, or nothing when it is hidden (VIP). Cities are not shown (the owner, 2026-10-26: country only). */
-export const ageText = (p: { age: number }) => (p.age > 0 ? String(p.age) : '')

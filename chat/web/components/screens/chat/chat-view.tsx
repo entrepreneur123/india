@@ -91,7 +91,7 @@ export function ChatView({
   const { t } = useI18n()
   const { me, openProfile } = useApp()
   const live = mode === 'random'
-  const chat = useMatchChat(matchId, opened.name, live)
+  const chat = useMatchChat(matchId, opened.name, live, visible)
   // Their card as I may see it now (35: they may turn VIP off or on during the chat).
   const partner = chat.partner ?? opened
   const lookId = partner.id

@@ -2,7 +2,8 @@
 
 import type { CSSProperties, ReactNode } from 'react'
 import useSWR from 'swr'
-import type { Backend, Look, LookWear } from '@/lib/backend'
+import { Mars, Venus } from 'lucide-react'
+import type { Backend, Gender, Look, LookWear } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { COLOR_DESIGNS, FONT_DESIGNS, isItem, NO_WEAR, type BadgeId, type ColorId, type FontId } from '@/lib/looks'
 import { cn } from '@/lib/utils'
@@ -117,12 +118,33 @@ export function NameText({ userId, wear, children, className }: { userId?: strin
   )
 }
 
-/** "Name, age" with the name in the person's look (the age is plain; none when it is hidden). */
-export function PersonName({ p, className }: { p: { id: string; name: string; age: number }; className?: string }) {
+/**
+ * The age with a woman's or man's sign before it, tinted (the owner, 2026-11-01: "gender next to the age", as in
+ * Hago, MICO and Azar's cards). Nothing when the age is hidden (VIP incognito hides both); "other" shows the age only.
+ */
+export function GenderAge({ p, className }: { p: { age: number; gender?: Gender }; className?: string }) {
+  if (!(p.age > 0)) return null
+  const Sign = p.gender === 'female' ? Venus : p.gender === 'male' ? Mars : null
   return (
-    <span className={className}>
-      <NameText userId={p.id}>{p.name}</NameText>
-      {p.age > 0 ? `, ${p.age}` : null}
+    <span
+      className={cn(
+        'inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 align-middle text-[0.8em] leading-[1.45] font-semibold tabular-nums',
+        p.gender === 'female' ? 'bg-pink-500/12 text-pink-600' : p.gender === 'male' ? 'bg-sky-500/12 text-sky-600' : 'bg-muted text-muted-foreground',
+        className,
+      )}
+    >
+      {Sign ? <Sign className="size-[0.95em]" strokeWidth={2.75} aria-hidden /> : null}
+      {p.age}
+    </span>
+  )
+}
+
+/** The name in the person's look, then their gender and age (none when hidden). */
+export function PersonName({ p, className }: { p: { id: string; name: string; age: number; gender?: Gender }; className?: string }) {
+  return (
+    <span className={cn('inline-flex min-w-0 items-center gap-1.5', className)}>
+      <NameText userId={p.id} className="truncate">{p.name}</NameText>
+      <GenderAge p={p} />
     </span>
   )
 }

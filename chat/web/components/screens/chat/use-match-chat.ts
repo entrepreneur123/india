@@ -16,7 +16,7 @@ const TYPING_TIMEOUT_MS = 6000
 type Outgoing = { text: string | null; media: File | null; preview: string | null }
 
 /** `live` = an open random match; threads (friends, past matches) carry messages, typing and calls. */
-export function useMatchChat(matchId: string, partnerName: string, live: boolean) {
+export function useMatchChat(matchId: string, partnerName: string, live: boolean, visible: boolean) {
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
@@ -110,11 +110,12 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     }
   }, [backend, matchId, append, toast, partnerName, live, setVideo])
 
-  // Read ticks: what's on screen while the tab is visible counts as read.
+  // Read ticks: only what is on screen counts as read — the chat shown (`visible`: not put away behind its bar with
+  // the v button while another tab is open; the owner, 2026-11-01) in a browser tab in front.
   let lastIncoming = 0
   for (const m of messages ?? []) if (!m.fromMe) lastIncoming = m.id // sorted by id
   useEffect(() => {
-    if (!lastIncoming) return
+    if (!lastIncoming || !visible) return
     const mark = () => {
       if (document.visibilityState !== 'visible') return
       // This chat's count drops at once (the Recent tab with it); the server's counts are read again once it has
@@ -125,7 +126,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     mark()
     document.addEventListener('visibilitychange', mark)
     return () => document.removeEventListener('visibilitychange', mark)
-  }, [backend, matchId, lastIncoming, mutate])
+  }, [backend, matchId, lastIncoming, visible, mutate])
 
   const notifyTyping = useCallback(() => {
     const now = Date.now()
