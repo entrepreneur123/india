@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { Megaphone, RefreshCw, Search, UserCheck, Users } from 'lucide-react'
+import { RefreshCw, Search, UserCheck, Users } from 'lucide-react'
 import type { ExploreKind, ExplorePerson, FeedItem, PersonRow } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { COUNTRIES } from '@/lib/countries'
@@ -18,16 +18,16 @@ import { cn } from '@/lib/utils'
 import { FadeImg } from '@/components/ui/fade-img'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { FriendNotes } from './friend-notes'
-import { LookingFor } from './looking'
 import { TagPosts } from '@/components/social/hashtags'
 import { hashtagsOf } from '@/lib/hashtags'
 import { PostCard } from '@/components/social/posts/post-card'
 import { ScrollRow } from '@/components/ui/scroll-row'
 
-// Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
-// of a country), Ranking (followers or friends) and Online. "Following" (the person with a check) lists whom I follow.
+// Explore (059): search by ID or name on top; under it Feed (posts, highlights and status lines of friends and people
+// I follow), For you (50 random people of a country: everyone, online or offline, 126) and Ranking (followers or friends).
 
-type Section = 'feed' | 'recommend' | 'ranking' | 'online' | 'liked' | 'looking'
+type Section = 'feed' | 'recommend' | 'ranking'
+type Presence = 'recommend' | 'online' | 'offline'
 
 export function ExploreScreen() {
   const backend = useBackend()
@@ -37,6 +37,7 @@ export function ExploreScreen() {
   const [asked, setAsked] = useState('')
   const [section, setSection] = useState<Section>('recommend')
   const [rank, setRank] = useState<'likes' | 'friends'>('likes')
+  const [presence, setPresence] = useState<Presence>('recommend')
   const [country, setCountry] = useState<string>(app.me?.country ?? '')
   const [round, setRound] = useState(0)
   useEffect(() => {
@@ -49,11 +50,11 @@ export function ExploreScreen() {
     return COUNTRIES.map((c) => ({ iso: c.iso, name: dn.of(c.iso) ?? c.name })).sort((a, b) => a.name.localeCompare(b.name, locale))
   }, [locale])
 
-  const kind: ExploreKind | null = section === 'feed' || section === 'looking' ? null : section === 'ranking' ? rank : section
+  const kind: ExploreKind | null = section === 'feed' ? null : section === 'ranking' ? rank : presence
   // 072: "#word" looks for posts with that hashtag instead of people.
   const tag = asked.startsWith('#') ? hashtagsOf(asked)[0] ?? null : null
   const found = useSWR(asked && !tag ? ['explore-find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
-  const people = useSWR(!asked && kind ? ['explore', kind, country, kind === 'recommend' ? round : 0] : null, () => backend.explorePeople(kind!, country || null), {
+  const people = useSWR(!asked && kind ? ['explore', kind, country, section === 'recommend' ? round : 0] : null, () => backend.explorePeople(kind!, country || null), {
     revalidateOnFocus: false,
   })
   const feed = useSWR(!asked && section === 'feed' ? 'explore-feed' : null, () => backend.exploreFeed())
@@ -61,42 +62,20 @@ export function ExploreScreen() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6 sm:px-8">
-        <div className="flex items-center gap-2">
-          <label className="relative block flex-1">
-            <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <TextInput
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t('explore.search')}
-              aria-label={t('explore.search')}
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              maxLength={30}
-              className="ps-9"
-            />
-          </label>
-          {/* 52: "Looking for…" lines, a toggle like Liked (the segments are full on a phone). */}
-          <Button
-            size="icon"
-            variant={section === 'looking' ? 'brand' : 'secondary'}
-            onClick={() => (setQ(''), setSection(section === 'looking' ? 'recommend' : 'looking'))}
-            aria-label={t('looking.tab')}
-            title={t('looking.tab')}
-            aria-pressed={section === 'looking'}
-          >
-            <Megaphone className="size-5" aria-hidden />
-          </Button>
-          <Button
-            size="icon"
-            variant={section === 'liked' ? 'brand' : 'secondary'}
-            onClick={() => (setQ(''), setSection(section === 'liked' ? 'recommend' : 'liked'))}
-            aria-label={t('explore.following')}
-            aria-pressed={section === 'liked'}
-          >
-            <UserCheck className="size-5" aria-hidden />
-          </Button>
-        </div>
+        <label className="relative block">
+          <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <TextInput
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t('explore.search')}
+            aria-label={t('explore.search')}
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            maxLength={30}
+            className="ps-9"
+          />
+        </label>
 
         {tag ? (
           <TagPosts tag={tag} />
@@ -114,22 +93,17 @@ export function ExploreScreen() {
           )
         ) : (
           <>
-            {section === 'liked' || section === 'looking' ? (
-              <h1 className="text-lg font-semibold">{t(section === 'liked' ? 'explore.following' : 'looking.tab')}</h1>
-            ) : (
-              <Segmented
-                label={t('nav.explore')}
-                value={section}
-                onChange={setSection}
-                options={[
-                  { value: 'feed', label: t('explore.feed') },
-                  { value: 'recommend', label: t('explore.recommend') },
-                  { value: 'ranking', label: t('explore.ranking') },
-                  { value: 'online', label: t('explore.online') },
-                ]}
-              />
-            )}
-            {section !== 'feed' && section !== 'liked' ? (
+            <Segmented
+              label={t('nav.explore')}
+              value={section}
+              onChange={setSection}
+              options={[
+                { value: 'feed', label: t('explore.feed') },
+                { value: 'recommend', label: t('explore.recommend') },
+                { value: 'ranking', label: t('explore.ranking') },
+              ]}
+            />
+            {section !== 'feed' ? (
               <div className="flex flex-wrap items-center gap-2">
                 <select
                   value={country}
@@ -155,20 +129,30 @@ export function ExploreScreen() {
                       { value: 'friends', label: t('explore.byFriends') },
                     ]}
                   />
-                ) : section === 'recommend' ? (
-                  <Button variant="secondary" onClick={() => setRound((r) => r + 1)} loading={people.isValidating}>
-                    {people.isValidating ? null : <RefreshCw className="size-4" aria-hidden />} {t('explore.more')}
-                  </Button>
-                ) : null}
+                ) : (
+                  <>
+                    <Button variant="secondary" onClick={() => setRound((r) => r + 1)} loading={people.isValidating}>
+                      {people.isValidating ? null : <RefreshCw className="size-4" aria-hidden />} {t('explore.more')}
+                    </Button>
+                    <Segmented
+                      label={t('explore.recommend')}
+                      value={presence}
+                      onChange={setPresence}
+                      options={[
+                        { value: 'recommend', label: t('lobby.everyone') },
+                        { value: 'online', label: t('presence.online') },
+                        { value: 'offline', label: t('presence.offline') },
+                      ]}
+                    />
+                  </>
+                )}
               </div>
             ) : null}
             {section === 'feed' ? (
               <>
-                <FriendNotes />
-                <Feed items={feed.data} />
+                <FriendNotes notes={feed.data?.notes} />
+                <Feed items={feed.data?.items} />
               </>
-            ) : section === 'looking' ? (
-              <LookingFor country={country} />
             ) : (
               <People list={people.data} ranked={section === 'ranking'} rank={rank} />
             )}
@@ -221,6 +205,13 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
                 <NameText userId={p.id}>{p.name}</NameText>, {num(p.age)} <span aria-hidden>{flagEmoji(p.country)}</span>
               </span>
               <LookName userId={p.id} handle={p.handle} className="truncate text-xs text-muted-foreground" />
+              {/* For you (126): online or offline, the friends list's dots (right-panel). */}
+              {p.online === null ? null : (
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className={cn('size-2 shrink-0 rounded-full', p.online ? 'bg-online' : 'bg-foreground')} aria-hidden />
+                  {t(p.online ? 'presence.online' : 'presence.offline')}
+                </span>
+              )}
               {ranked && p.count !== null ? (
                 <span className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-primary-text">
                   {rank === 'likes' ? <UserCheck className="size-3.5" aria-hidden /> : <Users className="size-3.5" aria-hidden />}

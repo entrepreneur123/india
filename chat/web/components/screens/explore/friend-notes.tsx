@@ -1,8 +1,7 @@
 'use client'
 
-import useSWR from 'swr'
 import { Plus } from 'lucide-react'
-import { useBackend } from '@/lib/backend-context'
+import type { FeedNote } from '@/lib/backend'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -10,21 +9,14 @@ import { cn } from '@/lib/utils'
 import { ScrollRow } from '@/components/ui/scroll-row'
 
 /**
- * 32: friends' status messages over the feed, newest change first, like Instagram's notes over the DMs: a bubble over
- * each face. Mine comes first (or an invitation to write one).
+ * 32: the status lines of friends and people I follow over the feed (126: from the feed's own call), newest change
+ * first, like Instagram's notes over the DMs: a bubble over each face. Mine comes first (or an invitation to write one).
  */
-export function FriendNotes() {
-  const backend = useBackend()
+export function FriendNotes({ notes }: { notes: FeedNote[] | undefined }) {
   const { t } = useI18n()
   const { me, openProfile, setTab } = useApp()
-  const { data: friends } = useSWR('friends', () => backend.friends())
-  const { data: activity } = useSWR('friend-activity', () => backend.friendActivity(), { refreshInterval: 60_000, refreshWhenHidden: false })
-  const byId = new Map(friends?.filter((f) => f.state === 'friends').map((f) => [f.profile.id, f.profile]))
-  const notes = (activity ?? [])
-    .flatMap((a) => (a.status && byId.has(a.id) ? [{ ...a, profile: byId.get(a.id)! }] : []))
-    .sort((a, b) => (b.statusAt ?? 0) - (a.statusAt ?? 0))
   const mine = me.style?.status?.trim()
-  if (!activity) return null
+  if (!notes) return null
   return (
     <section aria-label={t('notes.title')} className="-mx-4 sm:mx-0">
       <ScrollRow as="ul" className="flex gap-3 overflow-x-auto px-4 pt-1 pb-2 no-scrollbar sm:px-0">
@@ -47,11 +39,11 @@ export function FriendNotes() {
         />
         {notes.map((n) => (
           <Note
-            key={n.id}
-            name={n.profile.name}
-            text={n.status!}
-            onOpen={() => openProfile(n.id)}
-            face={<UserAvatar userId={n.id} name={n.profile.name} src={n.profile.photoUrl} size={64} />}
+            key={n.user.id}
+            name={n.user.name}
+            text={n.text}
+            onOpen={() => openProfile(n.user.id)}
+            face={<UserAvatar userId={n.user.id} name={n.user.name} src={n.user.photoUrl} size={64} />}
           />
         ))}
       </ScrollRow>

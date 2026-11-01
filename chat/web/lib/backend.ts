@@ -292,13 +292,15 @@ export interface RecentMatch {
 export type ReportReason = 'nudity' | 'minor' | 'harassment' | 'fake' | 'other'
 export type FriendState = 'none' | 'requested' | 'incoming' | 'friends'
 
-/** 059 Explore: 'recommend' 50 at random, 'online', 'likes' / 'friends' rankings (count), 'liked' (whom I follow). */
-export type ExploreKind = 'recommend' | 'online' | 'likes' | 'friends' | 'liked'
+/** 059 Explore: For you, 50 at random of a country — everyone, 'online' or 'offline' (126) — and the 'likes' / 'friends' rankings. */
+export type ExploreKind = 'recommend' | 'online' | 'offline' | 'likes' | 'friends'
 export interface ExplorePerson extends PersonRow {
   age: number
   country: string | null
   /** Rankings: the profile likes or friends. */
   count: number | null
+  /** For you: online now (someone hiding it reads offline). Rankings: null. */
+  online: boolean | null
 }
 /** A friend's or a followed person's post or highlight in the Explore feed (117). */
 export interface FeedItem {
@@ -310,6 +312,12 @@ export interface FeedItem {
   at: string
   /** A post in full (081): it shows as a post, liked and opened there. */
   post?: FeedPost | null
+}
+/** 126: a friend's or followed person's status line over the feed; `at` is when it last changed. */
+export interface FeedNote {
+  user: PersonRow
+  text: string
+  at: number | null
 }
 /**
  * A profile's followers (`likes`: a profile like is a follow, the owner 2026-10-31), following and friends, whether I
@@ -348,17 +356,6 @@ export interface PartyState {
   matched: string | null
 }
 
-/** 52 (075): a "looking for…" line in Explore, open for 24 hours to people of its country. */
-export interface LookingPost {
-  id: number
-  text: string
-  at: number
-  expiresAt: number
-  mine: boolean
-  author: Profile
-}
-export const LOOKING_MAX = 120
-
 /** 069: a group chat's lines: messages, and the server's notes ('created' / 'added': names, 'renamed': the title). */
 export type GroupLineKind = 'text' | 'created' | 'added' | 'left' | 'renamed'
 export interface GroupLine {
@@ -393,12 +390,10 @@ export interface Friend {
 /** 066: what a friend is doing now (League of Legends' friend list): app closed, idle, searching, in a random chat or a room. */
 export type Presence = 'offline' | 'online' | 'matching' | 'chat' | 'room'
 
-/** 066: a friend's presence and status message, with when it last changed (ms; null: never or none). */
+/** 066: a friend's presence (their status lines come with the Explore feed, 126). */
 export interface FriendActivity {
   id: string
   presence: Presence
-  status: string | null
-  statusAt: number | null
   /** 115: the room they are in ('room' presence), to join it from the friends list; null when it is private. */
   roomId: string | null
 }
@@ -746,6 +741,10 @@ export type BackendErrorCode =
   | 'exit_locked'
   | 'premium_required'
   | 'banned'
+  /** 126: deleting the account while suspended. */
+  | 'banned_no_delete'
+  /** 126: a new profile on a number whose account was deleted less than 24 hours ago. */
+  | 'recently_deleted'
   | 'under_18'
   | 'slow_down'
   | 'not_allowed'
@@ -909,7 +908,8 @@ export interface Backend {
   searchHandles(q: string): Promise<PersonRow[]>
   /** `country` (ISO 2) null: mine. */
   explorePeople(kind: ExploreKind, country?: string | null): Promise<ExplorePerson[]>
-  exploreFeed(): Promise<FeedItem[]>
+  /** Posts and highlights newest first, and status lines newest change first. */
+  exploreFeed(): Promise<{ items: FeedItem[]; notes: FeedNote[] }>
   profileSocial(userId: string): Promise<ProfileSocial>
   likeProfile(userId: string, on: boolean): Promise<void>
   /** Messages from anyone (true) or friends only (false, the default). */
@@ -1024,13 +1024,6 @@ export interface Backend {
   partyState(groupId: string, ready: boolean): Promise<PartyState>
   partySearch(groupId: string, everywhere: boolean): Promise<string | null>
   partyCancel(groupId: string): Promise<void>
-  /** 52: open "looking for" lines of a country (null: mine), newest first. */
-  lookingFor(country?: string | null): Promise<LookingPost[]>
-  /** Errors: bad_request, slow_down (3 open or 10 a day), verify_required, banned. */
-  postLooking(text: string): Promise<void>
-  hideLooking(id: number): Promise<void>
-  /** A message thread with the line's poster (open even if neither takes messages from everyone). Error: not_found. */
-  replyLooking(id: number): Promise<string>
   /** Null: gone, or not mine to see. */
   post(postId: string): Promise<FeedPost | null>
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>

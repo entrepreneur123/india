@@ -43,7 +43,7 @@ export const bubbleOf = (id: unknown): BubbleDesign | null =>
   typeof id === 'string' && Object.hasOwn(BUBBLE_DESIGNS, id) ? BUBBLE_DESIGNS[id as BubbleId] : null
 
 /**
- * ID colours: one tone (≥ 4.5:1 on white) or a horizontal gradient; the rainbow slides slowly (6 s, still with
+ * ID colours: one tone (≥ 4.5:1 on white; a lighter tone in dark mode, via light-dark()) or a horizontal gradient; the rainbow slides slowly (6 s, still with
  * reduced motion).
  */
 export type ColorDesign = string | { stops: string[]; slide?: boolean }
@@ -77,16 +77,16 @@ export const BUBBLE_DESIGNS: Record<BubbleId, BubbleDesign> = {
 }
 
 export const COLOR_DESIGNS: Record<ColorId, ColorDesign> = {
-  color_gold: '#A87400',
-  color_rose: '#C2185B',
-  color_ocean: '#0277BD',
-  color_emerald: '#00796B',
-  color_violet: '#6A1B9A',
+  color_gold: 'light-dark(#A87400, #F2C14E)',
+  color_rose: 'light-dark(#C2185B, #FF7AAE)',
+  color_ocean: 'light-dark(#0277BD, #5CC8FF)',
+  color_emerald: 'light-dark(#00796B, #4DD9B8)',
+  color_violet: 'light-dark(#6A1B9A, #CFA2F5)',
   color_sunset: { stops: ['#FF6A3D', '#FF2E8B', '#A63DFF'] },
   color_aurora: { stops: ['#00C9A7', '#3D8BFF', '#B44DFF'] },
   color_rainbow: { stops: ['#FF4D4D', '#FFA53D', '#F5D300', '#34C759', '#3DB8FF', '#9B5CFF'], slide: true },
   // 2026-10-28: polished metal (a light band slides along it) and a cyan-violet-magenta.
-  color_platinum: { stops: ['#2E3746', '#7D8899', '#2E3746', '#4A5566'], slide: true },
+  color_platinum: { stops: ['light-dark(#2E3746, #DDE3EC)', 'light-dark(#7D8899, #FFFFFF)', 'light-dark(#2E3746, #DDE3EC)', 'light-dark(#4A5566, #AEB8C6)'], slide: true },
   color_cyber: { stops: ['#0096C7', '#7C3AED', '#DB2777'] },
 }
 
