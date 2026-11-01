@@ -5,7 +5,7 @@ import { Avatar } from '@/components/ui/avatar'
 import type { FrameId } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 import { conic, FRAME_DESIGNS } from './frame-ring'
-import { UserAvatar } from './user-avatar'
+import { useLook } from './look-name'
 
 // Profile frames (040, redrawn 2026-10-26): a turning conic ring with a travelling glint and a soft glow around the
 // profile photo, and each frame's own decorations (snowflakes, flames, faceted gems, drifting sand, a neon orbit,
@@ -14,9 +14,13 @@ import { UserAvatar } from './user-avatar'
 /** A light glint travelling round the ring the other way. */
 const GLINT = 'conic-gradient(from var(--look-a), transparent 0deg 290deg, rgb(255 255 255 / 0.95) 325deg, transparent 360deg)'
 
-/** The turning ring with its glint (under the content), and a soft glow of the same colours behind it. */
-function Ring({ frame, glow }: { frame: FrameId; glow: number }) {
+/**
+ * The turning ring with its glint (under the content), and a soft glow of the same colours behind it. `band`: draw only
+ * the outer band that wide (px), clear inside, for a frame laid over a photo that keeps its place (FrameOverlay).
+ */
+function Ring({ frame, glow, band }: { frame: FrameId; glow: number; band?: number }) {
   const d = FRAME_DESIGNS[frame]
+  const mask = band ? { mask: `radial-gradient(circle closest-side, transparent calc(100% - ${band + 0.5}px), #000 calc(100% - ${band}px))` } : null
   return (
     <>
       <span
@@ -24,9 +28,31 @@ function Ring({ frame, glow }: { frame: FrameId; glow: number }) {
         className="look-turn pointer-events-none absolute -inset-1 rounded-[inherit]"
         style={{ backgroundImage: conic(d), filter: `blur(${glow}px)`, opacity: frame === 'frame_neon' ? 0.95 : 0.6 }}
       />
-      <span aria-hidden className="look-turn pointer-events-none absolute inset-0 rounded-[inherit]" style={{ backgroundImage: conic(d) }} />
-      <span aria-hidden className="look-turn-fast pointer-events-none absolute inset-0 rounded-[inherit]" style={{ backgroundImage: GLINT }} />
+      <span aria-hidden className="look-turn pointer-events-none absolute inset-0 rounded-[inherit]" style={{ backgroundImage: conic(d), ...mask }} />
+      <span aria-hidden className="look-turn-fast pointer-events-none absolute inset-0 rounded-[inherit]" style={{ backgroundImage: GLINT, ...mask }} />
     </>
+  )
+}
+
+const ringOf = (size: number) => Math.max(3, Math.round(size * 0.05))
+const gapOf = (size: number) => Math.max(2, Math.round(size * 0.025))
+const decorOf = (frame: FrameId, size: number, ring: number, outer: number) =>
+  frame === 'frame_fire' ? <FireRing size={size} outer={outer} /> : frame === 'frame_jewel' ? <DiamondHalo size={size} outer={outer} /> : <Decor frame={frame} ring={ring} outer={outer} />
+
+/**
+ * The same frame as FrameAvatar's, moving, round any other photo (the owner, 2026-11-01: "the frame should move
+ * everywhere, bottom-left, the friends panel, rooms"), laid just outside the photo so no layout moves: the ring and
+ * its glow under the photo (`part="under"`), the frame's decorations over it (`part="over"`). Its parent is the photo's
+ * `relative` box. Reduced motion stops it (the .look-* rules in globals.css).
+ */
+export function FrameOverlay({ frame, size, part }: { frame: FrameId; size: number; part: 'under' | 'over' }) {
+  const ring = ringOf(size)
+  const out = ring + gapOf(size)
+  const outer = size + 2 * out
+  return (
+    <span aria-hidden className="pointer-events-none absolute rounded-full" style={{ inset: -out }}>
+      {part === 'under' ? <Ring frame={frame} glow={Math.max(2, size * 0.07)} band={ring} /> : decorOf(frame, size, ring, outer)}
+    </span>
   )
 }
 
@@ -36,16 +62,17 @@ function Ring({ frame, glow }: { frame: FrameId; glow: number }) {
  * takes the same room as before; its glow and decorations spill over the edge. Plain without a frame.
  */
 export function FrameAvatar({ frame, userId, name, src, size, className }: { frame: FrameId | null; userId?: string; name: string; src?: string | null; size: number; className?: string }) {
-  const ring = frame ? Math.max(3, Math.round(size * 0.05)) : 0
-  const gap = frame ? Math.max(2, Math.round(size * 0.025)) : 3
+  const cycle = useLook(userId)?.cycle // the photo gradient (062), as UserAvatar shows it
+  const ring = frame ? ringOf(size) : 0
+  const gap = frame ? gapOf(size) : 3
   const outer = size + 2 * (ring + gap)
   return (
     <span className={cn('relative inline-grid shrink-0 place-items-center rounded-full', !frame && 'shadow-e2', className)} style={{ width: outer, height: outer }}>
       {frame ? <Ring frame={frame} glow={Math.max(4, size * 0.07)} /> : null}
       <span className="relative grid place-items-center rounded-full bg-card" style={{ padding: gap, margin: ring }}>
-        {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} frame={false} /> : <Avatar name={name} src={src} size={size} />}
+        <Avatar name={name} src={src} srcs={cycle} size={size} />
       </span>
-      {frame === 'frame_fire' ? <FireRing size={size} outer={outer} /> : frame === 'frame_jewel' ? <DiamondHalo size={size} outer={outer} /> : frame ? <Decor frame={frame} ring={ring} outer={outer} /> : null}
+      {frame ? decorOf(frame, size, ring, outer) : null}
     </span>
   )
 }

@@ -18,28 +18,3 @@ export const conic = (d: FrameDesign) => `conic-gradient(from var(--look-a), ${d
 
 /** A worn frame id, or null for none or an unknown one. */
 export const frameOf = (id: string | null | undefined) => (isItem(id) && id! in FRAME_DESIGNS ? (id as FrameId) : null)
-
-/**
- * The frame round every other photo of someone (the owner, 2026-11-01: "my frame doesn't show bottom-left, in the
- * friends panel, or in a room"): the frame's ring in its colours with a thin clear gap, drawn just outside the photo so
- * no layout moves (as Discord's avatar decorations overhang the avatar). It stands still: a list of 50 turning rings
- * would keep the GPU busy; the big photo on a profile or the random lobby keeps the turning ring and decorations.
- */
-export function FrameRing({ frame, size }: { frame: FrameId; size: number }) {
-  const ring = Math.max(2, Math.round(size * 0.06))
-  const gap = Math.max(1.5, size * 0.03)
-  const r = size / 2 + gap + ring
-  return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute rounded-full"
-      style={{
-        inset: -(gap + ring),
-        backgroundImage: conic(FRAME_DESIGNS[frame]),
-        // Only the outer band shows: the photo and the gap stay clear on any background.
-        mask: `radial-gradient(circle closest-side, transparent ${r - ring - 0.5}px, #000 ${r - ring}px)`,
-        boxShadow: frame === 'frame_neon' ? '0 0 6px rgb(0 240 255 / 0.55)' : undefined,
-      }}
-    />
-  )
-}
