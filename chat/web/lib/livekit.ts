@@ -20,7 +20,7 @@ import {
   Track,
   VideoPresets,
 } from 'livekit-client'
-import { canProcessMic, gate } from './voice-gate'
+import { canGate, gate } from './voice-gate'
 import { connectOptions, type DeviceProblem, deviceProblem, partnerNotice, preferRelay, type Quality, RELAY_AFTER, videoCodecFor } from './rtc'
 
 /** 'lost': LiveKit gave up for a reason a fresh join can fix (the call screen joins again); 'failed': it can't. */
@@ -231,21 +231,19 @@ export async function joinCall(
 /**
  * My microphone in [room], cleaned as Discord's is: LiveKit's Krisp noise filter with background voice cancellation
  * (on our LiveKit Cloud project: its /settings says enhancedNoiseCancellation). It keeps the voice of the person at the
- * phone and drops noise, music and other voices. Loaded only when the microphone goes on. Desktop Chrome and Edge only
- * (lib/rtc desktopChromium); where Krisp can't run there, the voice gate. Everywhere else the browser's own processing.
+ * phone and drops noise, music and other voices. Loaded only when the microphone goes on. Where Krisp can't run,
+ * computers get the voice gate (sent only while someone talks); elsewhere the microphone goes out as before.
  */
 export function cleanMicrophone(room: Room) {
   room.on(RoomEvent.LocalTrackPublished, async (pub: LocalTrackPublication) => {
     if (pub.source !== Track.Source.Microphone || !pub.track) return
     const track = pub.track as LocalAudioTrack
-    // Elsewhere (phones, iPad, Firefox, Safari) the browser's own echo cancellation and noise suppression only.
-    if (!canProcessMic()) return
     try {
       const { KrispNoiseFilter, isKrispNoiseFilterSupported } = await import('@livekit/krisp-noise-filter')
       if (isKrispNoiseFilterSupported()) return await track.setProcessor(KrispNoiseFilter({ useBVC: true }))
     } catch {
       /* not loaded or refused: the gate below */
     }
-    await track.setProcessor(gate()).catch(() => undefined)
+    if (canGate()) await track.setProcessor(gate()).catch(() => undefined)
   })
 }

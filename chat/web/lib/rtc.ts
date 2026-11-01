@@ -11,15 +11,6 @@ export function isAppleWebKit(ua: string, maxTouchPoints = 0): boolean {
   return /^((?!chrome|chromium|crios|fxios|edg|android).)*safari/i.test(ua)
 }
 
-/**
- * Where the app may run its own microphone processing (Krisp, the voice gate) in an audio graph of its own: desktop
- * Chrome and Edge, the engine measured with it (2026-11-01: the mic keeps echo cancellation, quality as the raw mic).
- * Phones, iPad, Firefox and Safari keep the browser's own echo cancellation, noise suppression and gain only, as other
- * voice sites do: a second audio graph on the microphone there makes the voice crackle or sound metallic.
- */
-export const desktopChromium = (ua: string, maxTouchPoints = 0) =>
-  /Chrome\/|Chromium\//.test(ua) && !/Android|Mobile|CriOS|FxiOS|EdgiOS|Firefox\//.test(ua) && !isAppleWebKit(ua, maxTouchPoints)
-
 /** iPhone and iPad (any browser): a page can't set a sound's volume there (HTMLMediaElement.volume is read-only). */
 export const fixedVolume = (ua: string, maxTouchPoints = 0) => /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && maxTouchPoints > 1)
 
