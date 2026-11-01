@@ -116,7 +116,12 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
             game = d["name"].removeprefix("Maharashtra ")
             if not re.fullmatch(r"[A-Z][a-z]+( [A-Z][a-z]+){0,3}", game):   # a circular, or a sheet with no English name
                 add(f"mh-name:{d['id']}", "wrong", "medium", f"Maharashtra entry {d['date']} does not look like a game: {game[:60]!r}")
-            if d.get("status") != "OK":
+            if d.get("readerError"):   # a bug, not a refusal: the reader must be fixed (31-10-2026)
+                add(f"mh-crash:{d['id']}", "failed-run", "medium", f"Maharashtra reader crashed on {d['id']}: {d['readerError'][:100]}")
+            if d.get("status") != "OK" and not d.get("ocrTries"):   # never even tried: runs are stuck before it
+                add(f"mh-stuck:{d['id']}", "unread", "medium",
+                    f"{d['name']} {d['date']}: no reading tried {MH_READ_HOURS} h after the draw day began (runs crash or run out of time)")
+            elif d.get("status") != "OK":
                 add(f"mh:{d['date']}:{d['name']}", "unread", "low",
                     f"{d['name']} {d['date']}: still a PDF link (OCR tries {d.get('ocrTries', 0)})")
             pat = _NUM["MH"]

@@ -51,7 +51,7 @@ def test_impossible_numbers_wrong_home_date_stale_feed_and_failed_runs():
 
 def test_maharashtra_unread_sheet_and_marathi_in_the_english_hub_title():
     now = dt.datetime(2026, 10, 30, 12, 0, tzinfo=UTC)
-    mh = {"/v2/mh/days/2026-10-28.json": {"draws": [{"id": "x", "date": "2026-10-28", "name": "Maharashtra Akshay", "status": "PDF"}]}}
+    mh = {"/v2/mh/days/2026-10-28.json": {"draws": [{"id": "x", "date": "2026-10-28", "name": "Maharashtra Akshay", "status": "PDF", "ocrTries": 2}]}}
     got = run(now, ALL_29 + [draw("2026-10-30", "NL1PM"), draw("2026-10-30", "KL", KL_TIERS)], mh=mh,
               home="<title>Maharashtra महाराष्ट्र आकर्षक Lottery Result 30.10.2026</title>")
     assert "mh:2026-10-28:Maharashtra Akshay" in got and "mh:hub-title" in got
@@ -101,3 +101,19 @@ def test_a_first_prize_the_gazette_ocr_could_not_confirm_asks_for_an_eye_check()
     got = run(now, [checked, doubtful] + ok[2:])
     assert [k for k in got if k.startswith("review:")] == ["review:2026-10-29_SK6PM"]
     assert got["review:2026-10-29_SK6PM"]["severity"] == "low" and "68C 85552" in got["review:2026-10-29_SK6PM"]["detail"]
+
+
+def test_a_maharashtra_sheet_never_tried_or_a_reader_crash_is_medium():
+    now = dt.datetime(2026, 11, 1, 6, 0, tzinfo=UTC)          # 11:30 IST: 31.10 began 35.5 h ago
+    base = {"date": "2026-10-31", "slot": "MH", "status": "PDF", "tiers": [], "sources": [{"url": "https://x/a.pdf"}]}
+    sheets = [dict(base, id="2026-10-31_MH_GAJLAXMI-SHANI", name="Maharashtra Gajlaxmi Shani"),
+              dict(base, id="2026-10-31_MH_SAHYADRI-PRABHALAXMI", name="Maharashtra Sahyadri Prabhalaxmi", ocrTries=1,
+                   readerError="ValueError: 2 is not in list"),
+              dict(base, id="2026-10-31_MH_GAJRAJ", name="Maharashtra Gajraj", ocrTries=2)]
+    mh = {"/v2/mh/index.json": {"dates": ["2026-10-31"]}, "/v2/mh/days/2026-10-31.json": {"draws": sheets}}
+    got = run(now, ALL_29 + [draw("2026-10-30", s) for s in ("NL1PM", "SK6PM", "NL8PM")], mh=mh,
+              home="<title>Lottery Result Today 01.11.2026</title>")
+    assert got["mh-stuck:2026-10-31_MH_GAJLAXMI-SHANI"]["severity"] == "medium"
+    assert got["mh-crash:2026-10-31_MH_SAHYADRI-PRABHALAXMI"]["severity"] == "medium"
+    assert got["mh:2026-10-31:Maharashtra Gajraj"]["severity"] == "low"          # tried and refused: a PDF link is right
+    assert "mh-stuck:2026-10-31_MH_GAJRAJ" not in got

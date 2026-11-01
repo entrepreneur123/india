@@ -588,6 +588,8 @@ def _printed_order(nums, count: int | None = None) -> list | None:
     cy = {r: sum(n[2] for kk, n in cells.items() if kk[1] == r) / sum(kk[1] == r for kk in cells) for r in {kk[1] for kk in cells}}
     for n in stray:
         r = row[n[2]]
+        if r not in cy:  # a row of strays only: no printed row to place them in (31-10-2026 crash)
+            return None
         if any(kk[1] == r and m[0] == n[0] for kk, m in cells.items()):
             continue  # the same number again, its position estimated wrong: already in its place
         order = sorted(cx)  # with the count: only places the printed grid has (the last column is short)
@@ -1308,6 +1310,11 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
         except MaharashtraError as e:
             warn(f"Maharashtra {date} {english_name(url) or local}: not published as numbers ({e}); linking the PDF")
             got = entry(date, url, None, local) | tries
+        except Exception as e:  # noqa: BLE001 - a reader bug on one sheet must not stop the others
+            # 31-10-2026: one sheet crashed the reader before its try was counted, so it came first again in
+            # every run and no other sheet was read for a day. Counted like a refusal; the run is flagged.
+            warn(f"::error::Maharashtra {date} {english_name(url) or local}: reader crashed: {type(e).__name__}: {e}; linking the PDF")
+            got = entry(date, url, None, local) | tries | {"readerError": f"{type(e).__name__}: {e}"[:200]}
         save(date, url, got)
     days = sorted((p.stem for p in (out / FEED / "days").glob("*.json")), reverse=True) if (out / FEED / "days").exists() else []
     (out / FEED).mkdir(parents=True, exist_ok=True)

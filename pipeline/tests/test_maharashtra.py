@@ -115,6 +115,34 @@ def test_update_links_the_pdf_when_a_sheet_does_not_read(tmp_path, monkeypatch):
     assert len(asked) == 9 and not any("Gajlaxmi%20Ravi" in u for u in asked)
 
 
+def test_a_reader_crash_on_one_sheet_does_not_stop_the_others(tmp_path, monkeypatch):
+    # 31-10-2026: a ValueError inside the reader ended every run on the same sheet; nothing else was read for a day.
+    page = (F / "mh_results_list.html").read_text()
+    good = mh._agree([reading()] * 3)
+
+    def fake_read(pdf, warn=print):
+        if pdf == b"crash":
+            raise ValueError("2 is not in list")
+        return good if pdf == b"good" else (_ for _ in ()).throw(mh.MaharashtraError("no agreement"))
+
+    monkeypatch.setattr(mh, "read", fake_read)
+    pdfs = lambda url: b"good" if "Gajlaxmi%20Ravi" in url else b"crash"
+    warned = []
+    mh.update(tmp_path, dt.date(2026, 10, 27), warn=warned.append, fetch_list=lambda: page, fetch_pdf=pdfs)
+    assert json.loads((tmp_path / "v2/mh/days/2026-10-25.json").read_text())["draws"][0]["status"] == "OK"
+    crashed = json.loads((tmp_path / "v2/mh/days/2026-10-27.json").read_text())["draws"]
+    assert all(x["status"] == "PDF" and x["ocrTries"] == 1 and x["readerError"].startswith("ValueError") for x in crashed)
+    assert any(w.startswith("::error::") and "reader crashed" in w for w in warned)
+
+
+def test_strays_in_a_row_of_their_own_are_refused_not_a_crash():
+    # The 6th-prize grid of Sahyadri Prabhalaxmi 31-10-2026 (positions as the reader found them): a number whose
+    # row holds no other number raised ValueError and stopped every Maharashtra run for a day.
+    case = json.loads((F / "mh_prabhalaxmi_311026_strays.json").read_text())
+    nums = [tuple(n) for n in case["nums"]]
+    assert mh._printed_order(nums, case["count"]) is None
+
+
 def test_a_sheet_for_another_date_is_not_published(tmp_path, monkeypatch):
     other = mh._agree([reading()] * 3) | {}
     other = {"head": dict(other["head"], date="2026-10-18"), "tiers": other["tiers"]}
