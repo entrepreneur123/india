@@ -4,27 +4,13 @@ import { useId } from 'react'
 import { Avatar } from '@/components/ui/avatar'
 import type { FrameId } from '@/lib/looks'
 import { cn } from '@/lib/utils'
+import { conic, FRAME_DESIGNS } from './frame-ring'
 import { UserAvatar } from './user-avatar'
 
 // Profile frames (040, redrawn 2026-10-26): a turning conic ring with a travelling glint and a soft glow around the
 // profile photo, and each frame's own decorations (snowflakes, flames, faceted gems, drifting sand, a neon orbit,
 // petals). The card wash and particles went with the card (Instagram layout, 2026-10-29).
 
-interface FrameDesign {
-  /** The ring's colours, turning round (a conic gradient; the first colour closes the circle). */
-  ring: string[]
-}
-
-const FRAME_DESIGNS: Record<FrameId, FrameDesign> = {
-  frame_frost: { ring: ['#FFFFFF', '#BFEAFF', '#5CB8FF', '#2F7DE1', '#A9E2FF', '#FFFFFF', '#7CC8FF'] },
-  frame_fire: { ring: ['#FFE66D', '#FF9A1F', '#FF4D00', '#C10000', '#FF6A00', '#FFD23F', '#FF3D00'] },
-  frame_jewel: { ring: ['#FFF6CF', '#E8C252', '#9C7414', '#FFE9A1', '#C9971C', '#FFF3C4', '#8A6510'] },
-  frame_sand: { ring: ['#FBE7C2', '#D9AE6C', '#9A6635', '#E9C792', '#7A4B24', '#F2D5A0'] },
-  frame_neon: { ring: ['#00F0FF', '#7A5CFF', '#FF00E5', '#FF4FA3', '#00F0FF', '#00FFA3'] },
-  frame_sakura: { ring: ['#FFE7EF', '#FFB3CC', '#FF7AA8', '#FFD6E4', '#FF92B8', '#FFF0F5'] },
-}
-
-const conic = (d: FrameDesign) => `conic-gradient(from var(--look-a), ${d.ring.join(', ')}, ${d.ring[0]})`
 /** A light glint travelling round the ring the other way. */
 const GLINT = 'conic-gradient(from var(--look-a), transparent 0deg 290deg, rgb(255 255 255 / 0.95) 325deg, transparent 360deg)'
 
@@ -57,7 +43,7 @@ export function FrameAvatar({ frame, userId, name, src, size, className }: { fra
     <span className={cn('relative inline-grid shrink-0 place-items-center rounded-full', !frame && 'shadow-e2', className)} style={{ width: outer, height: outer }}>
       {frame ? <Ring frame={frame} glow={Math.max(4, size * 0.07)} /> : null}
       <span className="relative grid place-items-center rounded-full bg-card" style={{ padding: gap, margin: ring }}>
-        {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} /> : <Avatar name={name} src={src} size={size} />}
+        {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} frame={false} /> : <Avatar name={name} src={src} size={size} />}
       </span>
       {frame === 'frame_fire' ? <FireRing size={size} outer={outer} /> : frame === 'frame_jewel' ? <DiamondHalo size={size} outer={outer} /> : frame ? <Decor frame={frame} ring={ring} outer={outer} /> : null}
     </span>

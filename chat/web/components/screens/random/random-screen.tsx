@@ -29,7 +29,7 @@ import { showRecentSegment } from '@/components/screens/recent/segment'
 import { GenderPassSheet, useGenderPass } from './gender-pass'
 import type { FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
-import { PersonName, useLook } from '@/components/looks/look-name'
+import { GenderAge, PersonName, useLook } from '@/components/looks/look-name'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { useBack } from '@/lib/back-stack'
 
@@ -364,7 +364,7 @@ export function RandomScreen({ active }: { active: boolean }) {
             <div className="flex w-full max-w-md flex-col items-center text-center">
               <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={128} />
               <p className="mt-5 text-lg font-semibold">
-                {`${me.name}, ${me.age}`} <span aria-hidden>{flagEmoji(me.country)}</span>
+                {me.name} <GenderAge p={me} /> <span aria-hidden>{flagEmoji(me.country)}</span>
               </p>
               <h1 id="lobby-title" className="mt-8 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
                 {t('lobby.title')}

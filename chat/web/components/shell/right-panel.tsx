@@ -102,7 +102,7 @@ export function RightPanel({ className }: { className?: string }) {
             <UserAvatar userId={me.id} name={me.name} src={me.photoUrl} size={40} />
           </PresenceAvatar>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold">{me.name}</span>
+            <NameText userId={me.id} className="block truncate text-sm font-semibold">{me.name}</NameText>
             {me.hideOnline ? <span className="block truncate text-xs font-medium text-muted-foreground">{t('presence.hidden')}</span> : <PresenceText presence={myPresence} />}
           </span>
         </div>

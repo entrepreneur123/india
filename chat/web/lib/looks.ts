@@ -166,5 +166,3 @@ export const isVip = (p: { name: string; age?: number; photoUrl?: string | null 
 
 /** "Name, 24", or only the name when the age is hidden (0: VIP incognito). */
 export const nameAge = (name: string, age: number) => (age > 0 ? `${name}, ${age}` : name)
-/** The age, or nothing when it is hidden (VIP). Cities are not shown (the owner, 2026-10-26: country only). */
-export const ageText = (p: { age: number }) => (p.age > 0 ? String(p.age) : '')

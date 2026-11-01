@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { UserAvatar } from './user-avatar'
 import { useLooksT } from './looks-text'
+import { NameText } from './look-name'
 
 /**
  * 33: a look for a friend. Each friend says whether they can get it (gift_check: not if they have it already); the
@@ -49,7 +50,7 @@ export function GiftSheet({ item, name, price, onClose }: { item: ItemId | null;
             return (
               <li key={f.profile.id} className="flex items-center gap-3 rounded-xl p-2">
                 <UserAvatar userId={f.profile.id} name={f.profile.name} src={f.profile.photoUrl} size={40} />
-                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{f.profile.name}</span>
+                <NameText userId={f.profile.id} className="min-w-0 flex-1 truncate text-sm font-semibold">{f.profile.name}</NameText>
                 {check === 'owned' ? (
                   <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
                     <Check className="size-3.5" aria-hidden /> {lt('gift.has')}

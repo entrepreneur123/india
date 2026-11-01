@@ -16,6 +16,7 @@ import { CountBadge } from '@/components/social/bits'
 import { useSocialT } from '@/components/social/social-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { cn } from '@/lib/utils'
+import { NameText } from '@/components/looks/look-name'
 
 /** 48: my group chats (069), latest first, with a "New group" button. The shell keeps the list live (useGroups). */
 export function GroupList() {
@@ -145,7 +146,7 @@ export function FriendPicker({ picked, onPick, exclude = [] }: { picked: string[
               className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors hover:bg-muted"
             >
               <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={40} />
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold">{p.name}</span>
+              <NameText userId={p.id} className="min-w-0 flex-1 truncate text-sm font-semibold">{p.name}</NameText>
               <span className={cn('grid size-6 place-items-center rounded-full ring-2', on ? 'bg-primary text-primary-foreground ring-primary' : 'ring-input')} aria-hidden>
                 {on ? <Check className="size-4" strokeWidth={3} /> : null}
               </span>
