@@ -19,3 +19,5 @@
 {"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Ganeshlaxmi Samruddhi", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Samruddhi 2026-10-31: still a PDF link (OCR tries 0)"}
 {"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Maharashtralaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Maharashtralaxmi 2026-10-31: still a PDF link (OCR tries 1)"}
 {"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-10-31: still a PDF link (OCR tries 0)"}
+{"at": "2026-11-01T09:18+00:00", "event": "resolved", "id": "mh:2026-10-31:Maharashtra Gajlaxmi Shani"}
+{"at": "2026-11-01T09:18+00:00", "event": "resolved", "id": "mh:2026-10-31:Maharashtra Ganeshlaxmi Samruddhi"}
