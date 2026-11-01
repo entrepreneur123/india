@@ -524,6 +524,11 @@ const en = {
   'settings.signOut': 'Sign out',
   'settings.delete': 'Delete account',
   'settings.footer': 'Yaari is for adults (18+) only. Report anyone who breaks the rules — reports are anonymous.',
+  'settings.myData': 'Download my data',
+  'settings.stats': 'Usage statistics',
+  'settings.statsBody': 'Count visits and app steps to improve Yaari. Never your messages, no ads, nothing stored on your device for it.',
+  'stats.yes': 'Allow',
+  'stats.no': 'No thanks',
   'settings.deleted': 'Your account and data were deleted',
   'settings.deleteTitle': 'Delete your account?',
   'settings.deleteBody':

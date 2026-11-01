@@ -3,6 +3,9 @@
 // Errors carry their message, stack and screen; events a fixed name plus the app language. No chat text, no phone
 // numbers: the signed-in account is its random id with its country. Nothing is kept in the browser (PostHog keeps
 // its ids in memory), no session replays, no click tracking.
+// PostHog (usage statistics) is not "strictly necessary", so in Europe it waits for a yes (ePrivacy art. 5(3); first
+// party analytics are not exempt, Article 29 WP194 §4.3) — the time zone stands in for the place, as nothing else on
+// the page knows it. Elsewhere it is on until turned off in Settings. The choice itself is the only thing stored.
 import { DEMO_MODE, POSTHOG_HOST, POSTHOG_KEY, SENTRY_DSN } from './config'
 
 export type FunnelEvent =
@@ -44,18 +47,84 @@ export function reportError(err: unknown, where?: string) {
   void sentry?.then((s) => s.captureException(err, { tags: { where: where ?? 'app' } }))
 }
 
+let lastMe: { me: { id: string; country?: string | null } | null; lang: string } | null = null
+let statsUser: string | null = null
 /** The signed-in account (null: signed out). Its id is random; country and language help compare countries. */
 export function identify(me: { id: string; country?: string | null } | null, lang: string) {
+  lastMe = { me, lang }
   const id = me?.id ?? null
-  const was = identified
+  if (id !== identified) void sentry?.then((s) => s.setUser(id ? { id } : null))
   identified = id
-  if (id !== was) void sentry?.then((s) => s.setUser(id ? { id } : null))
-  void posthog?.then((p) => {
-    if (id && id !== was) p.identify(id, { country: me?.country ?? null })
-    else if (!id && was) p.reset()
-    p.register({ lang }) // sent with every event; after reset() (which clears it) and on a language change
-    if (!viewed) p.capture('$pageview') // one per visit, here so it carries the language
-    viewed = true
+  void posthog?.then(statsSync)
+}
+
+function statsSync(p: PostHog) {
+  if (!lastMe) return
+  const id = lastMe.me?.id ?? null
+  if (id && id !== statsUser) p.identify(id, { country: lastMe.me?.country ?? null })
+  else if (!id && statsUser) p.reset()
+  statsUser = id
+  p.register({ lang: lastMe.lang }) // sent with every event; after reset() (which clears it) and on a language change
+  if (!viewed) p.capture('$pageview') // one per visit, here so it carries the language
+  viewed = true
+}
+
+const STATS = 'yaari_stats'
+const statsChoice = () => {
+  try {
+    const v = localStorage.getItem(STATS)
+    return v === '1' ? true : v === '0' ? false : null
+  } catch {
+    return null
+  }
+}
+const inEurope = () =>
+  /^(Europe\/|Atlantic\/(Azores|Madeira|Canary|Reykjavik|Faroe)$|Asia\/(Nicosia|Famagusta)$)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone ?? '')
+/** Whether usage statistics are on: the saved choice, else on outside Europe. */
+export const statsOn = () => statsChoice() ?? !inEurope()
+/** Whether to ask (Europe, nothing chosen yet, and statistics exist in this build). */
+export const statsAsk = () => !DEMO_MODE && !!POSTHOG_KEY && statsChoice() === null && inEurope()
+
+export function setStats(on: boolean) {
+  try {
+    localStorage.setItem(STATS, on ? '1' : '0')
+  } catch {
+    /* storage blocked: the choice lasts this page */
+  }
+  if (on) startStats()
+  else void posthog?.then((p) => p.opt_out_capturing())
+}
+
+function startStats() {
+  if (!POSTHOG_KEY || DEMO_MODE || typeof window === 'undefined') return
+  if (posthog) {
+    void posthog.then((p) => p.opt_in_capturing({ captureEventName: false })) // turned back on in Settings
+    return
+  }
+  posthog = afterLoad().then(async () => {
+    const p = (await import('posthog-js')).default
+    p.init(POSTHOG_KEY, {
+      api_host: POSTHOG_HOST,
+      persistence: 'memory',
+      person_profiles: 'identified_only',
+      autocapture: false,
+      capture_pageview: false, // sent by statsSync() (country, device, where people came from, language)
+      capture_pageleave: true,
+      capture_exceptions: false, // Sentry has them
+      capture_performance: false,
+      capture_heatmaps: false,
+      capture_dead_clicks: false,
+      disable_session_recording: true,
+      disable_surveys: true,
+      disable_product_tours: true,
+      disable_conversations: true,
+      disable_web_experiments: true,
+      advanced_disable_flags: true,
+      disable_external_dependency_loading: true,
+    })
+    p.register({ app_version: VERSION })
+    statsSync(p)
+    return p
   })
 }
 
@@ -80,29 +149,5 @@ export function installErrorReporting() {
       })
       return s
     })
-  if (POSTHOG_KEY)
-    posthog = afterLoad().then(async () => {
-      const p = (await import('posthog-js')).default
-      p.init(POSTHOG_KEY, {
-        api_host: POSTHOG_HOST,
-        persistence: 'memory',
-        person_profiles: 'identified_only',
-        autocapture: false,
-        capture_pageview: false, // sent by identify() (country, device, where people came from, language)
-        capture_pageleave: true,
-        capture_exceptions: false, // Sentry has them
-        capture_performance: false,
-        capture_heatmaps: false,
-        capture_dead_clicks: false,
-        disable_session_recording: true,
-        disable_surveys: true,
-        disable_product_tours: true,
-        disable_conversations: true,
-        disable_web_experiments: true,
-        advanced_disable_flags: true,
-        disable_external_dependency_loading: true,
-      })
-      p.register({ app_version: VERSION })
-      return p
-    })
+  if (statsOn()) startStats()
 }

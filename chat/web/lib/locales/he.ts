@@ -526,6 +526,11 @@ const he: Dict = {
   'settings.signOut': 'התנתקות',
   'settings.delete': 'מחיקת החשבון',
   'settings.footer': 'yaari מיועדת למבוגרים (18+) בלבד. אפשר לדווח על כל מי שמפר את הכללים — הדיווחים אנונימיים.',
+  'settings.myData': 'הורדת המידע שלי',
+  'settings.stats': 'סטטיסטיקת שימוש',
+  'settings.statsBody': 'אנחנו סופרים ביקורים ושלבים באפליקציה כדי לשפר את Yaari. אף פעם לא ההודעות שלך, בלי פרסומות, ושום דבר לא נשמר במכשיר שלך לשם כך.',
+  'stats.yes': 'לאשר',
+  'stats.no': 'לא, תודה',
   'settings.deleted': 'החשבון שלך וכל מה שבו נמחקו',
   'settings.deleteTitle': 'למחוק את החשבון?',
   'settings.deleteBody':

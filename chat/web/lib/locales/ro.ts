@@ -520,6 +520,11 @@ const ro: Dict = {
   'settings.signOut': 'Deconectează-te',
   'settings.delete': 'Șterge contul',
   'settings.footer': 'yaari este doar pentru adulți (18+). Raportează pe oricine încalcă regulile — raportările sunt anonime.',
+  'settings.myData': 'Descarcă datele mele',
+  'settings.stats': 'Statistici de utilizare',
+  'settings.statsBody': 'Numărăm vizitele și pașii din aplicație ca să îmbunătățim Yaari. Niciodată mesajele tale, fără reclame, nimic salvat pe dispozitivul tău pentru asta.',
+  'stats.yes': 'Permite',
+  'stats.no': 'Nu, mulțumesc',
   'settings.deleted': 'Contul tău și tot ce conținea au fost șterse',
   'settings.deleteTitle': 'Îți ștergi contul?',
   'settings.deleteBody':

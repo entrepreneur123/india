@@ -525,6 +525,11 @@ const th: Dict = {
   'settings.signOut': 'ออกจากระบบ',
   'settings.delete': 'ลบบัญชี',
   'settings.footer': 'yaari สำหรับผู้ใหญ่ (18+) เท่านั้น รายงานใครก็ตามที่ทำผิดกฎ — การรายงานไม่ระบุตัวตน',
+  'settings.myData': 'ดาวน์โหลดข้อมูลของฉัน',
+  'settings.stats': 'สถิติการใช้งาน',
+  'settings.statsBody': 'เรานับการเข้าชมและขั้นตอนในแอปเพื่อปรับปรุง Yaari ไม่เคยดูข้อความของคุณ ไม่มีโฆษณา และไม่เก็บอะไรไว้ในอุปกรณ์ของคุณเพื่อการนี้',
+  'stats.yes': 'อนุญาต',
+  'stats.no': 'ไม่เป็นไร',
   'settings.deleted': 'ลบบัญชีและข้อมูลทั้งหมดของคุณแล้ว',
   'settings.deleteTitle': 'ลบบัญชีของคุณไหม',
   'settings.deleteBody':

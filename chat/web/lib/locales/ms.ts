@@ -525,6 +525,11 @@ const ms: Dict = {
   'settings.signOut': 'Log keluar',
   'settings.delete': 'Padam akaun',
   'settings.footer': 'yaari untuk orang dewasa (18+) sahaja. Laporkan sesiapa yang melanggar peraturan — laporan adalah tanpa nama.',
+  'settings.myData': 'Muat turun data saya',
+  'settings.stats': 'Statistik penggunaan',
+  'settings.statsBody': 'Kami mengira lawatan dan langkah dalam aplikasi untuk menambah baik Yaari. Bukan mesej anda, tiada iklan, dan tiada apa disimpan pada peranti anda untuk ini.',
+  'stats.yes': 'Benarkan',
+  'stats.no': 'Tidak, terima kasih',
   'settings.deleted': 'Akaun anda dan semua kandungannya telah dipadam',
   'settings.deleteTitle': 'Padam akaun anda?',
   'settings.deleteBody':

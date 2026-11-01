@@ -525,6 +525,11 @@ const fa: Dict = {
   'settings.signOut': 'خروج از حساب',
   'settings.delete': 'حذف حساب',
   'settings.footer': 'yaari فقط برای بزرگسالان (۱۸+) است. هر کسی را که قوانین را زیر پا می‌گذارد گزارش دهید — گزارش‌ها ناشناس‌اند.',
+  'settings.myData': 'دانلود داده‌های من',
+  'settings.stats': 'آمار استفاده',
+  'settings.statsBody': 'برای بهتر کردن Yaari بازدیدها و مراحل برنامه شمرده می‌شوند. هرگز پیام‌های شما، بدون تبلیغ، و برای این کار چیزی روی دستگاه شما ذخیره نمی‌شود.',
+  'stats.yes': 'اجازه',
+  'stats.no': 'نه، ممنون',
   'settings.deleted': 'حساب شما و همهٔ محتوای آن حذف شد',
   'settings.deleteTitle': 'حسابتان حذف شود؟',
   'settings.deleteBody':

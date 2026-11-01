@@ -13,6 +13,7 @@ import { Splash } from '@/components/splash'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
 import { retryImport } from '@/lib/retry-import'
 import { InAppBanner } from '@/components/shell/in-app-banner'
+import { StatsBanner } from '@/components/shell/stats-banner'
 import { identify, installErrorReporting } from '@/lib/telemetry'
 import { applyTheme, followDevice, savedTheme } from '@/lib/theme'
 
@@ -94,6 +95,7 @@ function Localized({ landing }: { landing?: ReactNode }) {
     <BackendProvider fallback={first}>
       <ToastProvider>
         <InAppBanner />
+        <StatsBanner />
         <ScreenBoundary>
           <Suspense fallback={first}>
             <Root landing={landing} />

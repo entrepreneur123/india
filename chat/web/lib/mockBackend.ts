@@ -480,6 +480,11 @@ export class MockBackend implements Backend {
     this.guest = false
   }
 
+  async myData() {
+    await wait(400)
+    return { exported_at: new Date().toISOString(), profile: this.me }
+  }
+
   async deleteAccount() {
     await wait(900)
     this.signedIn = false

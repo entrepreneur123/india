@@ -525,6 +525,11 @@ const ja: Dict = {
   'settings.signOut': 'ログアウト',
   'settings.delete': 'アカウントを削除',
   'settings.footer': 'yaariは18歳以上の方専用です。ルール違反を見つけたら通報してください。通報は匿名です。',
+  'settings.myData': '自分のデータをダウンロード',
+  'settings.stats': '利用統計',
+  'settings.statsBody': 'Yaariの改善のため、訪問数とアプリ内の操作ステップを数えます。メッセージは一切含まず、広告には使わず、そのために端末に何も保存しません。',
+  'stats.yes': '許可する',
+  'stats.no': '許可しない',
   'settings.deleted': 'アカウントとすべてのデータを削除しました',
   'settings.deleteTitle': 'アカウントを削除しますか？',
   'settings.deleteBody':

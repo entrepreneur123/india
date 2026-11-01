@@ -849,6 +849,8 @@ export interface Backend {
   createProfile(p: NewProfile): Promise<Profile>
   signOut(): Promise<void>
   deleteAccount(): Promise<void>
+  /** All of my own data as one JSON document (128 my_data), for Settings' download. */
+  myData(): Promise<unknown>
   /** Phone number of the signed-in account, shown in Settings. */
   myPhone(): Promise<string | null>
   /**

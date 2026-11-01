@@ -546,6 +546,10 @@ export class SupabaseBackend implements Backend {
     this.forgetSigned()
   }
 
+  myData() {
+    return this.rpc<unknown>('my_data')
+  }
+
   async deleteAccount() {
     await this.invoke('delete-account')
     // The server already removed the user; only the local session is left.
