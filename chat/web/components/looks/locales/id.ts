@@ -78,9 +78,9 @@ const id: LooksDict = {
   'layout.resizeHint': 'Seret untuk mengubah ukuran. Ketuk dua kali untuk melihat obrolan saja.',
   'layout.showRoom': 'Tampilkan ruang',
 
-  'ended.add': 'Obrolan sudah berakhir. Tambahkan {name} sebagai teman untuk lanjut ngobrol.',
-  'ended.waiting': 'Obrolan sudah berakhir. Menunggu {name} menerima permintaan pertemananmu.',
-  'ended.incoming': 'Obrolan sudah berakhir. {name} ingin berteman: terima untuk lanjut ngobrol.',
+  'ended.add': 'Tambahkan {name} sebagai teman untuk lanjut ngobrol.',
+  'ended.waiting': 'Menunggu {name} menerima permintaan pertemananmu.',
+  'ended.incoming': '{name} ingin berteman: terima untuk lanjut ngobrol.',
   'find.title': 'Cari lewat ID',
   'find.placeholder': 'Cari ID',
   'find.hint': 'Ketik ID untuk menemukan seseorang',

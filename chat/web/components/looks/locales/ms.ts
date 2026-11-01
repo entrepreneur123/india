@@ -78,9 +78,9 @@ const ms: LooksDict = {
   'layout.resizeHint': 'Seret untuk mengubah saiz. Ketik dua kali untuk sembang sahaja.',
   'layout.showRoom': 'Tunjukkan bilik',
 
-  'ended.add': 'Sembang sudah tamat. Tambah {name} sebagai rakan untuk terus berbual.',
-  'ended.waiting': 'Sembang sudah tamat. Menunggu {name} menerima permintaan rakan anda.',
-  'ended.incoming': 'Sembang sudah tamat. {name} mahu berkawan: terima untuk terus berbual.',
+  'ended.add': 'Tambah {name} sebagai rakan untuk terus berbual.',
+  'ended.waiting': 'Menunggu {name} menerima permintaan rakan anda.',
+  'ended.incoming': '{name} mahu berkawan: terima untuk terus berbual.',
   'find.title': 'Cari melalui ID',
   'find.placeholder': 'Cari ID',
   'find.hint': 'Taip ID untuk mencari seseorang',

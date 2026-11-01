@@ -78,9 +78,9 @@ const zhHans: LooksDict = {
   'layout.resizeHint': '拖动以调整大小。双击只显示聊天。',
   'layout.showRoom': '显示房间',
 
-  'ended.add': '聊天已结束。添加 {name} 为好友即可继续聊。',
-  'ended.waiting': '聊天已结束。正在等待 {name} 接受你的好友申请。',
-  'ended.incoming': '聊天已结束。{name} 想加你为好友：接受即可继续聊。',
+  'ended.add': '添加 {name} 为好友即可继续聊。',
+  'ended.waiting': '正在等待 {name} 接受你的好友申请。',
+  'ended.incoming': '{name} 想加你为好友：接受即可继续聊。',
   'find.title': '通过 ID 查找',
   'find.placeholder': '搜索 ID',
   'find.hint': '输入 ID 查找用户',

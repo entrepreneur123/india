@@ -78,9 +78,9 @@ const ptBR: LooksDict = {
   'layout.resizeHint': 'Arraste para redimensionar. Toque duas vezes para ver só o chat.',
   'layout.showRoom': 'Mostrar a sala',
 
-  'ended.add': 'O chat terminou. Adicione {name} como amigo para continuar conversando.',
-  'ended.waiting': 'O chat terminou. Esperando {name} aceitar sua solicitação de amizade.',
-  'ended.incoming': 'O chat terminou. {name} quer ser seu amigo: aceite para continuar conversando.',
+  'ended.add': 'Adicione {name} como amigo para continuar conversando.',
+  'ended.waiting': 'Esperando {name} aceitar sua solicitação de amizade.',
+  'ended.incoming': '{name} quer ser seu amigo: aceite para continuar conversando.',
   'find.title': 'Buscar por ID',
   'find.placeholder': 'Buscar IDs',
   'find.hint': 'Digite um ID para encontrar alguém',

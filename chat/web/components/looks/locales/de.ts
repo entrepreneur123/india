@@ -78,9 +78,9 @@ const de: LooksDict = {
   'layout.resizeHint': 'Ziehen, um die Größe zu ändern. Doppelt tippen, um nur den Chat zu zeigen.',
   'layout.showRoom': 'Raum zeigen',
 
-  'ended.add': 'Chat beendet. Füge {name} als Freund hinzu, um weiterzuschreiben.',
-  'ended.waiting': 'Chat beendet. Warte darauf, dass {name} deine Freundschaftsanfrage annimmt.',
-  'ended.incoming': 'Chat beendet. {name} möchte mit dir befreundet sein: Nimm an, um weiterzuschreiben.',
+  'ended.add': 'Füge {name} als Freund hinzu, um weiterzuschreiben.',
+  'ended.waiting': 'Warte darauf, dass {name} deine Freundschaftsanfrage annimmt.',
+  'ended.incoming': '{name} möchte mit dir befreundet sein: Nimm an, um weiterzuschreiben.',
   'find.title': 'Nach ID suchen',
   'find.placeholder': 'IDs durchsuchen',
   'find.hint': 'Gib eine ID ein, um jemanden zu finden',

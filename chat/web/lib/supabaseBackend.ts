@@ -82,6 +82,7 @@ import type { HandleCheck } from './handle'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
+import { TYPING_TTL_MS } from './typing'
 import { beatsFast, droppedOut, nextHost, VOICE_BEAT_MS, VOICE_LISTENER_BEAT_MS } from './voice-lost'
 import { saveVolume } from './voice-volumes'
 import { hasThumb, registerThumb, thumbPath, THUMB_PX } from './thumbs'
@@ -367,6 +368,8 @@ type TypingHub = {
   partnerHere: boolean
   /** The partner's presence was seen at least once (only then does a disconnect start the grace period). */
   presenceSeen: boolean
+  /** When I last sent a typing signal (0 once a message went); repeated when the partner's presence arrives. */
+  typedAt: number
 }
 
 export class SupabaseBackend implements Backend {
@@ -774,7 +777,7 @@ export class SupabaseBackend implements Backend {
         partnerAlive()
         emit({ type: 'typing', on: true })
         clearTimeout(typingOff)
-        typingOff = setTimeout(() => emit({ type: 'typing', on: false }), 4_000)
+        typingOff = setTimeout(() => emit({ type: 'typing', on: false }), TYPING_TTL_MS)
       },
       presence: onPresence,
       // 35: they turned VIP off or on; what I may see of them is asked again (the server decides).
@@ -822,14 +825,19 @@ export class SupabaseBackend implements Backend {
       connected: false,
       partnerHere: false,
       presenceSeen: false,
+      typedAt: 0,
     }
     const tell = () => hub.listeners.forEach((l) => l.presence(hub.connected, hub.partnerHere))
     hub.channel
       .on('broadcast', { event: 'typing' }, ({ payload }) => hub.listeners.forEach((l) => l.typing(String(payload?.from ?? ''))))
       .on('broadcast', { event: 'profile' }, () => hub.listeners.forEach((l) => void l.profile()))
       .on('presence', { event: 'sync' }, () => {
+        const arrived = !hub.partnerHere
         hub.partnerHere = Object.keys(hub.channel.presenceState()).some((key) => key !== me)
         if (hub.partnerHere) hub.presenceSeen = true
+        // A broadcast reaches only who is subscribed: a partner joining now missed my last signal, so repeat it. Their
+        // join reaches me up to ~3 s late (Realtime batches presence), hence twice the time a signal lasts.
+        if (arrived && hub.partnerHere && Date.now() - hub.typedAt < 2 * TYPING_TTL_MS) this.sendTyping(matchId)
         tell()
       })
       .subscribe((status) => {
@@ -853,9 +861,10 @@ export class SupabaseBackend implements Backend {
   }
 
   sendTyping(matchId: string) {
-    const ch = this.typing.get(matchId)?.channel
-    if (!ch || !this.userId) return
-    void ch.send({ type: 'broadcast', event: 'typing', payload: { from: this.userId } }).catch(() => undefined)
+    const hub = this.typing.get(matchId)
+    if (!hub || !this.userId) return
+    hub.typedAt = Date.now()
+    void hub.channel.send({ type: 'broadcast', event: 'typing', payload: { from: this.userId } }).catch(() => undefined)
   }
 
   async history(matchId: string): Promise<Message[]> {
@@ -891,6 +900,8 @@ export class SupabaseBackend implements Backend {
   }
 
   async send(matchId: string, text: string | null, media: File | null, clientId: string): Promise<Message> {
+    const hub = this.typing.get(matchId)
+    if (hub) hub.typedAt = 0 // sent: no longer typing (nothing to repeat to someone who joins now)
     const kind = media ? mediaKindOf(media.type) : null
     let path = media ? this.uploaded.get(media) : null
     if (media && !path) this.uploaded.set(media, (path = await this.upload(media, 'chat')))

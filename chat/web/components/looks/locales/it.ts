@@ -78,9 +78,9 @@ const it: LooksDict = {
   'layout.resizeHint': 'Trascina per ridimensionare. Tocca due volte per vedere solo la chat.',
   'layout.showRoom': 'Mostra la stanza',
 
-  'ended.add': 'La chat è finita. Aggiungi {name} agli amici per continuare a parlare.',
-  'ended.waiting': 'La chat è finita. In attesa che {name} accetti la tua richiesta di amicizia.',
-  'ended.incoming': 'La chat è finita. {name} vuole essere tuo amico: accetta per continuare a parlare.',
+  'ended.add': 'Aggiungi {name} agli amici per continuare a parlare.',
+  'ended.waiting': 'In attesa che {name} accetti la tua richiesta di amicizia.',
+  'ended.incoming': '{name} vuole essere tuo amico: accetta per continuare a parlare.',
   'find.title': 'Cerca per ID',
   'find.placeholder': 'Cerca ID',
   'find.hint': 'Digita un ID per trovare qualcuno',

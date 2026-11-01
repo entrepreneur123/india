@@ -78,9 +78,9 @@ const fil: LooksDict = {
   'layout.resizeHint': 'I-drag para baguhin ang laki. I-double tap para chat lang ang makita.',
   'layout.showRoom': 'Ipakita ang room',
 
-  'ended.add': 'Tapos na ang chat. I-add si {name} bilang kaibigan para makapag-usap pa kayo.',
-  'ended.waiting': 'Tapos na ang chat. Hinihintay na tanggapin ni {name} ang friend request mo.',
-  'ended.incoming': 'Tapos na ang chat. Gustong makipagkaibigan ni {name}: tanggapin para makapag-usap pa kayo.',
+  'ended.add': 'I-add si {name} bilang kaibigan para makapag-usap pa kayo.',
+  'ended.waiting': 'Hinihintay na tanggapin ni {name} ang friend request mo.',
+  'ended.incoming': 'Gustong makipagkaibigan ni {name}: tanggapin para makapag-usap pa kayo.',
   'find.title': 'Hanapin gamit ang ID',
   'find.placeholder': 'Maghanap ng ID',
   'find.hint': 'Mag-type ng ID para makahanap ng tao',

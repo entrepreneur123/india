@@ -78,9 +78,9 @@ const sw: LooksDict = {
   'layout.resizeHint': 'Buruta kubadilisha ukubwa. Gusa mara mbili kuona gumzo pekee.',
   'layout.showRoom': 'Onyesha chumba',
 
-  'ended.add': 'Gumzo limeisha. Mwongeze {name} kama rafiki ili mendelee kuzungumza.',
-  'ended.waiting': 'Gumzo limeisha. Tunasubiri {name} akubali ombi lako la urafiki.',
-  'ended.incoming': 'Gumzo limeisha. {name} anataka kuwa rafiki yako: kubali ili mendelee kuzungumza.',
+  'ended.add': 'Mwongeze {name} kama rafiki ili mendelee kuzungumza.',
+  'ended.waiting': 'Tunasubiri {name} akubali ombi lako la urafiki.',
+  'ended.incoming': '{name} anataka kuwa rafiki yako: kubali ili mendelee kuzungumza.',
   'find.title': 'Tafuta kwa kitambulisho',
   'find.placeholder': 'Tafuta vitambulisho',
   'find.hint': 'Andika kitambulisho ili umpate mtu',

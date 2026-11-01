@@ -78,9 +78,9 @@ const ro: LooksDict = {
   'layout.resizeHint': 'Trage pentru a redimensiona. Atinge de două ori pentru a vedea doar chatul.',
   'layout.showRoom': 'Arată camera',
 
-  'ended.add': 'Chatul s-a încheiat. Adaugă-l pe {name} ca prieten ca să vorbiți în continuare.',
-  'ended.waiting': 'Chatul s-a încheiat. Așteptăm ca {name} să-ți accepte cererea de prietenie.',
-  'ended.incoming': 'Chatul s-a încheiat. {name} vrea să fiți prieteni: acceptă ca să vorbiți în continuare.',
+  'ended.add': 'Adaugă-l pe {name} ca prieten ca să vorbiți în continuare.',
+  'ended.waiting': 'Așteptăm ca {name} să-ți accepte cererea de prietenie.',
+  'ended.incoming': '{name} vrea să fiți prieteni: acceptă ca să vorbiți în continuare.',
   'find.title': 'Caută după ID',
   'find.placeholder': 'Caută ID-uri',
   'find.hint': 'Scrie un ID ca să găsești pe cineva',

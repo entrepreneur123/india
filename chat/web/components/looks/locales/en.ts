@@ -97,10 +97,10 @@ const en = {
   'layout.resizeHint': 'Drag to resize. Double-tap to switch to the chat only.',
   'layout.showRoom': 'Show the room',
 
-  // an ended random chat
-  'ended.add': 'Chat ended. Add {name} as a friend to keep talking.',
-  'ended.waiting': 'Chat ended. Waiting for {name} to accept your friend request.',
-  'ended.incoming': 'Chat ended. {name} wants to be friends: accept to keep talking.',
+  // the friends bar of a thread I may not write in (an ended random chat, a friends-only DM)
+  'ended.add': 'Add {name} as a friend to keep talking.',
+  'ended.waiting': 'Waiting for {name} to accept your friend request.',
+  'ended.incoming': '{name} wants to be friends: accept to keep talking.',
   'find.title': 'Find by ID',
   'find.placeholder': 'Search IDs',
   'find.hint': 'Type an ID to find someone',
