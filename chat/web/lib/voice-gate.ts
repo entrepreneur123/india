@@ -1,10 +1,9 @@
 // Type imports only: a P2P call loads this without the LiveKit SDK.
 import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-client'
-import { isAppleWebKit } from './rtc'
+import { desktopChromium } from './rtc'
 
-/** Computers only: on iPhone/iPad and Android a second AudioContext beside the call's can crackle (lib/voice-audio). */
-export const canGate = () =>
-  !isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) && !/Android/i.test(navigator.userAgent) && 'AudioWorkletNode' in window
+/** The app's own mic processing (Krisp, this gate): desktop Chrome and Edge only (lib/rtc desktopChromium). */
+export const canProcessMic = () => desktopChromium(navigator.userAgent, navigator.maxTouchPoints) && 'AudioWorkletNode' in window
 
 let weights: Promise<ArrayBuffer> | undefined
 
