@@ -15,3 +15,7 @@
 {"at": "2026-10-31T08:16+00:00", "event": "resolved", "id": "mh-name:2026-10-30_MH_LIST-OF-AUTHORIZED-LOTTERY-SCHEMES-PERIOD-DT-02-011-2026-TO-08-011-2026"}
 {"at": "2026-10-31T15:24+00:00", "event": "open", "id": "review:2026-10-31_NL1PM", "kind": "review", "severity": "low", "detail": "2026-10-31_NL1PM: gazette OCR did not confirm the 1st prize 38G 03421 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
 {"at": "2026-10-31T18:36+00:00", "event": "resolved", "id": "mh:2026-10-29:Maharashtra Gajlaxmi Guru"}
+{"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Gajlaxmi Shani", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajlaxmi Shani 2026-10-31: still a PDF link (OCR tries 0)"}
+{"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Ganeshlaxmi Samruddhi", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Samruddhi 2026-10-31: still a PDF link (OCR tries 0)"}
+{"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Maharashtralaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Maharashtralaxmi 2026-10-31: still a PDF link (OCR tries 1)"}
+{"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-10-31: still a PDF link (OCR tries 0)"}

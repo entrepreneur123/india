@@ -17,6 +17,30 @@
    "severity": "low",
    "detail": "2026-10-31_NL1PM: gazette OCR did not confirm the 1st prize 38G 03421 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-10-31T15:24+00:00"
+  },
+  "mh:2026-10-31:Maharashtra Gajlaxmi Shani": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Gajlaxmi Shani 2026-10-31: still a PDF link (OCR tries 0)",
+   "first_seen": "2026-11-01T05:11+00:00"
+  },
+  "mh:2026-10-31:Maharashtra Ganeshlaxmi Samruddhi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Ganeshlaxmi Samruddhi 2026-10-31: still a PDF link (OCR tries 0)",
+   "first_seen": "2026-11-01T05:11+00:00"
+  },
+  "mh:2026-10-31:Maharashtra Maharashtralaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Maharashtralaxmi 2026-10-31: still a PDF link (OCR tries 1)",
+   "first_seen": "2026-11-01T05:11+00:00"
+  },
+  "mh:2026-10-31:Maharashtra Sahyadri Prabhalaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-10-31: still a PDF link (OCR tries 0)",
+   "first_seen": "2026-11-01T05:11+00:00"
   }
  },
  "resolved": {
