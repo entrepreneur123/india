@@ -29,6 +29,12 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-10-31: still a PDF link (OCR tries 0)",
    "first_seen": "2026-11-01T05:11+00:00"
+  },
+  "review:2026-11-01_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-01_NL1PM: gazette OCR did not confirm the 1st prize 50J 91505 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-01T16:04+00:00"
   }
  },
  "resolved": {

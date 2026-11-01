@@ -21,3 +21,4 @@
 {"at": "2026-11-01T05:11+00:00", "event": "open", "id": "mh:2026-10-31:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-10-31: still a PDF link (OCR tries 0)"}
 {"at": "2026-11-01T09:18+00:00", "event": "resolved", "id": "mh:2026-10-31:Maharashtra Gajlaxmi Shani"}
 {"at": "2026-11-01T09:18+00:00", "event": "resolved", "id": "mh:2026-10-31:Maharashtra Ganeshlaxmi Samruddhi"}
+{"at": "2026-11-01T16:04+00:00", "event": "open", "id": "review:2026-11-01_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-01_NL1PM: gazette OCR did not confirm the 1st prize 50J 91505 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
