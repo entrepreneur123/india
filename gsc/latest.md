@@ -1,9 +1,9 @@
-# Search Console 2026-10-05 – 2026-11-02 (generated 2026-11-02T04:38+00:00)
+# Search Console 2026-10-05 – 2026-11-02 (generated 2026-11-02T11:27+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| ind | 189 | 2519 | 7.5% | 7.7 |
+| ind | 190 | 2520 | 7.5% | 7.7 |
 | bgd | 2 | 68 | 2.9% | 23 |
 | bra | 0 | 23 | 0.0% | 45.8 |
 | usa | 0 | 9 | 0.0% | 29 |
@@ -25,7 +25,8 @@
 | 2026-10-29 | 49 | 600 | 8.2% | 8.5 |
 | 2026-10-30 | 58 | 809 | 7.2% | 7.9 |
 | 2026-10-31 | 58 | 814 | 7.1% | 7.9 |
-| 2026-11-01 | 2 | 21 | 9.5% | 8.8 |
+| 2026-11-01 | 3 | 22 | 13.6% | 9 |
+| 2026-11-02 | 0 | 0 | 0.0% | 0 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -203,7 +204,7 @@
 | https://lottodost.com/kerala/ | 3 | 37 | 8.1% | 17 |
 | https://lottodost.com/morning-1pm/ | 2 | 36 | 5.6% | 21.4 |
 | https://lottodost.com/result/24-10-2026/ | 0 | 34 | 0.0% | 10.2 |
-| https://lottodost.com/ | 7 | 28 | 25.0% | 13.9 |
+| https://lottodost.com/ | 8 | 29 | 27.6% | 13.9 |
 | https://lottodost.com/maharashtra/sahyadri-dhanlaxmi/ | 2 | 28 | 7.1% | 5.9 |
 | https://lottodost.com/result/28-10-2026/kerala/ | 1 | 27 | 3.7% | 14.4 |
 | https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/ | 3 | 25 | 12.0% | 5.6 |
@@ -228,7 +229,7 @@
 |---|---|---|---|
 | https://lottodost.com/ | PASS | Submitted and indexed | 2026-11-01T17:12:26Z |
 | https://lottodost.com/bn/ | PASS | Submitted and indexed | 2026-10-31T23:43:25Z |
-| https://lottodost.com/hi/ | PASS | Submitted and indexed | 2026-10-31T08:42:26Z |
+| https://lottodost.com/hi/ | PASS | Submitted and indexed | 2026-11-02T08:12:25Z |
 | https://lottodost.com/kerala/ | PASS | Submitted and indexed | 2026-11-01T12:12:25Z |
 | https://lottodost.com/maharashtra/ | PASS | Submitted and indexed | 2026-11-01T04:42:25Z |
 | https://lottodost.com/night-8pm/ | PASS | Submitted and indexed | 2026-11-01T02:12:25Z |

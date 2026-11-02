@@ -1,14 +1,14 @@
 {
- "generated": "2026-11-02T04:38+00:00",
+ "generated": "2026-11-02T11:27+00:00",
  "site": "sc-domain:lottodost.com",
  "start": "2026-10-05",
  "end": "2026-11-02",
  "countries": [
   {
    "country": "ind",
-   "clicks": 189,
-   "impressions": 2519,
-   "ctr": 0.075,
+   "clicks": 190,
+   "impressions": 2520,
+   "ctr": 0.0754,
    "position": 7.7
   },
   {
@@ -316,10 +316,17 @@
   },
   {
    "date": "2026-11-01",
-   "clicks": 2,
-   "impressions": 21,
-   "ctr": 0.0952,
-   "position": 8.8
+   "clicks": 3,
+   "impressions": 22,
+   "ctr": 0.1364,
+   "position": 9
+  },
+  {
+   "date": "2026-11-02",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
   }
  ],
  "queries_india": [
@@ -1489,9 +1496,9 @@
   },
   {
    "page": "https://lottodost.com/",
-   "clicks": 7,
-   "impressions": 28,
-   "ctr": 0.25,
+   "clicks": 8,
+   "impressions": 29,
+   "ctr": 0.2759,
    "position": 13.9
   },
   {
@@ -6039,7 +6046,7 @@
    "url": "https://lottodost.com/hi/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-10-31T08:42:26Z",
+   "lastCrawl": "2026-11-02T08:12:25Z",
    "canonical": "https://lottodost.com/hi/"
   },
   {
