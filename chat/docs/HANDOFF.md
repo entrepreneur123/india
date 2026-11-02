@@ -1,5 +1,14 @@
 # Yaari 인수인계 (2026-10-30) — 새 세션은 이 파일부터 읽고 시작
 
+## ★ 지금 상태 (2026-11-02 저녁, 컨텍스트 초기화 직전) — 새 세션은 이 블록만 읽고 바로 시작
+- **브랜치** `claude/upbeat-cannon-3ddo4f`, HEAD `eb98712e5`. 작업 트리 깨끗함. PR entrepreneur123/india#2 열려 있음(CI 녹색).
+- **배포**: Vercel production = 커밋 e9f98b4bb(실사이트 https://yaari-web-indol.vercel.app). 이후 커밋 eb98712e5는 문서뿐이라 배포 불필요.
+- **음성(에코) 건 — 끝남**: 운영 기본값(Krisp BVC, lib/livekit.ts cleanMicrophone) 유지. 사장님 실기기 A/B로 확정(Krisp 끄면 에코, 켜면 깔끔). 자체 억제기(에코 가드 cfe7d3d79)는 되돌림, **재시도 금지**. 진단 페이지 `/audio-check`(components/audio-check.tsx, 링크 없음) + 브라우저별 원본 마이크 스위치(lib/rtc micRaw, localStorage `yaari_mic`)는 남겨 둠. 상세는 아래 "2026-11-02" 항목들.
+- **재배포 방법**: `mcp__Vercel__create_deployment` teamId `team_HKMkmzQNFo2UjOkkJWqlvD5Z`, requestBody `{deploymentId:"dpl_5wLx2cWGuxCGGVxPJuUkb5DywsRW", withLatestCommit:true, target:"production", name:"yaari-web"}` → READY 확인 후 실사이트 curl.
+- **검증 루틴**: `cd chat/web && npx tsc --noEmit -p . && npm test`(109개). 두 계정 E2E 스크립트(/tmp/yaari-pw/*.mjs, 테스트 계정 919000000001·919000000002, OTP 123456)는 **새 컨테이너에는 없음** — 필요하면 HANDOFF 2절 레시피대로 다시 만든다.
+- **사장님만 할 수 있는 미결(변동 없음)**: 테스트 번호 고정 OTP, 고충처리 담당자(YAA-7), OAuth 앱 등록, Twilio/SMS, 유료 요금제·도메인, DROP SQL 목록(YAA-8, party_* 함수), 익명계정·banned_identities 정리, UptimeRobot, 'Guest Gia' 프로필, 브랜드 주황 대비. 보고만 된 것: 확성기 욕설 우회.
+- **다음 지시가 오면**: chat/CLAUDE.md 헌법 → 작업 → tsc·테스트 → 커밋·푸시 → 배포 → 한국어 짧은 보고.
+
 ## 0. 먼저 읽을 것 (우선순위 순)
 1. `/home/user/india/CLAUDE.md` — 사장님 작업 규칙 (보고는 한국어, 짧게, 할루시네이션 금지, 묻지 말고 끝까지 진행·검증·배포)
 2. `/home/user/india/chat/CLAUDE.md` — **헌법** (모든 규칙보다 우선). 요점:
