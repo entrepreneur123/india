@@ -21,26 +21,45 @@ const concat = (parts: Float32Array[]) => {
   return out
 }
 
-/** [seconds] of [track] as PCM. A ScriptProcessor, which every phone browser still runs; its output stays silent. */
-function record(ctx: AudioContext, track: MediaStreamTrack, seconds: number) {
-  return new Promise<Float32Array>((resolve) => {
+/**
+ * Up to [seconds] of [track] as PCM, and when its first sound came (−1: none; a phone can hand over digital silence
+ * for seconds after the microphone opens). [untilSound]: stop at that first sound. A ScriptProcessor, which every
+ * phone browser still runs; its output stays silent.
+ */
+function record(ctx: AudioContext, track: MediaStreamTrack, seconds: number, untilSound = false) {
+  return new Promise<{ pcm: Float32Array; first: number }>((resolve) => {
     const src = ctx.createMediaStreamSource(new MediaStream([track]))
     const node = ctx.createScriptProcessor(4096, 1, 1)
     const parts: Float32Array[] = []
     let n = 0
+    let first = -1
     const want = seconds * ctx.sampleRate
+    const done = () => {
+      src.disconnect()
+      node.disconnect()
+      resolve({ pcm: concat(parts), first })
+    }
     node.onaudioprocess = (e) => {
       if (n >= want) return
       const d = e.inputBuffer.getChannelData(0).slice()
       parts.push(d)
-      if ((n += d.length) >= want) {
-        src.disconnect()
-        node.disconnect()
-        resolve(concat(parts))
+      if (first < 0) {
+        const i = d.findIndex((v) => Math.abs(v) > 1e-4)
+        if (i >= 0) first = (n + i) / ctx.sampleRate
       }
+      n += d.length
+      if (n >= want || (untilSound && first >= 0)) done()
     }
     src.connect(node).connect(ctx.destination)
   })
+}
+
+const started = (first: number) => (first < 0 ? '15초 넘게 무음' : `${first.toFixed(1)}초 뒤`)
+/** Waits for the microphone to hand over sound (max 15 s) and says how long that took. */
+async function warm(ctx: AudioContext, t: MediaStreamTrack, log: (l: string) => void, what: string) {
+  const { first } = await record(ctx, t, 15, true)
+  log(`${what}: 마이크 소리 시작 ${started(first)}`)
+  return first >= 0
 }
 
 /** Mean level of the loudest and the quietest 30 % of 100 ms frames. Echo left in the mic = loud − quiet. */
@@ -133,33 +152,51 @@ export function AudioCheck() {
     t.stop()
   })
 
+  /** Plays the test sound the way rooms play voices and says how much of it the microphone [t] still carries. */
+  const measure = async (name: string, t: MediaStreamTrack) => {
+    const far = farEnd(ctx())
+    const { stream, close } = await loop(far.track)
+    const el = audioRef.current!
+    el.srcObject = stream
+    await el.play()
+    far.start()
+    const { pcm, first } = await record(ctx(), t, SECONDS + 1)
+    close()
+    el.srcObject = null
+    const { loud, quiet } = levels(pcm, ctx().sampleRate)
+    log(`${name}: 소리 날 때 ${loud} dB, 조용할 때 ${quiet} dB → 마이크에 남은 소리 ${loud - quiet} dB${first < 0 ? ' (무음: 측정 무효)' : ''} (${settings(t)})`)
+  }
+
   const echo = run(async () => {
-    log(`에코 검사: 스피커로 ${SECONDS}초간 "쉬-쉬-" 소리가 납니다. 조용히 계세요.`)
+    log(`에코 검사: 스피커로 ${SECONDS}초간 "쉬-쉬-" 소리가 두 번 납니다. 조용히 계세요.`)
     for (const [name, c] of [['에코제거 켬', ON], ['에코제거 끔', OFF]] as const) {
       const t = await mic(c)
-      const far = farEnd(ctx())
-      const { stream, close } = await loop(far.track)
-      const el = audioRef.current!
-      el.srcObject = stream
-      await el.play()
-      far.start()
-      const pcm = await record(ctx(), t, SECONDS + 1)
+      if (await warm(ctx(), t, log, name)) await measure(name, t)
       t.stop()
-      close()
-      el.srcObject = null
-      const { loud, quiet } = levels(pcm, ctx().sampleRate)
-      log(`${name}: 소리 날 때 ${loud} dB, 조용할 때 ${quiet} dB → 마이크에 남은 소리 ${loud - quiet} dB (${settings(t)})`)
     }
     log('읽는 법: "켬"의 남은 소리가 "끔"보다 20 dB 이상 작으면 이 브라우저의 에코 제거가 일하는 것. 켬·끔 차이가 10 dB도 안 되면 이 브라우저 자체가 스피커 에코를 못 지우는 것.')
+  })
+
+  // The rooms' order: the microphone opens with everything on, then Krisp re-applies its settings with noise
+  // suppression off (node_modules/@livekit/krisp-noise-filter: applyConstraints({...getSettings(), noiseSuppression:
+  // false, voiceIsolation: false, sampleRate})). Does the echo cancellation survive that on this phone?
+  const krispOrder = run(async () => {
+    log('방 순서 검사: 마이크 열기 → Krisp식 설정 변경 → 에코 측정. 조용히 계세요.')
+    const t = await mic(ON)
+    if (!(await warm(ctx(), t, log, '열기'))) return t.stop()
+    await t.applyConstraints({ ...t.getSettings(), noiseSuppression: false, voiceIsolation: false, sampleRate: ctx().sampleRate } as MediaTrackConstraints)
+    if (await warm(ctx(), t, log, 'Krisp식 설정 변경 뒤')) await measure('설정 변경 뒤', t)
+    t.stop()
   })
 
   const rec = run(async () => {
     log('5초 동안 말해 보세요…')
     const t = await mic(ON)
-    voice.current = await record(ctx(), t, 5)
+    const { pcm, first } = await record(ctx(), t, 5)
     t.stop()
-    const { loud, quiet } = levels(voice.current, ctx().sampleRate)
-    log(`녹음 끝: 말할 때 ${loud} dB, 조용할 때 ${quiet} dB. "들어보기"로 이 기기의 마이크 소리(우리 처리 없음)를 확인하세요.`)
+    voice.current = pcm
+    const { loud, quiet } = levels(pcm, ctx().sampleRate)
+    log(`녹음 끝: 마이크 소리 시작 ${started(first)}, 말할 때 ${loud} dB, 조용할 때 ${quiet} dB. "들어보기"로 이 기기의 마이크 소리(우리 처리 없음)를 확인하세요.`)
   })
 
   const play = run(async () => {
@@ -186,7 +223,8 @@ export function AudioCheck() {
       <p className="text-sm text-muted-foreground">기기 하나씩, 이어폰 없이, 평소 통화하는 음량으로. 결과는 아래에 쌓이고 "복사"로 보낼 수 있습니다.</p>
       <div className="flex flex-wrap gap-2">
         <button type="button" className={btn} disabled={busy} onClick={info}>1. 기기·마이크 정보</button>
-        <button type="button" className={btn} disabled={busy} onClick={echo}>2. 에코 제거 검사 (14초)</button>
+        <button type="button" className={btn} disabled={busy} onClick={echo}>2. 에코 제거 검사</button>
+        <button type="button" className={btn} disabled={busy} onClick={krispOrder}>4. 방 순서(Krisp 설정) 검사</button>
         <button type="button" className={btn} disabled={busy} onClick={rec}>3. 내 목소리 녹음 (5초)</button>
         <button type="button" className={btn} disabled={busy} onClick={play}>들어보기</button>
       </div>
