@@ -21,7 +21,6 @@ import { cleanMicrophone, FINAL } from './livekit'
 import { connectOptions, isAppleWebKit, preferRelay, RELAY_AFTER } from './rtc'
 import { rms, silenceDetector, talkDetector } from './mic-hints'
 import { savedVolumes } from './voice-volumes'
-import { echoRefs } from './echo-guard'
 
 export type AudioStatus = 'connecting' | 'connected' | 'reconnecting' | 'failed'
 
@@ -74,7 +73,6 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   // second audio stream beside the call's. There the rings use LiveKit's own speaker levels only.
   const analysers = !isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) && !/Android/i.test(navigator.userAgent)
   cleanMicrophone(room)
-  echoRefs.setAudible(sound)
   let leaving = false
   let rebuilt = 0
   // Hidden <audio> elements, one per remote track; and an analyser per track for the speaking rings.
@@ -149,8 +147,6 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
     meters.delete(sid)
   }
   const teardown = () => {
-    room.remoteParticipants.forEach((p) => p.audioTrackPublications.forEach((pub) => pub.track && echoRefs.remove(pub.track.mediaStreamTrack)))
-    echoRefs.setAudible(true) // a call after this room plays its partner aloud
     clearInterval(timer)
     clearInterval(silence)
     stopProbe()
@@ -176,12 +172,10 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       // Once per track: a second <audio> for the same voice (the catch-up below can see it too) doubles it.
       if (track.kind !== Track.Kind.Audio || track.attachedElements.length) return
       play(track.attach())
-      echoRefs.add(track.mediaStreamTrack)
       meter(pub.trackSid, p.identity, track as RemoteAudioTrack)
     })
     .on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub) => {
       track.detach().forEach((el) => el.remove())
-      echoRefs.remove(track.mediaStreamTrack)
       unmeter(pub.trackSid)
     })
     .on(RoomEvent.LocalTrackPublished, (pub) => {
@@ -281,7 +275,6 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
     },
     setSound: (on) => {
       sound = on
-      echoRefs.setAudible(on)
       box.querySelectorAll('audio').forEach((el) => (el.muted = !on))
       room.remoteParticipants.forEach((p) => p.audioTrackPublications.forEach((pub) => want(pub, p)))
     },

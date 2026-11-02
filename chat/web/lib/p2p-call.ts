@@ -12,7 +12,6 @@ import type { CallMsg, CallSignal } from './backend'
 import type { Call, CallEvents } from './livekit'
 import { deviceProblem, type DeviceProblem, pathQuality, preferRed, withOpusParams } from './rtc'
 import { canGate, voiceOnly } from './voice-gate'
-import { echoRefs, guardEcho } from './echo-guard'
 
 const ICE: RTCIceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }]
 /** No direct path by then: the server carries the call. */
@@ -93,20 +92,17 @@ export async function joinP2P(
   els.remote.muted = true // its sound plays through the <audio>
   els.remote.srcObject = remoteVideo
   els.audio.srcObject = remoteAudio
-  pc.ontrack = ({ track }) => {
-    ;(track.kind === 'video' ? remoteVideo : remoteAudio).addTrack(track)
-    if (track.kind === 'audio') echoRefs.add(track) // the echo guard takes the partner's voice back out of my mic
-  }
+  pc.ontrack = ({ track }) => (track.kind === 'video' ? remoteVideo : remoteAudio).addTrack(track)
   const play = () =>
     els.audio.play().then(() => ev.blocked(false), (e: Error) => e.name === 'NotAllowedError' && ev.blocked(true))
 
   // One audio and one video slot from the start, so a camera turned on later needs no new offer.
   const senders: Record<'audio' | 'video', RTCRtpSender | null> = { audio: null, video: null }
-  // The microphone goes through the voice gate on computers (lib/voice-gate, as the rooms do where Krisp can't run),
-  // then the echo guard everywhere (lib/echo-guard): the raw microphone goes out until they are ready, then theirs.
+  // Computers send the microphone through the voice gate (lib/voice-gate, as the rooms do where Krisp can't run):
+  // the raw microphone goes out until the gate is ready, then the gated one replaces it.
   let closed = false
-  const ctx = new AudioContext()
-  let gated: { track: MediaStreamTrack; stop(): void } | null = null
+  const ctx = canGate() ? new AudioContext() : null
+  let gated: Awaited<ReturnType<typeof voiceOnly>> | null = null
   let micTurn = 0
   const sendMic = async () => {
     const turn = ++micTurn
@@ -115,14 +111,8 @@ export async function joinP2P(
     const t = tracks.audio
     await senders.audio?.replaceTrack(t)
     // Not awaited: the context may wait for a tap before it runs (autoplay rules), and the call mustn't wait with it.
-    if (t)
-      void ctx.resume().then(async () => {
-        const v = canGate() ? await voiceOnly(t, ctx).catch(() => null) : null
-        const e = await guardEcho(v?.track ?? t, ctx).catch(() => null) // failing, the rest still goes out
-        const track = e?.track ?? v?.track
-        return track && { track, stop: () => (e?.stop(), v?.stop()) }
-      }).then(async (g) => {
-        if (!g) return
+    if (t && ctx)
+      void ctx.resume().then(() => voiceOnly(t, ctx)).then(async (g) => {
         if (turn !== micTurn || closed) return g.stop()
         gated = g
         await senders.audio?.replaceTrack(g.track)
@@ -157,8 +147,7 @@ export async function joinP2P(
     sig.close()
     pc.close()
     gated?.stop()
-    remoteAudio.getAudioTracks().forEach((t) => echoRefs.remove(t))
-    void ctx.close()
+    void ctx?.close()
     tracks.audio?.stop()
     tracks.video?.stop()
     els.remote.srcObject = null

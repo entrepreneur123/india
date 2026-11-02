@@ -21,7 +21,6 @@ import {
   VideoPresets,
 } from 'livekit-client'
 import { canGate, gate } from './voice-gate'
-import { echoRefs, withEchoGuard } from './echo-guard'
 import { connectOptions, type DeviceProblem, deviceProblem, partnerNotice, preferRelay, type Quality, RELAY_AFTER, videoCodecFor } from './rtc'
 
 /** 'lost': LiveKit gave up for a reason a fresh join can fix (the call screen joins again); 'failed': it can't. */
@@ -108,7 +107,7 @@ export async function joinCall(
 
   const attach = (track: RemoteTrack) => {
     if (track.kind === Track.Kind.Video) track.attach(els.remote)
-    else if (track.kind === Track.Kind.Audio) (track.attach(els.audio), echoRefs.add(track.mediaStreamTrack))
+    else if (track.kind === Track.Kind.Audio) track.attach(els.audio)
   }
   room
     .on(RoomEvent.TrackSubscribed, (track, pub) => {
@@ -117,7 +116,6 @@ export async function joinCall(
     })
     .on(RoomEvent.TrackUnsubscribed, (track) => {
       track.detach()
-      echoRefs.remove(track.mediaStreamTrack)
       if (track.kind === Track.Kind.Video) ev.partnerCamera(false)
     })
     .on(RoomEvent.TrackMuted, (pub, p) => {
@@ -240,13 +238,12 @@ export function cleanMicrophone(room: Room) {
   room.on(RoomEvent.LocalTrackPublished, async (pub: LocalTrackPublication) => {
     if (pub.source !== Track.Source.Microphone || !pub.track) return
     const track = pub.track as LocalAudioTrack
-    // Then the echo guard on whatever it gives (lib/echo-guard): the voices I play, taken back out of my mic.
     try {
       const { KrispNoiseFilter, isKrispNoiseFilterSupported } = await import('@livekit/krisp-noise-filter')
-      if (isKrispNoiseFilterSupported()) return await track.setProcessor(withEchoGuard(KrispNoiseFilter({ useBVC: true })))
+      if (isKrispNoiseFilterSupported()) return await track.setProcessor(KrispNoiseFilter({ useBVC: true }))
     } catch {
       /* not loaded or refused: the gate below */
     }
-    await track.setProcessor(withEchoGuard(canGate() ? gate() : null)).catch(() => undefined)
+    if (canGate()) await track.setProcessor(gate()).catch(() => undefined)
   })
 }
