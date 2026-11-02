@@ -98,3 +98,15 @@
 | 결제 | **불가** | 앱 디지털 상품은 Google Play 결제 의무, 웹은 허가 받은 PG(인도: RBI 허가) |
 
 자체 호스팅으로도 안 사라지는 병목: 3초 보이스룸 하트비트 등 DB 폴링(위 "먼저 터지는 순서" 3–6). 서버를 바꾸기 전에 코드 개선이 먼저.
+
+### 2026-11-02 보충 (위 표를 고침)
+- 이 절의 판단은 `BUILD_VS_BUY.md`로 자세히 옮겼다.
+- **Krisp 고침**: 위에서 "대체 잡음제거가 먼저 필요"라고 썼다. 확인해 보니 다음과 같다.
+  - LiveKit 통합판(`@livekit/krisp-noise-filter`)은 LiveKit Cloud 약관 아래에서만 쓸 수 있다.
+    - 패키지 라이선스 "LiveKit Cloud Terms of Service"
+    - 공식 비교표에서 자체 호스팅은 "Client-side WebRTC cancellation"
+  - **Krisp 자체 SDK를 Krisp사와 직접 계약하면** 자체 서버에서도 쓸 수 있다. Jitsi Meet이 자체 호스팅에서 Krisp JS SDK를 공식 옵션으로 지원한다. 가격은 비공개다.
+  - 선택지는 셋이다: ① 방만 LiveKit Cloud에 남기기 ② Krisp SDK 직접 라이선스 ③ 오픈소스 조합. 실기기 A/B로 고른다(MIGRATION_ROADMAP 2-4).
+- 공식 가격 재확인(2026-11-02)
+  - LiveKit 요금은 위와 같다: Ship $50·15만 분·$0.0005/분·$0.12/GB, Scale $500·150만 분·$0.0004/분·$0.10/GB.
+  - Supabase Realtime 메시지가 받는 사람마다 과금된다는 점은 이번에 새로 반영했다(COST_MODEL §3-1).

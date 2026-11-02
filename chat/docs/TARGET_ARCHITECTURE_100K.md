@@ -354,3 +354,38 @@ interface PaymentRail { verify(receipt|orderId): Purchase; refundEvents(): Strea
 | 패킷 손실 5%에서 PESQ | 3.0 이상 |
 
 10만 CCU 주장은 25k 단계 결과로 노드 수를 선형 외삽한 뒤, 그 외삽을 50k에서 한 번 더 확인해야 한다.
+
+## 8. 대기업 벤치마킹 (공개 자료만)
+
+표기
+- [확인]: 회사 공식 블로그·소스·문서
+- [2차]: 언론
+- [미공개]: 공개 자료 없음. 추측하지 않음
+
+| 회사 | 미디어 전송 | 모르는 사람 IP | 서버·확장 | 신뢰·안전 | 출처 |
+|---|---|---|---|---|---|
+| **Azar/Hyperconnect** | 1:1은 P2P 연결 그림을 공개 [확인]. TURN 사용·IP 보호 여부 [미공개]. 라이브·그룹은 자체 SFU, Origin–Edge 분리(호스트=Origin, 시청자=Edge): 연결 25% 빠름, RTT 약 30%↓, 손실 최대 80%↓, 그룹 50명 [확인] | [미공개] | AWS + Cloudflare. 매칭 이벤트는 Kafka·Flink·Redis. ScyllaDB(EKS) [확인] | 매칭 모델에 "신고 확률" 출력, p90 236→48 ms [확인]. 기기 안 모더레이션으로 전송 전 차단(0.004–0.006초, 보도자료는 Slide·Hakuna 명시) [확인] | hyperconnect.github.io 2022-12-30, 2024-09-25, 2024-11-19, 2025-06-11 |
+| **OmeTV** | 개인정보처리방침: 직접 연결될 수 있고 **IP가 상대 기기에 제공됨** [확인] | 노출 | [미공개] | [미공개] | ome.tv/privacy |
+| **Discord** | 모든 통화가 자체 SFU(C++), **P2P 없음**. 이유 중 하나가 IP 보호·DDoS [확인] | 비노출 | 2018: 음성서버 850+대, 13리전, 동시 음성 260만+, 송출 220 Gbps. 서버가 etcd에 부하 등록 → 리전 안 최소 부하 서버 배정, DDoS 받는 서버는 회전에서 제외 [확인]. 시그널링·presence는 Elixir(500만 동시) [확인] | 2024 DAVE 종단암호화 [확인] | discord.com/blog (음성 2.5M, Elixir 5M, 메시지 저장) |
+| **Jitsi** | 2명이면 P2P, 3명째부터 브리지 [확인] | 2명 땐 노출 | 시그널링 샤드 + 리전별 자동확장 브리지 풀, 브리지 간 직접 연결, 대륙 간 RTT 29%↓ [확인] | — | jitsi.org/blog/bridge-cascading-is-back |
+| **Signal** | 연락처끼리만 P2P, **모르는 사람은 중계**, "항상 중계" 설정 [확인] | 비노출 | 그룹통화 SFU는 Rust. 상태 없는 프런트엔드가 방→서버 매핑(DynamoDB), 유휴 CPU 많은 서버로 가중 랜덤 배정 [확인, 소스] | 프레임 종단암호화 | signal.org/blog, github.com/signalapp/Signal-Calling-Service |
+| **LiveKit** | SFU + 내장 TURN(443) [확인] | 비노출 | 자체 호스팅: Redis 공유, 방 = 1노드, 종료 시 drain. Cloud: 세션을 여러 서버에 나누고 서버끼리 자체 프로토콜로 중계, 1초 안 서버 이동 [확인] | — | docs.livekit.io, livekit.com/blog/scaling-webrtc-with-distributed-mesh |
+
+**우리가 실제로 적용할 것** (1–2명 팀이 할 수 있는 것만)
+
+| 적용할 것 | 근거 | 우리 상태 |
+|---|---|---|
+| 모르는 사람 = 서버 중계, 친구 = P2P | Signal·Discord | 구현됨(070·P2P_PLAN) |
+| 2명 P2P / 3명 이상 SFU, 실패 시 서버로 고정 | Jitsi | 구현됨 |
+| 서버가 부하를 보고하고 최소 부하·유휴 CPU 서버 배정 | Discord·Signal·LiveKit | 2단계 토큰 서버 |
+| 공격받거나 죽은 서버를 회전에서 빼기, 종료 시 drain | Discord·LiveKit | 2단계 |
+| 별도 TURN 대신 SFU 내장 TURN 443 | LiveKit | 2단계 |
+| 방→서버 매핑을 작은 표(Valkey)에 | Signal·LiveKit | 2·4단계 |
+| 기기 안 모더레이션(전송 전 차단) | Hyperconnect | 노출 감지 일부 구현(LAUNCH_CHECKLIST) |
+| 정책별 임계값을 설정으로 | Hyperconnect WSDM 2023 | 위험 점수(5-5) |
+| 매칭에 신고 확률 반영 | Azar | 4단계 이후 |
+
+**적용하지 않을 것**
+- Kafka·Flink·ScyllaDB(Hyperconnect·Discord): 우리 규모에서 Postgres로 충분하다.
+- 자체 C++/Rust SFU: 하지 않는다.
+- Cloud식 리전 간 메시 중계: LiveKit OSS에 없다. 방장 리전 고정으로 대신한다.

@@ -157,3 +157,62 @@ LiveKit 초과 요금은 분당 $0.0004–0.0005입니다.
 4. **알림 수 30초 조회** → Broadcast로 바꿉니다.
 5. **방 목록·친구 상태·채팅 따라잡기** → Broadcast로 바꾸고, 따라잡기 주기는 60초로 늘립니다. 방 목록 1,000개 상한은 페이지 나누기로 바꿉니다.
 6. **메시지 전달(Postgres Changes, 단일 스레드)** → 보이스룸처럼 트리거에서 `realtime.send`로 보냅니다.
+
+---
+
+# 2026-11-02 재점검 — 위 기록의 바로잡기 (위 내용은 기록으로 남김)
+
+표시: [실행] 실서버·실행 확인 · [코드] 코드 확인 · [문서] 공식 문서. 새 계산은 `capacity_model.py`, 비용은 `COST_MODEL_100K.md`.
+
+## 1. 맞지 않게 된 가정
+
+**10-23 "랜덤채팅 2만 명(그중 영상 1만 명)"**
+- 070(10-27 사장님 결정) 뒤로 **모르는 사람끼리는 통화할 수 없다**.
+- `call_open`은 `kind='dm'`, 익명 아님, 친구, 차단 아님일 때만 참이다 [코드] `070_anon_chat_friend_calls.sql:111`.
+- 랜덤 채팅은 글만 된다. 음성은 친구 1:1(P2P 우선)과 보이스룸뿐이다.
+
+**10-26 "1:1 채팅 따라잡기 10초"**
+- 정상일 때는 60초다.
+- 10초 타이머가 6번째마다만 재동기화한다(`supabaseBackend.ts:797`). 비정상일 때만 10초다 [코드].
+
+## 2. 함수별 실제 비용 [실행]
+
+`pg_stat_statements`, 10-21 이후 누적, Micro 공유 CPU라 편차가 크다.
+
+| 함수 | 호출 | 평균 |
+|---|---|---|
+| Realtime 복제 폴링(WAL 읽기) | 288,523 | 6 ms (DB 총시간 1위) |
+| `my_badges` | 4,190 | 51 ms |
+| `voice_heartbeat3` | 18,380 | 9.5 ms |
+| `find_match4` | 693 | **224 ms** |
+| `friend_list` | 2,654 | 53 ms |
+| `online_count` | 1,604 | 39 ms |
+| `friend_activity2` | 1,562 | 35 ms |
+
+- 위 "회당 4–6 ms" 가정은 heartbeat에만 맞다.
+- 매칭·배지·친구 목록은 이 서버에서 10배 이상 무겁다. → `find_match4` 원인 확정이 MIGRATION_ROADMAP 0-5.
+
+## 3. 그 밖에 확인한 것
+
+- **웹은 Postgres Changes를 쓰지 않는다**(Broadcast만) [코드].
+- **Android는 아직 5곳에서 쓴다**(`SupabaseBackend.kt:459,535,539,1174,1737`) [코드].
+  - 공식 벤치마크상 RLS를 켠 Postgres Changes는 500 클라이언트에서 초당 3,000–4,000건이 한계다 [문서].
+  - → Android 이식 때 Broadcast로 옮긴다.
+- **Supabase Realtime 메시지는 받는 사람마다 1건으로 과금된다** [문서].
+  - "one message sent plus one message per subscribed client that receives it", 500만 건 초과 시 100만 건당 $2.50.
+  - 채팅이 많으면 Supabase 비용의 대부분이 된다. 모델 가정에서 10만 CCU면 월 약 $46k.
+- **자체 호스팅 Supabase Realtime**(Apache-2.0)은 요금제 상한이 없다. `max_concurrent_users`를 우리가 정한다 [문서].
+  - 공식 벤치마크(2–6노드): WebSocket Broadcast 3.2만 명·22.4만 msg/s, DB 발 Broadcast 8만 명·1만 msg/s, 팬아웃 25만 명.
+
+## 4. 새 부하 추정 [추정]
+
+`capacity_model.py`, 음성 10%, 가정 A1–A17은 COST_MODEL §2.
+
+| CCU | DB 호출/초 (지금 코드) | 목표 구조 |
+|---|---|---|
+| 1만 | 약 1,900 | 약 420 |
+| 10만 | 약 18,700 | 약 4,200 |
+
+- 10-26의 "초당 3만–4만"보다 낮다. 이유는 채팅 재동기화 60초와 사용자 구성 가정이다.
+- 결론은 같다: **지금 코드 그대로면 10만에서 DB가 단일 서버 최대를 넘는다**(필요 약 124 vCPU, 회당 4 ms 기준). 폴링→푸시 개선 뒤엔 약 28 vCPU다.
+- 10만 CCU 실부하 시험은 여전히 하지 않았다. 검증 계획은 TARGET_ARCHITECTURE §7.
