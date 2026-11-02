@@ -1,0 +1,22 @@
+[
+{
+"href": "https://upsssc.gov.in/Default.aspx",
+"text": "उत्तर प्रदेश अधीनस्थ सेवा चयन आयोग Uttar Pradesh Subordinate Services Selection Commission"
+},
+{
+"href": "https://play.google.com/store/apps/details?id=com.upsssc2025.kotlintesting1",
+"text": ""
+},
+{
+"href": "https://upsssc.gov.in/upssscadmitcard/AdmitCard.aspx?ID=P",
+"text": "Download Admit Card for Preliminary Eligibility Test (PET)-2026"
+},
+{
+"href": "https://upsssc.gov.in/default.aspx",
+"text": "Go to Home"
+},
+{
+"href": "https://upsssc.gov.in/${i.url}",
+"text": "${i.text}"
+}
+]

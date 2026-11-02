@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>TNPSC</title>
+    <link rel="shortcut icon" href="images/TNPSC.ico">
+    <style>
+        /* Exact Bootstrap Typography & Font Family */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            background-color: #F2F6FC;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #1e2532;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 0px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-height: 80px;
+            margin-right: 15px;
+        }
+
+        .header-text {
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .header-line1 {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 2px 0;
+        }
+
+        .header-line2 {
+            font-size: 22px;
+            margin: 2px 0;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .top-header {
+            text-align: center;
+            padding: 12px 0;
+        }
+
+            .top-header a {
+                color: #673AB7;
+                font-weight: 600;
+                text-decoration: none;
+                font-size: 15px;
+            }
+
+        /* Container matching Bootstrap width */
+        .container {
+            width: 100%;
+            max-width: 1140px;
+            margin-right: auto;
+            margin-left: auto;
+            padding-right: 15px;
+            padding-left: 15px;
+            box-sizing: border-box;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        /* Announcements Header */
+        h5 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* List */
+        .list-item {
+            background-color: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            border: 1px solid #c8cccf;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            align-items: center;
+            gap: 15px;
+            border-radius: 12px;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .list-item:hover {
+                box-shadow: 0px 4px 20px rgba(1, 41, 112, 0.12);
+                border: 1px solid #012970;
+                background-color: #F6F9FF;
+                color: #222;
+            }
+
+        .item-content {
+            flex: 1;
+        }
+
+            .item-content h6 {
+                font-size: 0.95rem;
+                font-weight: 500;
+                line-height: 1.45;
+                margin-top: 0;
+                margin-bottom: 0.5rem;
+                color: inherit;
+            }
+
+        .item-details {
+            text-align: right;
+            min-width: 220px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* Standalone Button Styling */
+        .btn {
+            display: inline-block;
+            font-weight: 600;
+            line-height: 1.35;
+            color: #212529;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.9rem;
+            border-radius: 0.35rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+
+        .btn-danger {
+            color: #fff !important;
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+        }
+
+            .btn-danger:hover {
+                color: #fff !important;
+                background-color: #bb2d3b !important;
+                border-color: #b02a37 !important;
+            }
+
+        @media (max-width: 768px) {
+            .list-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .item-details {
+                text-align: left;
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+
+            .header-line1 {
+                font-size: 14px;
+            }
+
+            .header-line2 {
+                font-size: 16px;
+            }
+
+            .logo img {
+                max-height: 60px;
+                margin-right: 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-line1 {
+                font-size: 11px;
+            }
+
+            .header-line2 {
+                font-size: 13px;
+            }
+
+            .logo img {
+                max-height: 40px;
+                margin-right: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="/web/theme/assets/img/tnpsc_logo.jpg" onerror="this.onerror=null; this.src='images/tnpsc_logo.jpg';" alt="Logo" />
+            </div>
+            <div class="header-text">
+                <div class="header-line1">தமிழ்நாடு அரசுப் பணியாளர் தேர்வாணையம்</div>
+                <div class="header-line2">TAMIL NADU PUBLIC SERVICE COMMISSION</div>
+            </div>
+        </div>
+    </header>
+
+    <header class="top-header">
+        <a href="https://tnpsc.gov.in/home.aspx"
+           target="_blank"
+           rel="noopener noreferrer">
+            முதன்மை பக்கம் செல்க / Go to Home Page
+        </a>
+    </header>
+
+    <div class="container mt-2" style="margin-bottom:60px;">
+
+        <h5>அறிவிப்புகள் / Announcements</h5>
+
+
+        <div class="list-item">
+        <div class="item-content">
+            <h6>ஒருங்கிணைந்த குடிமைப் பணிகள் தேர்வு - II (தொகுதி II மற்றும் IIA பணிகள்) அறிவிக்கை எண்.07/2026) முதல்நிலைத் தேர்வுக்கான நுழைவுச் சீட்டு </h6>
+            <h6>COMBINED CIVIL SERVICES EXAMINATION - II (GROUP II AND IIA SERVICES)  (Notification No.07/2026) Hall Ticket for Preliminary Examination </h6>
+        </div>
+        <div class="item-details">
+            
+            <a href="https://apply.tnpscexams.in/otr?app_id=UElZMDAwMDAwMQ==" target="_blank" class="btn btn-danger">நுழைவுச்சீட்டு /<br />Hall Ticket</a>
+        </div>
+    </div>
+
+        <div class="list-item">
+            <div class="item-content">
+                <h6>
+                    ஒருங்கிணைந்த குடிமைப் பணிகள் தேர்வு IV (தொகுதி IV பணிகள்)(அறிவிக்கை எண் 11/2026)
+                </h6>
+                <h6>
+                    Combined Civil Services Examination-IV (Group IV Services) (Notification No. 11/2026)
+                </h6>
+            </div>
+            <div class="item-details">
+                <a href="https://tnpsc.gov.in/document/tamil/group4_tamil.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-danger">
+                    தமிழ் வடிவம்
+                </a>
+                <a href="https://tnpsc.gov.in/document/english/group_english.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-danger">
+                    English version
+                </a>
+                <a href="https://apply.tnpscexams.in/secure?app_id=UElZMDAwMDAwMQ==" target="_blank" rel="noopener noreferrer" class="btn btn-danger">
+                    இணையவழியில் விண்ணப்பிக்க <br /> Apply online
+                </a>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

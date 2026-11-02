@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Content/MediaGallery/Logo/uplogo.png"
+          type="image/x-icon">
+    <link rel="shortcut icon" href="https://upessc.up.gov.in/Content/MediaGallery/Logo/Logoss.jpeg" />
+    <link href="/Content/assets/Css/font-awesome_4.7.0.min.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/bootstrap.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/owl.carousel.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/owl.theme.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/menu.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/breaking-news-ticker.min.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/jquery.fancybox.min.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/CMS_Style.css" rel="stylesheet" />
+    <link href="/Content/assets/Css/Style.css" rel="stylesheet" />
+    <link id="Hcv_mode" href="/Content/assets/css/index.html" rel="stylesheet"
+          type="text/css" />
+    <link href="/Content/assets/Css/Responsive.css" rel="stylesheet" />
+
+    <script src="/Content/assets/Js/jquery-3.7.1.min.js"
+            type="text/javascript"></script>
+
+    <title id="pgtitle">
+        Uttar Pradesh Education Service Selection Commission
+    </title>
+    <style>
+        .admitcard-float {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        .admitcard-inner {
+            display: flex;
+            align-items: center;
+            background-color: #990000;
+            color: #fff;
+            /* Left side attached rahe, right side rounded */
+            border-radius: 0 25px 25px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 220px;
+            min-height: 48px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
+            padding: 7px 12px;
+            box-sizing: border-box;
+        }
+
+        .admitcard-icon {
+            width: 30px;
+            min-width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+            .admitcard-icon img {
+                width: 22px;
+                height: 22px;
+                filter: brightness(0) invert(1);
+            }
+
+        .admitcard-text {
+            font-weight: bold;
+            color: #fff;
+            font-size: 15px;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Hover par thoda compact */
+        .admitcard-float:hover .admitcard-inner {
+            width: 230px;
+            background-color: #b30000;
+        }
+
+        /* Print me hide */
+        @media print {
+            .admitcard-float {
+                display: none !important;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .admitcard-inner {
+                width: 180px;
+                min-height: 44px;
+                padding: 6px 10px;
+            }
+
+            .admitcard-text {
+                font-size: 13px;
+            }
+
+            .admitcard-float:hover .admitcard-inner {
+                width: 190px;
+            }
+        }
+    </style>
+
+    
+
+    <style>
+        .thumbnail {
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .notice ul {
+            list-style: none;
+            padding: 0;
+        }
+
+            .notice ul li {
+                margin-bottom: 10px;
+            }
+
+                .notice ul li .arw {
+                    margin-right: 10px;
+                    color: #007bff;
+                }
+
+        .play-pause span {
+            cursor: pointer;
+        }
+
+        .notice {
+            background: linear-gradient(135deg, #f9f9f9, #eaeaea);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .notice h4 {
+                color: #ff5722;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+        .play-pause {
+            margin-bottom: 15px;
+        }
+
+            .play-pause i {
+                color: #ff5722;
+                cursor: pointer;
+            }
+
+        #ticker1 {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            #ticker1 .news-item {
+                margin-bottom: 15px;
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+
+                #ticker1 .news-item:last-child {
+                    border-bottom: none;
+                }
+
+            #ticker1 .arw i {
+                color: #2196f3;
+                margin-right: 10px;
+            }
+
+            #ticker1 a {
+                color: #333;
+                font-weight: bold;
+                text-decoration: none;
+            }
+
+                #ticker1 a:hover {
+                    color: #ff5722;
+                }
+
+        .ndate {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .btn-xs {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .btn-default {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+        }
+
+            .btn-default:hover {
+                background-color: #1976d2;
+            }
+
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+        }
+
+            .btn-warning:hover {
+                background-color: #f57c00;
+            }
+
+        .col-sm-4, .col-md-4, .col-xs-12 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .thumbnail, .notice {
+            flex-grow: 1;
+        }
+    </style>
+    <style>
+        #usefullinkbg {
+            position: relative;
+            padding: 25px 0px 30px 70px;
+            background-color: #ffffff;
+            background-image: url(../images/department-bg.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+            #usefullinkbg .linkstitle {
+                text-align: center;
+                font-size: 2em;
+                font-weight: 800;
+                color: #fff;
+                position: relative;
+                top: auto;
+                padding-bottom: 15px;
+            }
+
+                #usefullinkbg .linkstitle:after {
+                    content: "";
+                    position: absolute;
+                    right: 0;
+                    left: 0;
+                    margin: 0px auto;
+                    bottom: 0px;
+                    height: 1px;
+                    width: 15%;
+                    background-color: #fff;
+                }
+
+                #usefullinkbg .linkstitle:before {
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 3px;
+                    background-color: #fff;
+                    margin: 0px auto;
+                    content: "";
+                    position: absolute;
+                    right: 0;
+                    left: 0;
+                    bottom: -12px;
+                    transform: rotate(45deg);
+                }
+
+        .flip-container {
+            perspective: 1000px
+        }
+
+            .flip-container.hover .flipper,
+            .flip-container:hover .flipper {
+                transform: rotateY(180deg)
+            }
+
+        .back-links ol {
+            display: flex; /* Align list items horizontally */
+            justify-content: space-around; /* Space between items */
+            align-items: center; /* Vertically center the items */
+            gap: 15px; /* Space between each item */
+            padding-left: 0; /* Remove default padding */
+            list-style-type: decimal; /* Numbered list style */
+        }
+
+        .back-links li {
+            margin: 0; /* Remove margin from list items */
+        }
+
+        .back-links a {
+            text-decoration: none; /* Remove underline from links */
+            color: #333; /* Set text color */
+            font-size: 16px; /* Set font size */
+        }
+
+            .back-links a:hover {
+                color: #007bff; /* Change color on hover */
+            }
+
+        .back,
+        .flip-container,
+        .front {
+            width: 220px;
+            min-height: 310px;
+            float: left;
+            margin-right: 11px;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 100;
+            margin-bottom: 29px;
+            padding-bottom: 15px;
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        .avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            height: 68px;
+            width: 68px;
+            margin-top: 6px;
+            margin-bottom: 6px
+        }
+
+        small {
+            color: #000
+        }
+
+        .flip-container h3 span {
+            display: block;
+            font-size: 11pt;
+            color: #595757;
+            font-family: 'Roboto Condensed', sans-serif
+        }
+
+        .counter-home {
+            padding-bottom: 19px
+        }
+
+        .flipper {
+            transition: .3s;
+            transform-style: preserve-3d;
+            position: relative
+        }
+
+        .home > a::after {
+            content: "\f015";
+            font-family: "FontAwesome";
+            font-size: 24px;
+        }
+
+        .back,
+        .front {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 1em;
+        }
+
+            .back h3,
+            .front h3 {
+                font-size: 1em;
+            }
+
+        .front {
+            z-index: 2;
+            transform: rotateY(0);
+            background: #fff;
+            border-radius: 100px  100px 0px 0px;
+            box-shadow: 1px 1px 13px #3c2d2d3b
+        }
+
+            .front i {
+                /*color: #f3541c;*/
+                color: #0056b3;
+                font-size: 50px;
+            }
+
+        .back {
+            transform: rotateY(180deg);
+            background: #fff;
+            border-radius: 7px;
+            box-shadow: 1px 1px 13px #3c2d2d
+        }
+
+            .back i {
+                color: #141718;
+                font-size: 4.8rem;
+            }
+
+
+        .front-links ol {
+            display: flex; /* Align list items horizontally */
+            justify-content: space-around; /* Space between items */
+            align-items: center; /* Vertically center the items */
+            gap: 15px; /* Space between each item */
+            padding-left: 0; /* Remove default padding */
+            list-style-type: decimal; /* Numbered list style */
+        }
+
+        .front-links li {
+            margin: 0; /* Remove margin from list items */
+        }
+
+        .front-links a {
+            text-decoration: none; /* Remove underline from links */
+            color: #333; /* Set text color */
+            font-size: 16px; /* Set font size */
+        }
+
+            .front-links a:hover {
+                color: #007bff; /* Change color on hover */
+            }
+    </style>
+</head>
+<body>
+    
+        <div>
+            <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE"
+                   value="/wEPDwUKMTg2OTMwMjQ1Nw9kFgJmD2QWAgIDD2QWBgICD2QWAgIBDxYCHgRUZXh0BfUaPGxpIGNsYXNzPSduYXYtY2xvc2UnPjxidXR0b24gY2xhc3M9J2J0bi1uYXYtY2xvc2UnPjxzcGFuIGNsYXNzPSdjbG9zZS1idG4nPis8L3NwYW4+PC9idXR0b24+PC9saT48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBocmVmPSdJbmRleC5hc3B4JyB0aXRsZT0nSG9tZScgY2xhc3M9J25hdi1saW5rJz5Ib21lPC9hPjwvbGk+PGxpIGNsYXNzPSduYXYtaXRlbSBpY29uJz48YSBocmVmPSdqYXZhc2NyaXB0OnZvaWQoMCk7JyB0aXRsZT0nQWJvdXQgVVBERVNDTycgY2xhc3M9J25hdi1saW5rJyA+QWJvdXQgVVBERVNDTzwvYT48dWwgY2xhc3M9J2Ryb3Bkb3duJz48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2VzL0ludHJvLmFzcHgnIHRpdGxlPSdJbnRyb2R1Y3Rpb24nPkludHJvZHVjdGlvbjwvYT48L2xpID48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2VzL1Byb2ZpbGUuYXNweCcgdGl0bGU9J1Byb2ZpbGUnPlByb2ZpbGU8L2E+PC9saSA+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgY2xhc3M9J25hdi1saW5rJyBocmVmPSdQYWdlcy9WaXNpb25fTWlzc2lvbi5hc3B4JyB0aXRsZT0nVmlzaW9uICYgTWlzc2lvbic+VmlzaW9uICYgTWlzc2lvbjwvYT48L2xpID48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2VzL09TLmFzcHgnIHRpdGxlPSdPcmdhbml6YXRpb25hbCBTdHJ1Y3R1cmUnPk9yZ2FuaXphdGlvbmFsIFN0cnVjdHVyZTwvYT48L2xpID48L3VsPjwvbGk+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgaHJlZj0nUGFnZXMvRGl2aXNpb24uYXNweCcgdGl0bGU9J0RpdmlzaW9uJyBjbGFzcz0nbmF2LWxpbmsnPkRpdmlzaW9uPC9hPjwvbGk+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgaHJlZj0nUGFnZXMvU2VydmljZXMuYXNweCcgdGl0bGU9J1NlcnZpY2VzJyBjbGFzcz0nbmF2LWxpbmsnPlNlcnZpY2VzPC9hPjwvbGk+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgaHJlZj0nUGFnZXMvTWFqb3JQcm9qZWN0cy5hc3B4JyB0aXRsZT0nTWFqb3IgUHJvamVjdHMnIGNsYXNzPSduYXYtbGluayc+TWFqb3IgUHJvamVjdHM8L2E+PC9saT48bGkgY2xhc3M9J25hdi1pdGVtIGljb24nPjxhIGhyZWY9J2phdmFzY3JpcHQ6dm9pZCgwKTsnIHRpdGxlPSdFLUNpdGl6ZW4nIGNsYXNzPSduYXYtbGluaycgPkUtQ2l0aXplbjwvYT48dWwgY2xhc3M9J2Ryb3Bkb3duJz48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2VzL1JUSS5hc3B4JyB0aXRsZT0nUmlnaHQgVG8gSW5mb3JtYXRpb24nPlJpZ2h0IFRvIEluZm9ybWF0aW9uPC9hPjwvbGkgPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGNsYXNzPSduYXYtbGluaycgaHJlZj0nUGFnZXMvQUJTLmFzcHgnIHRpdGxlPSdBdWRpdCBiYWxhbmNlIFNoZWV0Jz5BdWRpdCBiYWxhbmNlIFNoZWV0PC9hPjwvbGkgPjwvdWw+PC9saT48bGkgY2xhc3M9J25hdi1pdGVtIGljb24nPjxhIGhyZWY9J2phdmFzY3JpcHQ6dm9pZCgwKTsnIHRpdGxlPSdEb2N1bWVudHMnIGNsYXNzPSduYXYtbGluaycgPkRvY3VtZW50czwvYT48dWwgY2xhc3M9J2Ryb3Bkb3duJz48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2UvTmV3cy5hc3B4JyB0aXRsZT0nTmV3cyAmIEFubm91bmNlbWVudHMnPk5ld3MgJiBBbm5vdW5jZW1lbnRzPC9hPjwvbGkgPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGNsYXNzPSduYXYtbGluaycgaHJlZj0nUGFnZS9HTy5hc3B4JyB0aXRsZT0nR292ZXJubWVudCBPcmRlcic+R292ZXJubWVudCBPcmRlcjwvYT48L2xpID48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2UvVGVuZGVyLmFzcHgnIHRpdGxlPSdUZW5kZXInPlRlbmRlcjwvYT48L2xpID48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2VzL1BvbGljeS5hc3B4JyB0aXRsZT0nUG9saWN5Jz5Qb2xpY3k8L2E+PC9saSA+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgY2xhc3M9J25hdi1saW5rJyBocmVmPSdQYWdlcy9CdWRnZXQuYXNweCcgdGl0bGU9J0J1ZGdldCc+QnVkZ2V0PC9hPjwvbGkgPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGNsYXNzPSduYXYtbGluaycgaHJlZj0nUGFnZXMvRG93bmxvYWQuYXNweCcgdGl0bGU9J0Rvd25sb2Fkcyc+RG93bmxvYWRzPC9hPjwvbGkgPjwvdWw+PC9saT48bGkgY2xhc3M9J25hdi1pdGVtIGljb24nPjxhIGhyZWY9J2phdmFzY3JpcHQ6dm9pZCgwKTsnIHRpdGxlPSdNZWRpYSBHYWxsZXJ5JyBjbGFzcz0nbmF2LWxpbmsnID5NZWRpYSBHYWxsZXJ5PC9hPjx1bCBjbGFzcz0nZHJvcGRvd24nPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGNsYXNzPSduYXYtbGluaycgaHJlZj0nUGFnZS9QaG90b0NhdGVnb3J5LmFzcHgnIHRpdGxlPSdQaG90byBHYWxsZXJ5Jz5QaG90byBHYWxsZXJ5PC9hPjwvbGkgPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGNsYXNzPSduYXYtbGluaycgaHJlZj0nUGFnZS9WaWRlb0dhbGxlcnkuYXNweCcgdGl0bGU9J1ZpZGVvIEdhbGxlcnknPlZpZGVvIEdhbGxlcnk8L2E+PC9saSA+PC91bD48L2xpPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGhyZWYgPSAnaHR0cDovL3d3dy51cGRlc2NvcG1zLmluLycgdGFyZ2V0PSdfYmxhbmsnIHRpdGxlPSdVUERFU0NPIFBNUycgY2xhc3M9J25hdi1saW5rJyBvbmNsaWNrPSdyZXR1cm4gQ29uZmlybXZpZXdwYWdlKCk7Jz5VUERFU0NPIFBNUzwvYT48L2xpPjxsaSBjbGFzcz0nbmF2LWl0ZW0gaWNvbic+PGEgaHJlZj0namF2YXNjcmlwdDp2b2lkKDApOycgdGl0bGU9J0NvbnRhY3QgVXMnIGNsYXNzPSduYXYtbGluaycgPkNvbnRhY3QgVXM8L2E+PHVsIGNsYXNzPSdkcm9wZG93bic+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgY2xhc3M9J25hdi1saW5rJyBocmVmPSdQYWdlL0dyaWV2YW5jZXNEZXRhaWxzLmFzcHgnIHRpdGxlPSdHcmlldmFuY2UnPkdyaWV2YW5jZTwvYT48L2xpID48bGkgY2xhc3M9J25hdi1pdGVtJz48YSBjbGFzcz0nbmF2LWxpbmsnIGhyZWY9J1BhZ2VzL1JlYWNoVXMuYXNweCcgdGl0bGU9J0hvdyB0byBSZWFjaCBVcyc+SG93IHRvIFJlYWNoIFVzPC9hPjwvbGkgPjxsaSBjbGFzcz0nbmF2LWl0ZW0nPjxhIGNsYXNzPSduYXYtbGluaycgaHJlZj0nUGFnZXMvUElPRGV0YWlscy5hc3B4JyB0aXRsZT0nUHVibGljIEluZm9ybWF0aW9uIE9mZmljZXIgRGV0YWlsJz5QdWJsaWMgSW5mb3JtYXRpb24gT2ZmaWNlciBEZXRhaWw8L2E+PC9saSA+PGxpIGNsYXNzPSduYXYtaXRlbSc+PGEgY2xhc3M9J25hdi1saW5rJyBocmVmPSdQYWdlL1N0YWZmX0RpcmVjdG9yeS5hc3B4JyB0aXRsZT0nU3RhZmYgRGlyZWN0b3J5Jz5TdGFmZiBEaXJlY3Rvcnk8L2E+PC9saSA+PC91bD48L2xpPmQCAw9kFgQCAQ8WAh8ABcYCPGRpdiBjbGFzcz0naXRlbSc+PGEgaHJlZj0nd3d3LnRlc3RpbmcuY29tJyB0YXJnZXQ9J19ibGFuaycgICBvbmNsaWNrPSdyZXR1cm4gQ29uZmlybXZpZXdwYWdlKCk7Jz48aW1nIHNyYz0nTWVkaWFHYWxsZXJ5L0lubmVyQmFubmVyL1VwRGVzY29iYW5uZXJfMi5qcGcnLz48L2E+PC9kaXY+PGRpdiBjbGFzcz0naXRlbSc+PGEgaHJlZj0naHR0cHM6Ly9nb29nbGUuY29tJyB0YXJnZXQ9J19ibGFuaycgICBvbmNsaWNrPSdyZXR1cm4gQ29uZmlybXZpZXdwYWdlKCk7Jz48aW1nIHNyYz0nTWVkaWFHYWxsZXJ5L0lubmVyQmFubmVyL2Jhbm5lcl8xLmpwZycvPjwvYT48L2Rpdj5kAgMPFgIfAAXACjxsaT48YSBocmVmPSdNZWRpYUdhbGxlcnkvVGlja2VyU2Nyb2xscy9TYW1hcnRoU1NMLnBkZicgdGFyZ2V0PSdfYmxhbmsnIHRpdGxlPSdDbGljayBoZXJlIHRvIGRvd25sb2FkJz7gpLjgpYLgpJrgpL/gpKQg4KSV4KSw4KSo4KS+IOCkueCliCDgpJXgpL8g4KS44KSu4KSX4KWN4KSwIOCktuCkv+CkleCljeCkt+Ckviwg4KSw4KS+4KSc4KWN4KSvIOCkquCksOCkv+Ckr+Cli+CknOCkqOCkviDgpJXgpL7gpLDgpY3gpK/gpL7gpLLgpK8sIOCkueClh+CkpOClgSDgpLjgpK7gpLDgpY3gpKUg4KSq4KWL4KSw4KWN4KSf4KSyL+Ckj+CkqiDgpJXgpYcg4KS44KSC4KSa4KS+4KSy4KSoIOCkruClh+CkgiBBcHBsaWNhdGlvbiBQcm9ncmFtbWluZyBJbnRlcmZhY2UgKEFQSSkg4KSV4KWHIOCkruCkvuCkp+CljeCkr+CkriDgpLjgpYcgU29mdHdhcmUgUHJvZ3JhbXMgdG8gQ29tbXVuaWNhdGUgd2l0aCBlYWNoIG90aGVyJ3Mg4KSk4KSl4KS+IFNlY3VyZSBEYXRhIFRyYW5zZmVyIOCkleCksOCkqOClhyDgpLngpYfgpKTgpYEgV2lsZGNhcmQgU1NMIENlcnRpZmljYXRlIGZvciBkb21haW4gYW5kIHN1YiBkb21haW4g4KSJ4KSq4KSy4KSs4KWN4KSnIOCkleCksOCkvuCkjyDgpJzgpL7gpKjgpYcg4KSV4KWHIOCkuOCkruCljeCkrOCkqOCljeCkpyDgpK7gpYfgpILgpaQgPC9hPjxzcGFuIGNsYXNzPSd0aWNrZXJzZXByYXRvcic+PC9zcGFuPjwvbGk+PGxpPjxpbWcgY2xhc3M9J3RpY2tlcl9uZXcnIHNyYz0nTWVkaWFHYWxsZXJ5L1RpY2tlclNjcm9sbHMvTmV3LmdpZic+PGEgaHJlZj0nTWVkaWFHYWxsZXJ5L1RpY2tlclNjcm9sbHMvTmlyd2FjaGFuLnBkZicgdGFyZ2V0PSdfYmxhbmsnIHRpdGxlPSdDbGljayBoZXJlIHRvIGRvd25sb2FkJz7gpLjgpYLgpJrgpL/gpKQg4KSV4KSw4KSo4KS+IOCkueCliCDgpJXgpL8g4KSV4KS+4KSw4KWN4KSv4KS+4KSy4KSvIOCkruClgeCkluCljeCkryDgpKjgpL/gpLDgpY3gpLXgpL7gpJrgpKgg4KSG4KSv4KWB4KSV4KWN4KSkLCDgpIku4KSq4KWN4KSwLiDgpLDgpL7gpJzgpY3gpK8g4KS44KS54KSV4KS+4KSw4KWAIOCkuOCkruCkv+CkpOCkvyDgpKjgpL/gpLDgpY3gpLXgpL7gpJrgpKgg4KSG4KSv4KWL4KSXLCDgpLLgpJbgpKjgpIog4KSV4KWHIOCkteClh+CkrCDgpKrgpYvgpLDgpY3gpJ/gpLIgdXBzY2VjLmdvdi5pbiDgpJXgpL4g4KSP4KS44KSP4KS44KSP4KSyIOCkuOCksOCljeCkn+Ckv+Ckq+Ckv+CkleClh+CktuCkqCDgpJXgpLDgpL7gpK/gpL4g4KSc4KS+4KSo4KWHIOCkleClhyDgpLjgpK7gpY3gpKzgpKjgpY3gpKcg4KSu4KWH4KSC4KWkIDwvYT48c3BhbiBjbGFzcz0ndGlja2Vyc2VwcmF0b3InPjwvc3Bhbj48L2xpPmQCBA8WAh4JaW5uZXJodG1sBQY3MDU3MjZkZLPWjudbBV5aP/IGq6BoxKzyzLee" />
+        </div>
+        <div>
+            <input type="hidden" name="__VIEWSTATEGENERATOR"
+                   id="__VIEWSTATEGENERATOR" value="0192E1E2" />
+        </div>
+        <section class="modal_sec">
+            <button type="button" id="modal" class="btn btn-primary d-none"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+            </button>
+            <div class="modal fade" id="exampleModal" tabindex="-1"
+                 aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" id="ModalId">
+                    <div class="modal-content p-5">
+                        <img src="/Content/MediaGallery/Banner/Banner1.jpg" alt=""
+                             class="w-100">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="header">
+            <div class="head_top">
+                <div class="top-menu">
+                    <div class="d-inline-flex align-items-center">
+                        <a href="#skip_Content"
+                           class="top_link skipicon wow zoomIn"
+                           data-wow-delay="0.15s"
+                           title="Skip To Main Content">
+                            <img src="/Content/MediaGallery/Icons/skip_icon_clr.svg">
+                        </a>
+                        <a href="/Home/SRA"
+                           class="top_link scrreder wow zoomIn"
+                           data-wow-delay="0.2s"
+                           title="Screen Reader Access">
+                            <img src="/Content/MediaGallery/Icons/screen_reader_clr.png">
+                        </a>
+                        <a href="/Home/Sitemap"
+                           class="top_link wow zoomIn"
+                           data-wow-delay="0.25s"
+                           title="Sitemap">
+                            <i class="fa fa-sitemap"></i>
+                        </a>
+                        <a class="top_link wow zoomIn" data-wow-delay="0.3s"
+                           href="javascript:void(0);"
+                           id="show_search_box" title="Site Search">
+                            <i class="fa fa-search"></i>
+                        </a>
+                        <div tabindex="0" id="hidden_search_box"
+                             class="navbar-form hidden-search-box"
+                             role="search">
+                            <div class="traingle"></div>
+                            <div class="input-group add-on">
+                                <input name="ctl00$txtSearch" type="text"
+                                       id="ctl00_txtSearch" tabindex="1"
+                                       placeholder="Search Keyword"
+                                       class="form-control addon-text-box"
+                                       autocomplete="off" />
+                                <input type="submit" name="ctl00$btnSearch"
+                                       value="Search" id="ctl00_btnSearch"
+                                       tabindex="2"
+                                       title="Search Keyword"
+                                       class="input-group-btn addon-btn" />
+                            </div>
+                        </div>
+                        <a class="top_link"
+                           title="Click here to View in Hindi"
+                           onclick="LanguageRedirection()">
+                            <img src="/Content/MediaGallery/Icons/language.png">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class='Container'>
+                <div class="Logo_sec">
+                    <div class='Container'>
+                        <!-- <div class="home_logo">
+                        <a href="index-2.html"
+                            title="Uttar Pradesh Shiksha Seva Chayan Ayog, Government of Uttar Pradesh">
+                            <div class="main_logo">
+                                <img src="MediaGallery/Logo/logo-hi.png" alt="Logo of UPESSC"
+                                    style="height:auto; width:100%;">
+                            </div>
+                        </a>
+                    </div> -->
+                        <div class="home_logo">
+                            <a class="" href="/"
+                               title="Uttar Pradesh Shiksha Seva Chayan Ayog, Government of Uttar Pradesh">
+                                <div class="main_logo">
+                                    <img src="/Content/MediaGallery/Logo/Logoss.jpeg"
+                                         alt="Logo of UPESSC">
+                                </div>
+                                <div>
+                                    <div class="main_head">
+                                        Uttar Pradesh
+                                        Education Service Selection
+                                        Commission<br />
+                                        उत्तर प्रदेश
+                                        शिक्षा सेवा चयन
+                                        आयोग
+                                    </div>
+                                    <!-- <span>(A Uttar Pradesh Government Undertaking)</span> -->
+                                </div>
+                            </a>
+                        </div>
+                        <div class="other_site" id="en">
+                            <a href="https://kumbh.gov.in/" target="_blank"
+                               title="Opens in a new window"
+                               onclick="return Confirmviewpage();">
+                                <img class="Mahakumbh_logo"
+                                     alt="Logo of Mahakumbh 2025"
+                                     src="/Content/MediaGallery/Logo/mahakumbh2025.png"
+                                     title="Mahakumbh 2025">
+                            </a>
+                            <a class="upmygov" href="https://up.mygov.in/en"
+                               target="_blank"
+                               title="Opens in a new window"
+                               onclick="return Confirmviewpage();">
+                                <img alt="Logo of MyGov"
+                                     src="/Content/MediaGallery/Logo/Mygov.svg">
+                            </a>
+                            <img class="kta_logo"
+                                 alt="Logo of Kakori Train Action Shatabdi Mahotsava"
+                                 src="/Content/MediaGallery/Logo/KTA_logo.png"
+                                 title="Kakori Train Action Shatabdi Mahotsava">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <script>
+            // Function to toggle visibility of #en section based on screen size
+            function toggleEnSection() {
+                const enSection = document.getElementById("en");
+                if (window.innerWidth <= 768) {
+                    enSection.style.display = "none";
+                } else {
+                    enSection.style.display = "block";
+                }
+            }
+
+            // Run the function on page load and resize
+            document.addEventListener("DOMContentLoaded", toggleEnSection);
+            window.addEventListener("resize", toggleEnSection);
+        </script> -->
+
+        </section>
+        <section class="nav_bar">
+            <nav class="navbar bg-primary animate__animated animate__slideInUp">
+                <span class="navbar-toggler">
+                    <i class="fa fa-bars" aria-hidden="true"></i>
+                </span>
+                <div class="common_container">
+                    <ul id="ctl00_MenusID" class="navbar-nav">
+                        <li class='nav-close'>
+                            <button class='btn-nav-close'>
+                                <span class='close-btn'>+</span>
+                            </button>
+                        </li>
+                        <li class='nav-item'>
+                            <a href='/'
+                               title='Home'
+                               class='nav-link'>Home</a>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               title='About UPESSC'
+                               class='nav-link'>About UPESSC</a>
+                            <ul class='dropdown'>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href="/Home/Intro"
+                                       title='Introduction'>Introduction</a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href="/Home/Intro_prayag"
+                                       title='Profile'>
+                                        Introduction
+                                        Prayagraj
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Vision_Mission'
+                                       title='Vision & Mission'>
+                                        Vision
+                                        &
+                                        Mission
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Acts_rules'>
+                                        Act &
+                                        Rules
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Vision & Mission'>Regulations</a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Org_Structure'
+                                       title='Organizational Structure'>
+                                        Organization Strucature
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/pdfs/calender.pdf'>
+                                        Holiday Calendar
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'>
+                                        Important Links
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               class='nav-link'>Selection/Recruitment</a>
+                            <ul class="dropdown">
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Elegiblety' target="_blank">
+                                        Selection
+                                        Process
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Content/MediaGallery/Documents/expert_biodata.pdf' target="_blank">
+                                        Expert BioData Proforma
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Advertisment'
+                                       title='Advertisement'>Advertisement</a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Finalkey'>
+                                        Revised &
+                                        Final Key
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               title='E-Citizen'
+                               class='nav-link'>Administration</a>
+                            <ul class='dropdown'>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Chairmen_msg'
+                                       title='Right To Information'>
+                                        Chairman's
+                                        Message
+                                    </a>
+                                </li>
+                                
+                                
+
+                            </ul>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               title='Documents'
+                               class='nav-link'>Examination</a>
+                            <ul class='dropdown'>
+                                <li class='nav-item'>
+                                    <a class='nav-link' target="_parent"
+                                       href='/Home/Active_examination'
+                                       title='News & Announcements'>
+                                        Active
+                                        Examination
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link' target="_parent"
+                                       href='/Home/Ongoing_examination'
+                                       title='Government Order'>
+                                        Ongoing
+                                        Examination
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Speciman Question
+                                    cum Answers Booklet'>
+                                        Speciman Question
+                                        cum Answers Booklet
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Cut-Off Marks'>
+                                        Cut-Off
+                                        Marks
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Marks Information'>
+                                        Marks
+                                        Information
+                                    </a>
+                                </li>
+
+
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Booklet'
+                                       title='Previous Question
+                                    Paper'>
+                                        Previous Question
+                                        Paper
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Syllabus_all'
+                                       title='Revised Syllabus and Scheme'>
+                                        Revised
+                                        Syllabus and Scheme
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               title='Department'
+                               class='nav-link'>Department</a>
+                            <ul class='dropdown'>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Higher_old_content'
+                                       title='Higher Education'>
+                                        Higher
+                                        Education Old Content
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/old_Secondery_section'
+                                       title='Secondary Education'>
+                                        Secondary
+                                        Education Old Content
+                                    </a>
+                                </li>
+
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Basic Education'>
+                                        Basic
+                                        Education
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Basic Education'>Atal Awasiya Vidyalaya</a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Basic Education'>Department of Vocational Education, Skill Development and Entrepreneurship</a>
+                                </li>
+                                <!-- <li class='nav-item'><a class='nav-link'
+            href='#'
+            title='Other Information'>Other
+            Information</a></li> -->
+                            </ul>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               title='Recruitment'
+                               class='nav-link'>Recruitment</a>
+                            <ul class='dropdown'>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Content/MediaGallery/Documents/sahyukt_hetu_vigyapan.pdf'
+                                       title='Current Advertisement'>
+                                        Current
+                                        Advertisement
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='#'
+                                       title='Online Recruitment Application'>
+                                        Online
+                                        Recruitment Application
+                                    </a>
+                                </li>
+
+                                
+                            </ul>
+                        </li>
+                        <li class='nav-item icon'>
+                            <a href='javascript:void(0);'
+                               title='Contact Us'
+                               class='nav-link'>Contact Us</a>
+                            <ul class='dropdown'>
+                                
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/ReachUs'
+                                       title='How to Reach Us'>
+                                        How to
+                                        Reach
+                                        Us
+                                    </a>
+                                </li>
+                                <li class='nav-item'>
+                                    <a class='nav-link'
+                                       href='/Home/Staff_Directory'
+                                       title='Public Information Officer Detail'>
+                                        Hon'ble Members
+                                        Details
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </li>
+                        <li class='nav-item'>
+                            <a href='/Home/Gallery'
+                               title='Home'
+                               class='nav-link'>Gallery</a>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="curv_menu">
+                    <div class="curv_lft">
+                        <svg version="1.1" id="Layer_1"
+                             xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                             x="0px" y="0px" width="80px" height="21px"
+                             viewBox="0 0 80 20"
+                             enable-background="new 0 0 80 20"
+                             xml:space="preserve">
+                        <path fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M 81 20 c 0 0 -16 0 -30 0 c -30 0 -23 -15 -50 -15 l 0 -5 L 81 0 L 81 20 Z"
+                              class="">
+                                    </path>
+                        <path fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M 81 -1 L 31 -1 c 27 -1 21 15 51 16 C 82 3 82 -1 82 -1 Z"
+                              class=""></path>
+                                </svg>
+                    </div>
+                    <div class="curv_rght">
+                        <svg version="1.1" id="Layer_2"
+                             xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                             x="0px" y="0px" width="80px" height="21px"
+                             viewBox="0 0 80 20"
+                             enable-background="new 0 0 80 20"
+                             xml:space="preserve">
+                        <path fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M 0 20 c 0 0 16 0 30 0 c 30 0 23 -15 50 -15 l 0 -5 L 0 0 L 0 20 Z"
+                              class=""></path>
+
+                                </svg>
+                    </div>
+                    <div class="curv_center"></div>
+                </div>
+            </nav>
+        </section>
+        <div>
+            
+
+
+
+<section class="main_content">
+    <div class="common_container">
+        <div>
+            <ul class='breadcrumb_nav'>
+                <li class='breadcrumb_items' tabindex='0' title='' aria-current='page'>
+                    <a href='/' style="color:black">Home</a>
+                </li>
+                
+            <li class='breadcrumb_items' tabindex='0' title='' aria-current='page'>
+                Press Release
+            </li>
+            </ul>
+        </div>
+        <div id="DivContent">
+            <div class="table-responsive mb-5">
+                <table id="newsTable" class="table Clr_table table-bordered table-hover table-responsive display mb-5">
+                    <thead>
+                        <tr>
+                            <th class='wth_3'>S.No.</th>
+                            <th style="width:200px">Title</th>
+                            <th class='wth_4'>Date</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $(document).ready(function () {
+        Get_Getpressrelese();
+    });
+    function Get_Getpressrelese() {
+        $.ajax({
+            url: "/Home/Get_press_relise",
+            type: "POST",
+            data: { Action: 'Get_press_relese' },
+            dataType: "json",
+            success: function (response) {
+                if (typeof response === "string") {
+                    try {
+                        response = JSON.parse(response);
+                    } catch (e) {
+                        console.error("Error parsing JSON:", e);
+                        return;
+                    }
+                }
+
+                if (Array.isArray(response)) {
+                    let tableBody = "";
+
+                    $.each(response, function (index, item) {
+                        let noticeDate = new Date(item.notice_date);
+                        let formattedDate = noticeDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        });
+
+                        // Get today's date & calculate difference in days
+                        let today = new Date();
+                        let timeDiff = today - noticeDate;
+                        let diffDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+
+                        // If the notice is within the last 3 days, add the "New" GIF
+                        let newIcon = (diffDays <= 3) ? " <img class='ticker_new' src='/Content/MediaGallery/TickerScrolls/New.gif'>" : "";
+
+                        tableBody += "<tr>";
+                        tableBody += "<td style='width: 50px; text-align: center;'>" + (index + 1) + "</td>"; // Serial No.
+                        tableBody += "<td style='max-width: 200px; min-width: 200px; word-wrap: break-word; white-space: normal; overflow: hidden;'>"
+                            + item.notice_title_english + item.notice_details + newIcon + "</td>"; // Title with "New" Icon if applicable
+                        tableBody += "<td style='width: 120px; text-align: center;'>" + formattedDate + "</td>"; // Date
+                        /*                        tableBody += "<td style='width: 80px; text-align: center;'><a style='color:#ffcc00;' href='/Notice/" + item.notice_path + "' target='_blank'>View</a></td>"; // View Link*/
+                        tableBody += "</tr>";
+                    });
+
+
+                    $("#newsTable tbody").html(tableBody);
+                    if ($.fn.DataTable.isDataTable("#newsTable")) {
+                        $('#newsTable').DataTable().destroy();
+                    }
+                    setTimeout(function () {
+                        $('#newsTable').DataTable({
+                            responsive: true,
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            lengthMenu: [5, 10, 25, 50, 100, 200, 500],
+                            pageLength: 5
+                        });
+                    }, 500);
+                } else {
+                    console.error("Unexpected response format:", response);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                console.log("Response Text:", xhr.responseText);
+            }
+        });
+    }
+</script>
+
+        </div>
+        
+        <section class="footer_sec">
+            <div class="footer_top">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <div class="Importantlinks">
+                            <div id="Importantlinks"
+                                 class="owl-carousel owl-theme">
+                                <div class="slideritem">
+                                    <a href="https://india.gov.in/"
+                                       target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <img class="height_60"
+                                             src="/Content/MediaGallery/logo/indiaGov.png"
+                                             alt="...">
+                                    </a>
+                                </div>
+                                <div class="slideritem">
+                                    <a href="https://up.mygov.in/en"
+                                       target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <img class="height_65"
+                                             src="/Content/MediaGallery/Logo/Mygov.svg"
+                                             alt="Image of UP My Government">
+                                    </a>
+                                </div>
+                                <div class="slideritem">
+                                    <a href="https://up.gov.in/en"
+                                       target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <img src="/Content/MediaGallery/logo/gov_up.png"
+                                             alt="...">
+                                    </a>
+                                </div>
+                                <div class="slideritem">
+                                    <a href="http://meity.gov.in/"
+                                       title="Opens in a new window"
+                                       target="_blank"
+                                       onclick="return Confirmviewpage();">
+                                        <img class="height_60"
+                                             src="/Content/MediaGallery/Logo/mite.png"
+                                             alt="Image of Ministry of Electronics and Information Technology, Government of India">
+                                    </a>
+                                </div>
+                                <div class="slideritem">
+                                    <a href="https://righttoinformation.gov.in/"
+                                       target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <img class="height_65"
+                                             src="/Content/MediaGallery/logo/rti-icon.png"
+                                             alt="...">
+                                    </a>
+                                </div>
+                                <div class="slideritem egazette">
+                                    <a href="https://egazette.gov.in/(S(l2fdeykz1hezv5hq1gbt3odn))/default.aspx"
+                                       target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <img src="/Content/MediaGallery/logo/egazette.png"
+                                             alt="...">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="owl-2_sliderbutton">
+                                <a id="owlplay-2"
+                                   class="clr_Darkblue">
+                                    <i class="fa fa-play"
+                                       aria-hidden="true"></i>
+                                </a><a id="owlstop-2"
+                                       class="clr_Darkblue">
+                                    <i class="fa fa-pause"
+                                       aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 home_social">
+                        <div class="social-menu">
+                            <ul>
+                                <li>
+                                    <a href="https://x.com/upesscprayagraj" target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <img src="/Content/MediaGallery/Icons/X_twitter_white.svg"
+                                             class="twitter_img"
+                                             alt="Twitter Icon">
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <i class="fa fa-instagram"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <i class="fa fa-facebook"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <i class="fa fa-youtube-play"></i>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="#" target="_blank"
+                                       title="Opens in a new window"
+                                       onclick="return Confirmviewpage();">
+                                        <i class="fa fa-linkedin"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer_main">
+                <div class="common_container">
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <a href="Index.html" class="ftr_home">
+                                <img style="background-color: white; border-radius: 50px;height:100px;width:100px"
+                                     src="/Content/MediaGallery/Logo/Logoss.jpeg"
+                                     alt="Logo of UPESSC">
+                            </a>
+                            <p class="footer_text">
+                                This is the Official Website of Uttar
+                                Pradesh Education Service Selection
+                                Commission.,
+                                Government
+                                of
+                                Uttar Pradesh, India. Content on this
+                                website is published and managed by
+                                Uttar Pradesh
+                                Education Service Selection Commission.,
+                                Government of Uttar Pradesh, India. For
+                                any
+                                query
+                                regarding this website, Please contact
+                                the
+                                <a href="Pages/Webmaster.html"
+                                   class="web_mannger">"Web Information Manager"</a>
+                            </p>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <ul class="footer_nav">
+                                <li>
+                                    <a href="https://courtcases.up.nic.in/" target="_blank"
+                                       title="court">Court Cases Information System - UP</a>
+                                </li>
+                                <li>
+                                    <a href="https://services.ecourts.gov.in/ecourtindia_v6/" target="_blank"
+                                       title="Sitemap">ECourt India Services - Gov</a>
+                                </li>
+                                <li>
+                                    <a href="https://up.gov.in/en" target="_blank"
+                                       title="Archive">Uttar Pradesh Government Website</a>
+                                </li>
+                                <li>
+                                    <a href="https://pariksha.nic.in/Agencies.aspx?KZhCrm9B4QPkl0gO2rAMuw==" target="_blank"
+                                       title="Help">E-Pariksha - Govt of India</a>
+                                </li>
+                                <li>
+                                    <a href="https://pariksha.up.nic.in/" target="_blank"
+                                       title="Sitemap">e-Pariksha - UP</a>
+                                </li>
+                                <li>
+                                    <a href="https://rtionline.up.gov.in/" target="_blank"
+                                       title="Archive">RTI - Online Portal</a>
+                                </li>
+                                <li>
+                                    <a href="https://jansunwai.up.nic.in/" target="_blank"
+                                       title="Help">IGRS - Jansunwai - Samadhan</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <ul class="footer_nav one">
+                                <li>
+                                    <a href="/Home/Accessibility"
+                                       title="Accessibility Statement">
+                                        Accessibility
+                                        Statement
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/Home/Website_Policies"
+                                       title="Website Policies">
+                                        Website
+                                        Policies
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/Home/Security_Policy"
+                                       title="Security Policy">
+                                        Security
+                                        Policy
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/Home/Privacy_Policy"
+                                       title="Privacy Policy">
+                                        Privacy
+                                        Policy
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/Home/Disclaimer"
+                                       title="Disclaimer">Disclaimer</a>
+                                </li>
+                                <li>
+                                    <a href="/Home/SiteMap" target="_blank"
+                                       title="Help">SiteMap</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        
+
+                        <div class="col-md-6 col-12">
+                            <span class="lst_updat">
+                                Last Update on
+                                Website:
+                                <noscript>
+                                    Javascript Required
+                                </noscript>
+                                <span id="last-update"></span>
+                                <script type="text/javascript">
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const lastUpdateElement = document.getElementById("last-update");
+                                        const d = new Date();
+                                        const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                                        const monthname = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                                        const formattedDate = `${weekday[d.getDay()]}, ${d.getDate()} ${monthname[d.getMonth()]}, ${d.getFullYear()}`;
+                                        lastUpdateElement.textContent = formattedDate;
+                                    });
+                                </script>
+                            </span>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <span class="visitor_no" style="font-size:20px">
+                                Visitor No.:
+                                <span id="ctl00_lblCounterss"></span>
+                            </span>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer_bottom">
+                <div class="common_container">
+                    <div class="row">
+                        <div class="col-md-7 col-12">
+                            <div class="copyright">
+                                <i class="fa fa-copyright"></i>&nbsp;
+                                Uttar Pradesh Education Service
+                                Selection Commission | All rights
+                                reserved.
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-5 col-12">
+                        <div class="powerd_by">Powered by <a
+                                href="#" target="_blank"
+                                title="Opens in a new window"
+                                onclick="return Confirmviewpage();">WPCS
+                            </a></div>
+                    </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <img src="/Content/MediaGallery/UI_Image/foter_lft.png" alt=""
+                 class="footer_lft_img">
+            <img src="/Content/MediaGallery/UI_Image/foter_rght.png" alt=""
+                 class="footer_rght_img">
+
+        </section>
+
+        <div class="progress-wrap">
+            <svg class="progress-circle svg-content" width="100%"
+                 height="100%" viewBox="-1 -1 102 102">
+                <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+            </svg>
+        </div>
+
+        <section class="swicher_popup">
+            <div id="dzSwitcher-right" class="styleswitcher">
+                <div class="overlay-switch"></div>
+                <div class="switcher-btn-bx">
+                    <a href="javascript:void(0);"
+                       title="Accessibility Tools" class="switch-btn">
+                        <img src="/Content/MediaGallery/Icons/accessibility.png">
+                    </a>
+                </div>
+                <div class="styleswitcher-inner">
+                    <h4>Accessibility Tools</h4>
+                    <div class="row Accessibility_nav m-0">
+
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               id="btn-increase"
+                               title="Increase Text">
+                                <span>
+                                    <img src="/Content/MediaGallery/Icons/increase.png"
+                                         alt="">
+                                </span>Increase Font
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               id="btn-decrease"
+                               title="Decrease Text">
+                                <span>
+                                    <img src="/Content/MediaGallery/Icons/decrease.png"
+                                         alt="">
+                                </span>Decrease Font
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);" id="btn-orig"
+                               title="Reset Text">
+                                <span>
+                                    <img src="/Content/MediaGallery/Icons/nrmltxt.png"
+                                         alt="">
+                                </span>Reset Font
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               class="hcv_button"
+                               data-stylesheet="~/Content/UPESSC/assets/css/Gray.css"
+                               title="High Contrast View in Gray Color">
+                                <span class="lrg">
+                                    <img src="/Content/MediaGallery/Icons/gray.png">
+                                </span>Gray Contrast
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               class="hcv_button"
+                               data-stylesheet="../../UPESSC/assets/css/Dark.css"
+                               title="High Contrast View in Black Color">
+                                <span class="lrg">
+                                    <img src="/Content/MediaGallery/Icons/dark.png">
+                                </span>Dark Contrast
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               class="hcv_button f_none"
+                               data-stylesheet="assets/css/"
+                               title="Standard View">
+                                <span class="lrg">
+                                    <img src="/Content/MediaGallery/Icons/light.png">
+                                </span>Light Contrast
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               id="Readable_Font"
+                               title="Readable Font">
+                                <span class="lrg">
+                                    <img src="/Content/MediaGallery/Icons/redable.png">
+                                </span>Readable Font
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               onclick="underlineAllAnchors()"
+                               title="Links Underline">
+                                <span class="lrg">
+                                    <img src="/Content/MediaGallery/Icons/underline.png">
+                                </span>Links Underline
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="javascript:void(0);"
+                               class="hcv_button"
+                               onclick="toggleUnderline()"
+                               data-stylesheet="assets/css/"
+                               title="Reset Theme">
+                                <span class="lrg">
+                                    <img src="/Content/MediaGallery/Icons/reset.png"
+                                         alt="">
+                                </span>Reset
+                                Theme
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+
+        <script src="/Content/assets/Js/bootstrap.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/owl.carousel.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/breaking-news-ticker.min.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/easy-ticker.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/menu.js" type="text/javascript"></script>
+        <script src="/Content/assets/Js/mousewheel.min.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/jquery.fancybox.min.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/mixitup.min.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/CMS_main.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/Accessibility.js"
+                type="text/javascript"></script>
+        <script src="/Content/assets/Js/main.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+
+        function Confirmviewpage() {
+
+            answer = confirm("This link shall take you to a page /website outside this website . For any query regarding the contents of linked page/website, Please contact the Webmaster of the concerned website.");
+            //alert(answer);
+            if (answer != 0) {
+
+                return true;
+            }
+            else
+
+                return false;
+        }
+
+        function LanguageRedirection() {
+            if (confirm('आपको उत्तर प्रदेश उच्चतर शिक्षा सेवा आयोग , उत्तर प्रदेश, की आधिकारिक वेबसाइट के हिंदी संस्करण पर हस्तानांतरित किया जा रहा है।')) {
+                window.open("/Home/index_hindi");
+            }
+        }
+
+
+        $(".Confirmvpbyclass").click(function () {
+            answer = confirm("This link shall take you to a page /website outside this website https://#/UPESSC/. For any query regarding the contents of linked page/website, Please contact the Webmaster of the concerned website.");
+            if (answer != 0) {
+                return true;
+            }
+            else
+                return false;
+        });
+
+
+
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
