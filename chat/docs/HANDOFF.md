@@ -1,5 +1,13 @@
 # Yaari 인수인계 (2026-10-30) — 새 세션은 이 파일부터 읽고 시작
 
+## ★★ 2026-11-02 밤 추가 (0단계 실행) — 아래 블록보다 우선
+- 문서: `docs/TARGET_ARCHITECTURE_100K.md`·`BUILD_VS_BUY.md`·`COST_MODEL_100K.md`(+`capacity_model.py`)·`MIGRATION_ROADMAP.md`(0단계 결과 표)·`research_2026-11-02/`. 사장님 결정: **iOS 보류**.
+- 웹 사본: **https://yaari-web.pages.dev** (Cloudflare Pages, noindex). 이 브랜치에 `chat/web/**`를 푸시하면 CI `chat-web-pages`가 자동 배포한다(저장소의 Cloudflare 토큰 = 복권 사이트와 같은 것). 운영 주소는 여전히 Vercel. 헤더는 `vercel.json` 하나에서 `scripts/pages-config.mjs`가 생성한다 → **헤더를 바꿀 땐 vercel.json만 고친다**.
+- `send-sms` edge function 배포됨(꺼짐, 503). 켜는 법은 Linear YAA-5. WhatsApp을 켜면 로그인 문구 36개 언어 수정이 필요하다.
+- Deno는 컨테이너에 없음 → `npm i deno@2`(스크래치)로 `deno test _shared/*_test.ts`.
+- 주의: Supabase `execute_sql`에 DELETE/DROP/TRUNCATE 낱말이 들어가면 사장님 확인창이 떠 230초 뒤 실패한다(이번에도 1회 발생). 측정용 SQL에도 쓰지 말 것.
+- 사장님 미결 추가: YAA-15(도메인), YAA-16(LiveKit 웹훅).
+
 ## ★ 지금 상태 (2026-11-02 저녁, 컨텍스트 초기화 직전) — 새 세션은 이 블록만 읽고 바로 시작
 - **브랜치** `claude/upbeat-cannon-3ddo4f`, HEAD `eb98712e5`. 작업 트리 깨끗함. PR entrepreneur123/india#2 열려 있음(CI 녹색).
 - **배포**: Vercel production = 커밋 e9f98b4bb(실사이트 https://yaari-web-indol.vercel.app). 이후 커밋 eb98712e5는 문서뿐이라 배포 불필요.
