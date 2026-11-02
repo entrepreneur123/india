@@ -28,3 +28,4 @@
 {"at": "2026-11-02T02:22+00:00", "event": "open", "id": "mh:2026-11-01:Maharashtra Gajlaxmi Ravi", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajlaxmi Ravi 2026-11-01: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-02T02:22+00:00", "event": "open", "id": "mh:2026-11-01:Maharashtra Ganeshlaxmi Vaibhav", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Vaibhav 2026-11-01: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-02T02:22+00:00", "event": "open", "id": "mh:2026-11-01:Maharashtra Mohini", "kind": "unread", "severity": "low", "detail": "Maharashtra Mohini 2026-11-01: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-02T17:10+00:00", "event": "open", "id": "review:2026-11-02_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-02_NL1PM: gazette OCR did not confirm the 1st prize 35D 76682 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
