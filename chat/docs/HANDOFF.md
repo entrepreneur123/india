@@ -6,6 +6,7 @@
 - `send-sms` edge function 배포됨(꺼짐, 503). 켜는 법은 Linear YAA-5. WhatsApp을 켜면 로그인 문구 36개 언어 수정이 필요하다.
 - Deno는 컨테이너에 없음 → `npm i deno@2`(스크래치)로 `deno test _shared/*_test.ts`.
 - 주의: Supabase `execute_sql`에 DELETE/DROP/TRUNCATE 낱말이 들어가면 사장님 확인창이 떠 230초 뒤 실패한다(이번에도 1회 발생). 측정용 SQL에도 쓰지 말 것.
+- Vercel production = 커밋 c38732e(배포 dpl_CmdLiAYEYX3axL7C63zhcecvezSe, 재배포 때 이 id 사용). 로그인 E2E: RPC 14개 200·오류 0.
 - 사장님 미결 추가: YAA-15(도메인), YAA-16(LiveKit 웹훅).
 
 ## ★ 지금 상태 (2026-11-02 저녁, 컨텍스트 초기화 직전) — 새 세션은 이 블록만 읽고 바로 시작
