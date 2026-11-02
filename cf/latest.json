@@ -10,21 +10,21 @@
    }
   },
   {
-   "count": 210,
+   "count": 200,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 210
+    "visits": 200
    }
   },
   {
-   "count": 160,
+   "count": 110,
    "dimensions": {
     "countryName": "KR"
    },
    "sum": {
-    "visits": 70
+    "visits": 50
    }
   },
   {
@@ -83,16 +83,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 70,
-   "dimensions": {
-    "date": "2026-10-19",
-    "siteTag": "70803c3adff14678a3c5b780bf918a89"
-   },
-   "sum": {
-    "visits": 40
-   }
-  },
   {
    "count": 10,
    "dimensions": {
@@ -212,6 +202,16 @@
    "sum": {
     "visits": 20
    }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "date": "2026-11-02",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 10
+   }
   }
  ],
  "pages": [
@@ -231,15 +231,6 @@
    },
    "sum": {
     "visits": 80
-   }
-  },
-  {
-   "count": 40,
-   "dimensions": {
-    "requestPath": "/india/"
-   },
-   "sum": {
-    "visits": 20
    }
   },
   {
@@ -272,19 +263,19 @@
   {
    "count": 20,
    "dimensions": {
-    "requestPath": "/maharashtra/gajlaxmi-budh/"
+    "requestPath": "/maharashtra/ganeshlaxmi-vijayee/"
    },
    "sum": {
-    "visits": 10
+    "visits": 20
    }
   },
   {
    "count": 20,
    "dimensions": {
-    "requestPath": "/maharashtra/ganeshlaxmi-vijayee/"
+    "requestPath": "/maharashtra/gajlaxmi-budh/"
    },
    "sum": {
-    "visits": 20
+    "visits": 10
    }
   },
   {
@@ -317,7 +308,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-gajlaxmi-mangal/"
+    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
    },
    "sum": {
     "visits": 0
@@ -344,7 +335,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
+    "requestPath": "/hi/claim-prize/"
    },
    "sum": {
     "visits": 0
@@ -380,6 +371,15 @@
   {
    "count": 10,
    "dimensions": {
+    "requestPath": "/result/27-10-2026/maharashtra-gajlaxmi-mangal/"
+   },
+   "sum": {
+    "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
     "requestPath": "/bn/night-8pm/"
    },
    "sum": {
@@ -389,7 +389,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/hi/claim-prize/"
+    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
    },
    "sum": {
     "visits": 0
@@ -398,7 +398,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/old-results/"
+    "requestPath": "/result/30-10-2026/maharashtra-gajlaxmi-shukra/"
    },
    "sum": {
     "visits": 0
@@ -416,10 +416,10 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/18-10-2026/1pm/"
+    "requestPath": "/old-results/"
    },
    "sum": {
-    "visits": 10
+    "visits": 0
    }
   },
   {
@@ -434,7 +434,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/30-10-2026/maharashtra-gajlaxmi-shukra/"
+    "requestPath": "/maharashtra/sahyadri-vijayalaxmi/"
    },
    "sum": {
     "visits": 0
