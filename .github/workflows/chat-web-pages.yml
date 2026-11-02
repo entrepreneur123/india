@@ -1,0 +1,49 @@
+name: chat-web-pages
+
+# Yaari web on Cloudflare Pages, next to Vercel (docs/MIGRATION_ROADMAP.md 0-9): the same static build with the same
+# headers (scripts/pages-config.mjs turns vercel.json into _headers/_redirects). Vercel stays the production address
+# until the owner's domain exists; the *.pages.dev copy is noindex.
+on:
+  push:
+    branches: [claude/upbeat-cannon-3ddo4f]
+    paths: [chat/web/**, .github/workflows/chat-web-pages.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chat-web-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: chat/web
+    env:
+      # Public values (the same four as the Vercel project; they ship in the site's JavaScript anyway).
+      NEXT_PUBLIC_SUPABASE_URL: https://dgynsckrqgnpyyvqekzi.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneW5zY2tycWducHl5dnFla3ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNTM1NDMsImV4cCI6MjEwNzkyOTU0M30.jRi2koC_ZgTSFcEu42R2mRK_ij97NggWQ8cOSGfbAvw
+      NEXT_PUBLIC_SENTRY_DSN: https://555cf89b0616fbfe1ef40fea731c9825@o4512135769161728.ingest.us.sentry.io/4512327942209536
+      NEXT_PUBLIC_POSTHOG_KEY: phc_nYoZHXm5Pwt9eFUbUx7PJkc8s2pFTRmMSyZbZXonbyVY
+      PROJECT: yaari-web
+      HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}  # a step's own env is not visible to its if
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: chat/web/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile && pnpm build
+      - name: Deploy to Cloudflare Pages
+        if: ${{ env.HAS_CF == 'true' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          deploy() { npx --yes wrangler@4.147.0 pages deploy out --project-name "$PROJECT" --branch main --commit-dirty=true; }
+          deploy || { npx --yes wrangler@4.147.0 pages project create "$PROJECT" --production-branch main && deploy; }

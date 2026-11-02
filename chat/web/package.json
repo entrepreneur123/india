@@ -5,7 +5,7 @@
   "packageManager": "pnpm@12.3.4",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/copy-legal.mjs && node scripts/nsfw-model.mjs && next build && node scripts/csp-hashes.mjs",
+    "build": "node scripts/copy-legal.mjs && node scripts/nsfw-model.mjs && next build && node scripts/csp-hashes.mjs && node scripts/pages-config.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "node --test lib/tests/*.test.ts"
