@@ -21,7 +21,7 @@ import {
   VideoPresets,
 } from 'livekit-client'
 import { canGate, gate } from './voice-gate'
-import { connectOptions, type DeviceProblem, deviceProblem, partnerNotice, preferRelay, type Quality, RELAY_AFTER, videoCodecFor } from './rtc'
+import { connectOptions, type DeviceProblem, deviceProblem, micRaw, partnerNotice, preferRelay, type Quality, RELAY_AFTER, videoCodecFor } from './rtc'
 
 /** 'lost': LiveKit gave up for a reason a fresh join can fix (the call screen joins again); 'failed': it can't. */
 export type CallState = 'connecting' | 'connected' | 'reconnecting' | 'lost' | 'failed'
@@ -232,11 +232,12 @@ export async function joinCall(
  * My microphone in [room], cleaned as Discord's is: LiveKit's Krisp noise filter with background voice cancellation
  * (on our LiveKit Cloud project: its /settings says enhancedNoiseCancellation). It keeps the voice of the person at the
  * phone and drops noise, music and other voices. Loaded only when the microphone goes on. Where Krisp can't run,
- * computers get the voice gate (sent only while someone talks); elsewhere the microphone goes out as before.
+ * computers get the voice gate (sent only while someone talks); elsewhere the microphone goes out as before. A browser
+ * flagged raw (lib/rtc micRaw, the /audio-check page) sends the microphone untouched.
  */
 export function cleanMicrophone(room: Room) {
   room.on(RoomEvent.LocalTrackPublished, async (pub: LocalTrackPublication) => {
-    if (pub.source !== Track.Source.Microphone || !pub.track) return
+    if (pub.source !== Track.Source.Microphone || !pub.track || micRaw()) return
     const track = pub.track as LocalAudioTrack
     try {
       const { KrispNoiseFilter, isKrispNoiseFilterSupported } = await import('@livekit/krisp-noise-filter')

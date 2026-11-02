@@ -62,6 +62,28 @@ export function preferRelay(now = Date.now()) {
   }
 }
 
+const MIC_KEY = 'yaari_mic'
+/**
+ * True once this browser was told (the /audio-check page) to send the microphone as the browser hands it over: no
+ * Krisp, no voice gate. For telling a bad browser path from a bad room, one device at a time.
+ */
+export function micRaw(): boolean {
+  try {
+    return localStorage.getItem(MIC_KEY) === 'raw'
+  } catch {
+    return false
+  }
+}
+
+export function setMicRaw(raw: boolean) {
+  try {
+    if (raw) localStorage.setItem(MIC_KEY, 'raw')
+    else localStorage.removeItem(MIC_KEY)
+  } catch {
+    /* private mode: this page load only */
+  }
+}
+
 /** For room.connect: relay only, still with the server's own TURN list (LiveKit fills iceServers when none are given). */
 export const connectOptions = () => (relayFirst() ? { rtcConfig: { iceTransportPolicy: 'relay' as const } } : undefined)
 

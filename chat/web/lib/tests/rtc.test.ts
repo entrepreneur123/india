@@ -98,3 +98,21 @@ test('withOpusParams: the Opus fmtp line carries the rooms\' settings, keeps the
   // no Opus: untouched
   assert.equal(withOpusParams('a=rtpmap:8 PCMA/8000\r\n'), 'a=rtpmap:8 PCMA/8000\r\n')
 })
+
+test('the raw-microphone flag is per browser and survives a missing localStorage', async () => {
+  const { micRaw, setMicRaw } = await import('../rtc.ts')
+  const store = new Map<string, string>()
+  const g = globalThis as { localStorage?: unknown }
+  g.localStorage = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) }
+  try {
+    assert.equal(micRaw(), false)
+    setMicRaw(true)
+    assert.equal(micRaw(), true)
+    setMicRaw(false)
+    assert.equal(micRaw(), false)
+  } finally {
+    delete g.localStorage
+  }
+  assert.equal(micRaw(), false) // no storage at all: never raw
+  setMicRaw(true) // and never throws
+})

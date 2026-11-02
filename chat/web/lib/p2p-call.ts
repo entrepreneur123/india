@@ -10,7 +10,7 @@
 // a network that blocks a direct path goes through LiveKit, whose TURN covers it.
 import type { CallMsg, CallSignal } from './backend'
 import type { Call, CallEvents } from './livekit'
-import { deviceProblem, type DeviceProblem, pathQuality, preferRed, withOpusParams } from './rtc'
+import { deviceProblem, type DeviceProblem, micRaw, pathQuality, preferRed, withOpusParams } from './rtc'
 import { canGate, voiceOnly } from './voice-gate'
 
 const ICE: RTCIceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }]
@@ -101,7 +101,7 @@ export async function joinP2P(
   // Computers send the microphone through the voice gate (lib/voice-gate, as the rooms do where Krisp can't run):
   // the raw microphone goes out until the gate is ready, then the gated one replaces it.
   let closed = false
-  const ctx = canGate() ? new AudioContext() : null
+  const ctx = canGate() && !micRaw() ? new AudioContext() : null
   let gated: Awaited<ReturnType<typeof voiceOnly>> | null = null
   let micTurn = 0
   const sendMic = async () => {
