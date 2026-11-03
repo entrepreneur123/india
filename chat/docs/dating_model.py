@@ -1,13 +1,16 @@
 """Dating app (Tinder-style swipes + random voice match) at 100k peak CCU: monthly cost per stack. (2026-11-03)
 Every usage figure is an assumption (T*); prices are the official pages in COST_MODEL_100K.md §1 / research_2026-11-02.
 Run: python3 chat/docs/dating_model.py"""
-CCU, MAU_PER_CCU, AVG = 100_000, 20, 0.5            # T1: monthly actives = 20 x peak concurrent; average = half of peak
+import sys
+CCU = int(sys.argv[1]) if len(sys.argv) > 1 else 100_000
+LIGHT = "light" in sys.argv                          # T10: lighter use: average 35% of peak, 8% in calls, 90% photo cache hits
+MAU_PER_CCU, AVG = 20, (0.35 if LIGHT else 0.5)           # T1: monthly actives = 20 x peak concurrent; average = half of peak
 SEC = 30 * 86400 * AVG                               # concurrency-seconds per peak user per month
-SWIPE, CHAT, QUEUE, CALL = 0.40, 0.30, 0.10, 0.15   # T2: share of peak users swiping, chatting, waiting for a match, in a voice call
+SWIPE, CHAT, QUEUE, CALL = 0.40, 0.30, 0.10, (0.08 if LIGHT else 0.15)   # T2: share of peak users swiping, chatting, waiting for a match, in a voice call
 CARD_S, PHOTO_KB, PHOTOS = 4, 40, 2                  # T3: a card every 4 s, 2 WebP thumbnails of 40 KB
-CACHE_HIT = 0.8                                      # T4: CDN cache hit rate for photos
+CACHE_HIT = 0.9 if LIGHT else 0.8                                     # T4: CDN cache hit rate for photos
 MSG_S, TYPING = 30, 0.5                              # T5: a chat message every 30 s; typing/presence = +50% of deliveries
-DB_RPS = (5_000, 7_000)                              # T6: DB calls/s at peak with no polling (reads 3-6k incl. card batches, writes ~1.4k)
+DB_RPS = tuple(x * CCU / 100_000 for x in (5_000, 7_000))                             # T6: DB calls/s at peak with no polling (reads 3-6k incl. card batches, writes ~1.4k)
 MS_CALL, UTIL, VCPU = 4, 0.6, 20                     # T7: 4 ms per call, plan to 60% CPU, $20 per dedicated vCPU-month (A15)
 KBPS = (44, 106)                                     # T8: relayed voice stream: economy Opus 24k / today's 48k+RED, incl. headers
 OTP_SHARE, KYC_SHARE = 0.10, (0.005, 0.02)           # T9: OTPs per MAU per month; share of MAU doing a $0.33 ID check
@@ -22,18 +25,19 @@ photo_tb = photo_req * PHOTO_KB / 1e9
 # voice: every stranger/match call relayed (IP hidden); each caller receives one stream
 voice_tb = [CCU * CALL * k * 1000 / 8 * SEC / 1e12 for k in KBPS]
 cf_turn = [tb * 1000 * 0.05 for tb in voice_tb]
-own_turn = [tb * 1000 * 0.01 + 8 * 4 * VCPU for tb in voice_tb[:1]] + [voice_tb[1] * 1000 * 0.08 + 8 * 4 * VCPU]
+nodes = max(2, -(-CCU // 12_500)) * 4                 # 4 vCPU coturn per region slice, at least 2
+own_turn = [voice_tb[0] * 1000 * 0.01 + nodes * VCPU, voice_tb[1] * 1000 * 0.08 + nodes * VCPU]
 # realtime traffic
 sends = CCU * CHAT / MSG_S
 deliv = sends * 2 * (1 + TYPING)
-supa_rt = (CCU - 500) / 1000 * 10 + ((sends + deliv) * SEC / 1e6 - 5) * 2.5
+supa_rt = max(0, CCU - 500) / 1000 * 10 + max(0, (sends + deliv) * SEC / 1e6 - 5) * 2.5
 incoming = sends * (1 + TYPING) + CCU * QUEUE / 10          # chat + typing + a matching heartbeat every 10 s
 do_rt = [5 + incoming * SEC / 20 * 0.15e-6 + incoming * SEC * ms / 1000 * 0.128 * 12.5e-6 for ms in (2, 20)]
-own_rt = 6 * 8 * VCPU + 2 * 4 * VCPU                         # Supabase Realtime x6 nodes + Valkey pair
+own_rt = (max(2, -(-CCU // 25_000)) * 8 + 2 * 2) * VCPU                        # Supabase Realtime x6 nodes + Valkey pair
 # database
-supa_compute = lambda need: next(usd for v, usd in [(16, 960), (32, 1870), (48, 2800), (64, 3730)] if v >= need)
-supa_db = [599 + supa_compute(db_vcpu(x)) + max(0, mau - 100_000) * 0.00325 + x * 2 * SEC / 1e6 * 0.09 for x in DB_RPS]
-own_db = [(round(db_vcpu(x)) * 2 + round(db_vcpu(x)) // 2 + 4 * 4) * VCPU + 150 for x in DB_RPS]   # primary+standby+replica, API, backups
+supa_compute = lambda need: next(usd for v, usd in [(1, 15), (2, 110), (4, 210), (8, 410), (16, 960), (32, 1870), (48, 2800), (64, 3730)] if v >= need)
+supa_db = [25 + supa_compute(db_vcpu(x)) + max(0, mau - 100_000) * 0.00325 + x * 2 * SEC / 1e6 * 0.09 for x in DB_RPS]
+own_db = [(max(4, round(db_vcpu(x))) * 2 + max(2, round(db_vcpu(x)) // 2) + 2 * 2) * VCPU + 150 for x in DB_RPS]   # primary+standby+replica, API, backups
 otp = [mau * OTP_SHARE * c for c in (0.0064, 0.083)]          # WhatsApp (Meta + Twilio fee) / international SMS
 kyc = [mau * s * 0.33 for s in KYC_SHARE]
 misc = 300                                                   # monitoring, Workers Paid, Pages, DNS
