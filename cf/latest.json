@@ -317,7 +317,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
+    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
    },
    "sum": {
     "visits": 0
@@ -398,7 +398,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
+    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
    },
    "sum": {
     "visits": 0

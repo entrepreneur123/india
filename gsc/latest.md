@@ -1,4 +1,4 @@
-# Search Console 2026-10-06 – 2026-11-03 (generated 2026-11-03T11:04+00:00)
+# Search Console 2026-10-06 – 2026-11-03 (generated 2026-11-03T15:54+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
@@ -6,8 +6,8 @@
 | ind | 190 | 2522 | 7.5% | 7.7 |
 | bgd | 2 | 68 | 2.9% | 23 |
 | bra | 0 | 23 | 0.0% | 45.8 |
+| kor | 5 | 10 | 50.0% | 1.2 |
 | usa | 0 | 9 | 0.0% | 29 |
-| kor | 5 | 8 | 62.5% | 1.2 |
 | are | 0 | 7 | 0.0% | 17 |
 | rus | 0 | 6 | 0.0% | 37.3 |
 | arg | 0 | 5 | 0.0% | 46 |
@@ -27,7 +27,7 @@
 | 2026-10-31 | 58 | 814 | 7.1% | 7.9 |
 | 2026-11-01 | 3 | 22 | 13.6% | 9 |
 | 2026-11-02 | 0 | 2 | 0.0% | 3 |
-| 2026-11-03 | 0 | 0 | 0.0% | 0 |
+| 2026-11-03 | 0 | 2 | 0.0% | 1 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -184,7 +184,7 @@
 ## Pages (all countries)
 | page | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| https://lottodost.com/maharashtra/akshay/ | 53 | 347 | 15.3% | 4.1 |
+| https://lottodost.com/maharashtra/akshay/ | 53 | 348 | 15.2% | 4.1 |
 | https://lottodost.com/maharashtra/gajlaxmi-budh/ | 16 | 212 | 7.5% | 6.1 |
 | https://lottodost.com/maharashtra/gajlaxmi-shukra/ | 21 | 206 | 10.2% | 6.1 |
 | https://lottodost.com/maharashtra/padmini/ | 6 | 135 | 4.4% | 5.4 |
@@ -195,8 +195,8 @@
 | https://lottodost.com/maharashtra/gajlaxmi-som/ | 1 | 80 | 1.2% | 8.0 |
 | https://lottodost.com/result/28-10-2026/ | 2 | 70 | 2.9% | 13.0 |
 | https://lottodost.com/maharashtra/sahyadri-mahalaxmi/ | 4 | 59 | 6.8% | 6.3 |
+| https://lottodost.com/maharashtra/sagarlaxmi/ | 3 | 55 | 5.5% | 5.0 |
 | https://lottodost.com/day-6pm/ | 1 | 55 | 1.8% | 14.3 |
-| https://lottodost.com/maharashtra/sagarlaxmi/ | 3 | 54 | 5.6% | 5.0 |
 | https://lottodost.com/result/25-10-2026/ | 5 | 49 | 10.2% | 10.7 |
 | https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/ | 6 | 46 | 13.0% | 4.5 |
 | https://lottodost.com/result/29-10-2026/ | 4 | 44 | 9.1% | 13.5 |
@@ -205,12 +205,12 @@
 | https://lottodost.com/kerala/ | 3 | 37 | 8.1% | 17 |
 | https://lottodost.com/morning-1pm/ | 2 | 36 | 5.6% | 21.4 |
 | https://lottodost.com/result/24-10-2026/ | 0 | 35 | 0.0% | 10.0 |
-| https://lottodost.com/ | 8 | 30 | 26.7% | 13.5 |
+| https://lottodost.com/ | 8 | 32 | 25.0% | 12.8 |
 | https://lottodost.com/maharashtra/sahyadri-dhanlaxmi/ | 2 | 28 | 7.1% | 5.9 |
 | https://lottodost.com/result/28-10-2026/kerala/ | 1 | 27 | 3.7% | 14.4 |
 | https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/ | 3 | 25 | 12.0% | 5.6 |
+| https://lottodost.com/claim-prize/ | 0 | 21 | 0.0% | 8.1 |
 | https://lottodost.com/maharashtra// | 4 | 20 | 20.0% | 3.4 |
-| https://lottodost.com/claim-prize/ | 0 | 20 | 0.0% | 8.2 |
 | https://lottodost.com/hi/lottery-tax/ | 0 | 20 | 0.0% | 8.1 |
 | https://lottodost.com/lottery-scams/ | 0 | 20 | 0.0% | 10.4 |
 | https://lottodost.com/result/22-10-2026/ | 2 | 19 | 10.5% | 10.3 |
@@ -232,7 +232,7 @@
 | https://lottodost.com/bn/ | PASS | Submitted and indexed | 2026-11-03T09:13:33Z |
 | https://lottodost.com/hi/ | PASS | Submitted and indexed | 2026-11-02T08:12:25Z |
 | https://lottodost.com/kerala/ | PASS | Submitted and indexed | 2026-11-01T12:12:25Z |
-| https://lottodost.com/maharashtra/ | PASS | Submitted and indexed | 2026-11-01T04:42:25Z |
+| https://lottodost.com/maharashtra/ | PASS | Submitted and indexed | 2026-11-03T11:37:47Z |
 | https://lottodost.com/night-8pm/ | PASS | Submitted and indexed | 2026-11-03T01:42:28Z |
 | https://lottodost.com/day-6pm/ | PASS | Submitted and indexed | 2026-10-28T22:51:00Z |
 | https://lottodost.com/morning-1pm/ | PASS | Submitted and indexed | 2026-10-29T21:36:27Z |
