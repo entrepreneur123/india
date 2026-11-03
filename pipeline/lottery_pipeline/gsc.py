@@ -100,6 +100,9 @@ def main() -> int:
            "queries_india": query(s, a.site, start, end, ["query"], country="ind"),
            "pages": query(s, a.site, start, end, ["page"]),
            "query_pages_india": query(s, a.site, start, end, ["query", "page"], country="ind"),
+           # which pages gained or lost impressions on which day (a sudden drop: 01-11-2026)
+           "days_pages": query(s, a.site, end - dt.timedelta(days=10), end, ["date", "page"], limit=5000),
+           "days_queries_india": query(s, a.site, end - dt.timedelta(days=10), end, ["date", "query"], country="ind", limit=5000),
            "inspections": [inspect(s, a.site, a.base_url.rstrip("/") + p) for p in INSPECT]}
     a.out.mkdir(parents=True, exist_ok=True)
     (a.out / "history").mkdir(exist_ok=True)
