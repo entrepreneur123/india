@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-03T09:25+00:00",
+ "generated": "2026-11-03T11:04+00:00",
  "site": "sc-domain:lottodost.com",
  "start": "2026-10-06",
  "end": "2026-11-03",
@@ -327,6 +327,13 @@
    "impressions": 2,
    "ctr": 0,
    "position": 3
+  },
+  {
+   "date": "2026-11-03",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
   }
  ],
  "queries_india": [
@@ -11575,6 +11582,13 @@
   },
   {
    "date": "2026-11-02",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-03",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,

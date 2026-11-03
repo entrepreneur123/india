@@ -1,4 +1,4 @@
-# Search Console 2026-10-06 – 2026-11-03 (generated 2026-11-03T09:25+00:00)
+# Search Console 2026-10-06 – 2026-11-03 (generated 2026-11-03T11:04+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
@@ -27,6 +27,7 @@
 | 2026-10-31 | 58 | 814 | 7.1% | 7.9 |
 | 2026-11-01 | 3 | 22 | 13.6% | 9 |
 | 2026-11-02 | 0 | 2 | 0.0% | 3 |
+| 2026-11-03 | 0 | 0 | 0.0% | 0 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
