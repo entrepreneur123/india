@@ -66,6 +66,15 @@
   {
    "count": 10,
    "dimensions": {
+    "countryName": "NO"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
     "countryName": "CA"
    },
    "sum": {
@@ -202,16 +211,26 @@
    "sum": {
     "visits": 20
    }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "date": "2026-11-03",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 10
+   }
   }
  ],
  "pages": [
   {
-   "count": 300,
+   "count": 310,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 280
+    "visits": 290
    }
   },
   {
