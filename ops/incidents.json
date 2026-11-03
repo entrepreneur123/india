@@ -35,6 +35,12 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Dhanlaxmi 2026-11-02: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-03T01:08+00:00"
+  },
+  "review:2026-11-03_NL8PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-03_NL8PM: gazette OCR did not confirm the 1st prize 55J 48301 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-03T15:20+00:00"
   }
  },
  "resolved": {
