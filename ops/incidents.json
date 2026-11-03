@@ -23,6 +23,18 @@
    "severity": "low",
    "detail": "2026-11-02_NL1PM: gazette OCR did not confirm the 1st prize 35D 76682 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-02T17:10+00:00"
+  },
+  "mh:2026-11-02:Maharashtra Sagarlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sagarlaxmi 2026-11-02: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-03T01:08+00:00"
+  },
+  "mh:2026-11-02:Maharashtra Sahyadri Dhanlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Dhanlaxmi 2026-11-02: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-03T01:08+00:00"
   }
  },
  "resolved": {
