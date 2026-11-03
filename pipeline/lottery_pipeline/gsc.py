@@ -36,9 +36,10 @@ def session(key_json: str = "", token: str = ""):
     return AuthorizedSession(creds)
 
 
-def query(s, site: str, start: dt.date, end: dt.date, dims: list[str], country: str = "", limit: int = 1000) -> list[dict]:
+def query(s, site: str, start: dt.date, end: dt.date, dims: list[str], country: str = "", limit: int = 1000,
+          search_type: str = "web") -> list[dict]:
     body: dict = {"startDate": start.isoformat(), "endDate": end.isoformat(), "dimensions": dims,
-                  "rowLimit": limit, "dataState": "all"}
+                  "rowLimit": limit, "dataState": "all", "type": search_type}
     if country:
         body["dimensionFilterGroups"] = [{"filters": [{"dimension": "country", "operator": "equals", "expression": country}]}]
     r = s.post(f"{API}/webmasters/v3/sites/{urllib.parse.quote(site, safe='')}/searchAnalytics/query", json=body, timeout=60)
@@ -102,6 +103,9 @@ def main() -> int:
            "query_pages_india": query(s, a.site, start, end, ["query", "page"], country="ind"),
            # which pages gained or lost impressions on which day (a sudden drop: 01-11-2026)
            "days_pages": query(s, a.site, end - dt.timedelta(days=10), end, ["date", "page"], limit=5000),
+           # Google Images: do the result cards (og/*.png, image sitemap) get shown at all?
+           "image_days": query(s, a.site, start, end, ["date"], search_type="image"),
+           "image_pages": query(s, a.site, start, end, ["page"], search_type="image"),
            "days_queries_india": query(s, a.site, end - dt.timedelta(days=10), end, ["date", "query"], country="ind", limit=5000),
            "inspections": [inspect(s, a.site, a.base_url.rstrip("/") + p) for p in INSPECT]}
     a.out.mkdir(parents=True, exist_ok=True)
