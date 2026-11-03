@@ -1,4 +1,4 @@
-# Search Console 2026-10-06 – 2026-11-03 (generated 2026-11-03T04:38+00:00)
+# Search Console 2026-10-06 – 2026-11-03 (generated 2026-11-03T04:43+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
