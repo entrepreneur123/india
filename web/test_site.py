@@ -575,6 +575,10 @@ def test_a_maharashtra_series_gets_one_page_for_all_its_weekday_draws(tmp_path, 
     out = build(tmp_path, monkeypatch)
     page = (out / "maharashtra/gajlaxmi/index.html").read_text()
     assert "<title>Maharashtra Gajlaxmi Lottery Result Today 18.10.2026 (Nikal) – Gajlaxmi Shukra, Shani, Ravi</title>" in page
+    later = tmp_path / "later"   # the next morning, before that day's sheets: no "Today" on yesterday's date
+    sitegen.Site(tmp_path / "data", "https://example.in", now=dt.datetime(2026, 10, 19, 11, 0, tzinfo=sitegen.IST)).build(later)
+    old = (later / "maharashtra/gajlaxmi/index.html").read_text()
+    assert "<title>Maharashtra Gajlaxmi Lottery Result 18.10.2026 (Nikal)" in old and "Result Today" not in old.split("</h1>")[0]
     recent = page[page.index("Recent Gajlaxmi results"):]
     assert recent.index("GL-00 2142") < recent.index("GL-04 3701") < recent.index("GL-01 1326")   # newest first
     sched = page[page.index("Gajlaxmi draws"):page.index("Recent Gajlaxmi results")]

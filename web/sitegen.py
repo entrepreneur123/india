@@ -68,7 +68,7 @@ ML = {
 # Maharashtra State Lottery (other state lotteries, kept apart from Lottery Sambad and Kerala).
 MH = {
     "en": {"tab": "Maharashtra", "h1": "Maharashtra Lottery Result Today", "other": "Other state lotteries",
-           "series_h1": "Maharashtra {g} Lottery Result Today", "series_title": "Maharashtra {g} Lottery Result Today {d} (Nikal) – {g} {list}", "series_desc": "Maharashtra {g} lottery result today {d}{f}. {g} draws: {list}. Every {g} result with its official sheet from the Government of Maharashtra.", "series_when": "{g} has a draw on {n} days of the week, each with its own name:", "series_recent": "Recent {g} results", "series_games": "{g} draws", "day": "Day", "game": "Draw", "time": "Time", "latest": "Latest result", "game_h1": "Maharashtra {g} Lottery Result", "game_title": "Maharashtra {g} Lottery Result {d} (Nikal) – {k} Draw, Official Sheet",
+           "series_h1": "Maharashtra {g} Lottery Result Today", "series_title": "Maharashtra {g} Lottery Result {t}{d} (Nikal) – {g} {list}", "series_desc": "Maharashtra {g} lottery result {t}{d}{f}. {g} draws: {list}. Every {g} result with its official sheet from the Government of Maharashtra.", "series_when": "{g} has a draw on {n} days of the week, each with its own name:", "series_recent": "Recent {g} results", "series_games": "{g} draws", "day": "Day", "game": "Draw", "time": "Time", "latest": "Latest result", "game_h1": "Maharashtra {g} Lottery Result", "game_title": "Maharashtra {g} Lottery Result {d} (Nikal) – {k} Draw, Official Sheet",
            "game_desc": "Maharashtra {g} lottery result {d}{f}. Every {g} draw with its official result sheet (PDF) from the Government of Maharashtra.",
            "game_when": "{k} draw every {wd}{t}.", "game_when_any": "{k} draw.", "game_past": "Earlier {g} draws", "games": "All Maharashtra lotteries",
            "first_is": ": 1st prize {n}", "sheet_only": "Official sheet", "marathi": "मराठीत वाचा →",
@@ -86,7 +86,7 @@ MH = {
            "desc_pdf": "Maharashtra State Lottery result {d}: {list} – the official result sheet (PDF) of every draw, straight from the Government of Maharashtra.",
            "pdf_note": "Each draw links its official result sheet (PDF) on the Maharashtra State Lottery website. Check your ticket against that sheet."},
     "bn": {"tab": "মহারাষ্ট্র", "h1": "মহারাষ্ট্র লটারি আজকের রেজাল্ট", "other": "অন্য রাজ্যের লটারি",
-           "series_h1": "মহারাষ্ট্র {g} লটারি আজকের রেজাল্ট", "series_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট আজ {d} – {g} {list}", "series_desc": "মহারাষ্ট্র {g} লটারি আজকের রেজাল্ট {d}{f}। {g}-এর ড্র: {list}। মহারাষ্ট্র সরকারের সরকারি শিট সহ {g}-এর প্রতিটি রেজাল্ট।", "series_when": "{g}-এর ড্র সপ্তাহে {n} দিন, প্রতিদিনের আলাদা নাম:", "series_recent": "{g}-এর সাম্প্রতিক রেজাল্ট", "series_games": "{g}-এর ড্র", "day": "দিন", "game": "ড্র", "time": "সময়", "latest": "সর্বশেষ রেজাল্ট", "game_h1": "মহারাষ্ট্র {g} লটারি রেজাল্ট", "game_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d} – {k} ড্র, সরকারি শিট",
+           "series_h1": "মহারাষ্ট্র {g} লটারি আজকের রেজাল্ট", "series_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট {t}{d} – {g} {list}", "series_desc": "মহারাষ্ট্র {g} লটারি রেজাল্ট {t}{d}{f}। {g}-এর ড্র: {list}। মহারাষ্ট্র সরকারের সরকারি শিট সহ {g}-এর প্রতিটি রেজাল্ট।", "series_when": "{g}-এর ড্র সপ্তাহে {n} দিন, প্রতিদিনের আলাদা নাম:", "series_recent": "{g}-এর সাম্প্রতিক রেজাল্ট", "series_games": "{g}-এর ড্র", "day": "দিন", "game": "ড্র", "time": "সময়", "latest": "সর্বশেষ রেজাল্ট", "game_h1": "মহারাষ্ট্র {g} লটারি রেজাল্ট", "game_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d} – {k} ড্র, সরকারি শিট",
            "game_desc": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}{f}। মহারাষ্ট্র সরকারের সরকারি রেজাল্ট শিট (PDF) সহ {g}-এর প্রতিটি ড্র।",
            "game_when": "প্রতি {wd} {k} ড্র{t}।", "game_when_any": "{k} ড্র।", "game_past": "{g}-এর আগের ড্র", "games": "মহারাষ্ট্রের সব লটারি",
            "first_is": ": প্রথম পুরস্কার {n}", "sheet_only": "সরকারি শিট", "marathi": "মারাঠিতে পড়ুন →",
@@ -104,7 +104,7 @@ MH = {
            "desc_pdf": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list} – প্রতিটি ড্রয়ের সরকারি রেজাল্ট শিট (PDF), সরাসরি মহারাষ্ট্র সরকারের কাছ থেকে।",
            "pdf_note": "প্রতিটি ড্রয়ের সঙ্গে মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইটের সরকারি রেজাল্ট শিটের (PDF) লিংক আছে। ওই শিটের সঙ্গে টিকিট মিলিয়ে নিন।"},
     "hi": {"tab": "महाराष्ट्र", "h1": "महाराष्ट्र लॉटरी रिज़ल्ट आज", "other": "दूसरे राज्यों की लॉटरी",
-           "series_h1": "महाराष्ट्र {g} लॉटरी रिज़ल्ट आज", "series_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट (निकाल) आज {d} – {g} {list}", "series_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट आज {d}{f}। {g} के ड्रॉ: {list}। महाराष्ट्र सरकार की सरकारी शीट के साथ {g} का हर रिज़ल्ट।", "series_when": "{g} का ड्रॉ हफ़्ते में {n} दिन होता है, हर दिन का अलग नाम:", "series_recent": "{g} के हाल के रिज़ल्ट", "series_games": "{g} के ड्रॉ", "day": "दिन", "game": "ड्रॉ", "time": "समय", "latest": "ताज़ा रिज़ल्ट", "game_h1": "महाराष्ट्र {g} लॉटरी रिज़ल्ट", "game_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट (निकाल) {d} – {k} ड्रॉ, सरकारी शीट",
+           "series_h1": "महाराष्ट्र {g} लॉटरी रिज़ल्ट आज", "series_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट (निकाल) {t}{d} – {g} {list}", "series_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {t}{d}{f}। {g} के ड्रॉ: {list}। महाराष्ट्र सरकार की सरकारी शीट के साथ {g} का हर रिज़ल्ट।", "series_when": "{g} का ड्रॉ हफ़्ते में {n} दिन होता है, हर दिन का अलग नाम:", "series_recent": "{g} के हाल के रिज़ल्ट", "series_games": "{g} के ड्रॉ", "day": "दिन", "game": "ड्रॉ", "time": "समय", "latest": "ताज़ा रिज़ल्ट", "game_h1": "महाराष्ट्र {g} लॉटरी रिज़ल्ट", "game_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट (निकाल) {d} – {k} ड्रॉ, सरकारी शीट",
            "game_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}{f}। महाराष्ट्र सरकार की सरकारी रिज़ल्ट शीट (PDF) के साथ {g} का हर ड्रॉ।",
            "game_when": "हर {wd} {k} ड्रॉ{t}।", "game_when_any": "{k} ड्रॉ।", "game_past": "{g} के पिछले ड्रॉ", "games": "महाराष्ट्र की सभी लॉटरी",
            "first_is": ": पहला इनाम {n}", "sheet_only": "सरकारी शीट", "marathi": "मराठी में पढ़ें →",
@@ -1268,7 +1268,8 @@ class Site:
                    f'{esc(m["sheet_only"])} (PDF)</a>') + '</td></tr>'
                 for d in draws[:21])
             first = next((d for d in today if d in ok), None)
-            body = (f'<div class="intro"><h1>{esc(m["series_h1"].format(g=g))} <span class="d">{esc(ddmmyyyy(latest_day))}</span></h1>'
+            h1 = m["series_h1"].format(g=g) if latest_day == self.today else m["game_h1"].format(g=g)
+            body = (f'<div class="intro"><h1>{esc(h1)} <span class="d">{esc(ddmmyyyy(latest_day))}</span></h1>'
                     f'<p class="hint">{esc(m["series_when"].format(g=series, n=len(order)))}</p></div>'
                     + (self.checker(lang, hint=m["check_hint"], example=ok[0]["tiers"][0]["numbers"][0]) if ok else "")
                     + "".join(self.mh_card(lang, d) for d in today) + self.ad()
@@ -1279,11 +1280,12 @@ class Site:
                       f'<th>{esc(w["date"])}</th><th>{esc(m["game"])}</th><th>{esc(s["first_prize"])}</th></tr></thead><tbody>{recent}</tbody></table></div>'
                     + f'<p class="hint">{esc(m["ocr_note"])}</p>' + self.mh_game_links(lang)
                     + f'<p class="pn"><a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
-            d0 = ({"en": "", "bn": "", "hi": ""}[lang]) + ddmmyyyy(latest_day)
+            d0 = ddmmyyyy(latest_day)
+            t = {"en": "Today ", "bn": "আজ ", "hi": "आज "}[lang] if latest_day == self.today else ""   # never "today" on an older date
             f = m["first_is"].format(n=first["tiers"][0]["numbers"][0]) if first else ""
             self.write(out, lang, path, self.page(
-                lang, path, m["series_title"].format(g=g, d=d0, list=", ".join(short)),
-                m["series_desc"].format(g=g, d=d0, f=f, list=", ".join(short)), body, data=ok[:5],
+                lang, path, m["series_title"].format(g=g, t=t, d=d0, list=", ".join(short)),
+                m["series_desc"].format(g=g, t=t, d=d0, f=f, list=", ".join(short)), body, data=ok[:5],
                 image=self.og_images.get(first["id"], "") if first else "",
                 crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (series, path)],
                 modified=self.updated if latest_day == self.today else None),
