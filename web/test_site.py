@@ -557,3 +557,32 @@ def test_a_nameless_maharashtra_draw_links_no_game_page(tmp_path, monkeypatch):
     missing = [h for h in links if not (out / h.lstrip("/") / "index.html").exists() and not (out / h.lstrip("/")).exists()
                and not (out / (h.lstrip("/") + ".html")).exists() and h != "/privacy.html"]   # privacy.html is a static file
     assert missing == []
+
+
+def test_a_maharashtra_series_gets_one_page_for_all_its_weekday_draws(tmp_path, monkeypatch):
+    # "maharashtra gajlaxmi lottery result today" was the top query (30-31.10): a different name each weekday
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    def g(date, wd, local, n):
+        return dict(MH_DRAW, id=f"{date}_MH_GAJLAXMI-{wd.upper()}", date=date, name=f"Maharashtra Gajlaxmi {wd}",
+                    nameLocal=f"महाराष्ट्र गजलक्ष्मी {local} साप्ताहिक सोडत",
+                    tiers=[dict(MH_DRAW["tiers"][0], numbers=[n])] + MH_DRAW["tiers"][1:])
+    days = {"2026-10-16": [g("2026-10-16", "Shukra", "शुक्र", "GL-01 1326")],
+            "2026-10-17": [g("2026-10-17", "Shani", "शनि", "GL-04 3701")],
+            "2026-10-18": [MH_DRAW, dict(MH_DRAW, id="2026-10-18_MH_AKSHAY", name="Maharashtra Akshay", nameLocal="महाराष्ट्र अक्षय साप्ताहिक सोडत")]}
+    for d, draws in days.items():
+        (data / f"{d}.json").write_text(json.dumps({"schema": 2, "date": d, "draws": draws}))
+    out = build(tmp_path, monkeypatch)
+    page = (out / "maharashtra/gajlaxmi/index.html").read_text()
+    assert "<title>Maharashtra Gajlaxmi Lottery Result Today 18.10.2026 (Nikal) – Gajlaxmi Shukra, Shani, Ravi</title>" in page
+    recent = page[page.index("Recent Gajlaxmi results"):]
+    assert recent.index("GL-00 2142") < recent.index("GL-04 3701") < recent.index("GL-01 1326")   # newest first
+    sched = page[page.index("Gajlaxmi draws"):page.index("Recent Gajlaxmi results")]
+    assert sched.index("Friday") < sched.index("Saturday") < sched.index("Sunday")                # by weekday
+    for game in ("gajlaxmi-ravi", "gajlaxmi-shani", "gajlaxmi-shukra"):
+        assert f'href="/maharashtra/{game}/"' in page
+    hi = (out / "hi/maharashtra/gajlaxmi/index.html").read_text()
+    assert "महाराष्ट्र गजलक्ष्मी (Gajlaxmi) लॉटरी रिज़ल्ट (निकाल) आज 18.10.2026 – गजलक्ष्मी (Gajlaxmi) शुक्र, शनि, रवि" in hi
+    assert not (out / "maharashtra/akshay-").exists() and not (out / "maharashtra/maharashtra").exists()   # no series of one
+    assert 'href="/maharashtra/gajlaxmi/"' in (out / "maharashtra/gajlaxmi-ravi/index.html").read_text()   # game -> series
+    assert "https://example.in/maharashtra/gajlaxmi/" in (out / "sitemap.xml").read_text()
