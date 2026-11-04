@@ -43,3 +43,6 @@
 {"at": "2026-11-04T06:02+00:00", "event": "open", "id": "mh:2026-11-03:Maharashtra Padmini", "kind": "unread", "severity": "low", "detail": "Maharashtra Padmini 2026-11-03: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-04T06:02+00:00", "event": "open", "id": "mh:2026-11-03:Maharashtra Sahyadri Mahalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-03: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-04T15:35+00:00", "event": "open", "id": "review:2026-11-04_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-04_NL8PM: gazette OCR did not confirm the 1st prize 38L 06381 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "mh:2026-11-02:Maharashtra Sagarlaxmi"}
+{"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "mh:2026-11-02:Maharashtra Sahyadri Dhanlaxmi"}
+{"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "review:2026-11-03_NL8PM"}
