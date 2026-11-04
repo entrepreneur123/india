@@ -39,3 +39,6 @@
 {"at": "2026-11-03T19:39+00:00", "event": "resolved", "id": "mh:2026-11-01:Maharashtra Ganeshlaxmi Vaibhav"}
 {"at": "2026-11-03T19:39+00:00", "event": "resolved", "id": "mh:2026-11-01:Maharashtra Mohini"}
 {"at": "2026-11-03T19:39+00:00", "event": "resolved", "id": "review:2026-11-02_NL1PM"}
+{"at": "2026-11-04T06:02+00:00", "event": "open", "id": "mh:2026-11-03:Maharashtra Gajlaxmi Mangal", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajlaxmi Mangal 2026-11-03: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-04T06:02+00:00", "event": "open", "id": "mh:2026-11-03:Maharashtra Padmini", "kind": "unread", "severity": "low", "detail": "Maharashtra Padmini 2026-11-03: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-04T06:02+00:00", "event": "open", "id": "mh:2026-11-03:Maharashtra Sahyadri Mahalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-03: still a PDF link (OCR tries 2)"}
