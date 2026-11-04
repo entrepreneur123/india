@@ -1164,7 +1164,8 @@ def english_name(url: str) -> str | None:
     """The sheet's file name carries the English name: '... N 100 Mah. Tejaswini Monthly, Draw Result._0001.pdf'."""
     f = urllib.parse.unquote(url.rsplit("/", 1)[-1])
     # Some files stop at the name: '... N_109_Mah. Akarshak Pushkraj_0001.pdf'.
-    m = re.search(r"(?i)mah\s*[._]\s*(.+?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery|_*\d{4}\.pdf$|\.pdf$)", f)
+    # "Mah. ", "Mah_" or just "Mah " ('... N_12_Mah Akshay_0001.pdf', 04-11-2026).
+    m = re.search(r"(?i)mah(?:\s*[._]\s*|\s+)(.+?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery|_*\d{4}\.pdf$|\.pdf$)", f)
     # Or the name follows the scheme number without "Mah.": '... N_118 Maharashtralaxmi.pdf' (31-10-2026).
     m = m or re.search(r"(?i)\bN[ _]?\d{2,4}[ _]+([A-Za-z][A-Za-z .]*?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery|_*\d{4}\.pdf$|\.pdf$)", f)
     if not m:

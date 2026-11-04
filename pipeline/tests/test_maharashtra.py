@@ -231,6 +231,8 @@ def test_english_name_when_the_file_name_stops_at_the_game():
     # no "Mah." at all: the name follows the scheme number (31-10-2026, published nameless until then)
     assert mh.english_name(base + "1031202616531165031_10_2026%20N_118%20Maharashtralaxmi.pdf") == "Maharashtralaxmi"
     assert mh.english_name(base + "1031202616531165031_10_2026%20N_118.pdf") is None
+    # "Mah" and a space, no dot (04-11-2026: Akshay, the best-searched game, came out Marathi-only)
+    assert mh.english_name(base + "11420261711977904_11_2026_N_12_Mah%20Akshay_0001.pdf") == "Akshay"
 
 
 def test_draws_with_marathi_only_names_keep_distinct_ids():
