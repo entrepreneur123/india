@@ -35,6 +35,12 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-03: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-04T06:02+00:00"
+  },
+  "review:2026-11-04_NL8PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-04_NL8PM: gazette OCR did not confirm the 1st prize 38L 06381 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-04T15:35+00:00"
   }
  },
  "resolved": {
