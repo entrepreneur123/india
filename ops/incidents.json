@@ -23,6 +23,18 @@
    "severity": "low",
    "detail": "2026-11-04_NL8PM: gazette OCR did not confirm the 1st prize 38L 06381 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-04T15:35+00:00"
+  },
+  "mh:2026-11-04:Maharashtra Akshay": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Akshay 2026-11-04: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-05T01:25+00:00"
+  },
+  "mh:2026-11-04:Maharashtra Sahyadri Vijayalaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-04: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-05T01:25+00:00"
   }
  },
  "resolved": {

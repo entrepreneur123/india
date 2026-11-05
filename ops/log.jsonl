@@ -46,3 +46,5 @@
 {"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "mh:2026-11-02:Maharashtra Sagarlaxmi"}
 {"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "mh:2026-11-02:Maharashtra Sahyadri Dhanlaxmi"}
 {"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "review:2026-11-03_NL8PM"}
+{"at": "2026-11-05T01:25+00:00", "event": "open", "id": "mh:2026-11-04:Maharashtra Akshay", "kind": "unread", "severity": "low", "detail": "Maharashtra Akshay 2026-11-04: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-05T01:25+00:00", "event": "open", "id": "mh:2026-11-04:Maharashtra Sahyadri Vijayalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-04: still a PDF link (OCR tries 2)"}
