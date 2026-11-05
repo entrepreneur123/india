@@ -48,3 +48,4 @@
 {"at": "2026-11-04T19:54+00:00", "event": "resolved", "id": "review:2026-11-03_NL8PM"}
 {"at": "2026-11-05T01:25+00:00", "event": "open", "id": "mh:2026-11-04:Maharashtra Akshay", "kind": "unread", "severity": "low", "detail": "Maharashtra Akshay 2026-11-04: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-05T01:25+00:00", "event": "open", "id": "mh:2026-11-04:Maharashtra Sahyadri Vijayalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-04: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-05T15:37+00:00", "event": "open", "id": "review:2026-11-05_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-05_NL1PM: gazette OCR did not confirm the 1st prize 92H 01810 (lower prizes 92% confirmed): compare by eye with tools/eyecheck.py"}
