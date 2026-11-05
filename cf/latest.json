@@ -10,12 +10,12 @@
    }
   },
   {
-   "count": 190,
+   "count": 210,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 190
+    "visits": 210
    }
   },
   {
@@ -24,7 +24,7 @@
     "countryName": "KR"
    },
    "sum": {
-    "visits": 50
+    "visits": 60
    }
   },
   {
@@ -92,16 +92,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 10,
-   "dimensions": {
-    "date": "2026-10-22",
-    "siteTag": "70803c3adff14678a3c5b780bf918a89"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
   {
    "count": 80,
    "dimensions": {
@@ -211,16 +201,26 @@
    "sum": {
     "visits": 10
    }
+  },
+  {
+   "count": 30,
+   "dimensions": {
+    "date": "2026-11-04",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 30
+   }
   }
  ],
  "pages": [
   {
-   "count": 300,
+   "count": 310,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 280
+    "visits": 290
    }
   },
   {
@@ -233,12 +233,12 @@
    }
   },
   {
-   "count": 40,
+   "count": 50,
    "dimensions": {
     "requestPath": "/maharashtra/gajlaxmi-shukra/"
    },
    "sum": {
-    "visits": 40
+    "visits": 50
    }
   },
   {
@@ -280,15 +280,6 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/bn/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
     "requestPath": "/result/16-10-2026/"
    },
    "sum": {
@@ -298,7 +289,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
+    "requestPath": "/result/27-10-2026/maharashtra-gajlaxmi-mangal/"
    },
    "sum": {
     "visits": 0
@@ -307,7 +298,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-dhanlaxmi/"
+    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
    },
    "sum": {
     "visits": 0
@@ -370,15 +361,6 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-gajlaxmi-mangal/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
     "requestPath": "/claim-prize/"
    },
    "sum": {
@@ -388,7 +370,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
+    "requestPath": "/maharashtra/sahyadri-dhanlaxmi/"
    },
    "sum": {
     "visits": 0
@@ -406,7 +388,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/24-10-2026/"
+    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
    },
    "sum": {
     "visits": 0
@@ -415,7 +397,25 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/old-results/"
+    "requestPath": "/maharashtra/gajlaxmi-mangal/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/maharashtra/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/result/24-10-2026/"
    },
    "sum": {
     "visits": 0
@@ -433,7 +433,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/gajlaxmi-mangal/"
+    "requestPath": "/maharashtra/tejaswini/"
    },
    "sum": {
     "visits": 10
