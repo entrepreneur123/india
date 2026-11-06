@@ -40,7 +40,8 @@ def get_json(url: str):
 
 
 def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get(u).decode("utf-8", "replace"),
-           runs: list[dict] | None = None, mirror: str | None = None) -> dict[str, dict]:
+           runs: list[dict] | None = None, mirror: str | None = None,
+           relays: list[dict] | None = None) -> dict[str, dict]:
     """Open problems right now: {incident id: {kind, severity, detail}}."""
     out: dict[str, dict] = {}
 
@@ -147,6 +148,14 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
     for r in runs or []:
         if r.get("conclusion") == "failure":
             add(f"run:{r['databaseId']}", "failed-run", "high", f"results run {r['databaseId']} failed ({r.get('createdAt')})")
+    # The relay chain starts every results run on time: a relay or a results run must always be alive.
+    # 06-11-2026: GitHub cancelled the waiting relay at 03:19 UTC and nothing restarted it for 80 min.
+    if relays is not None:
+        alive = {"in_progress", "queued", "waiting", "pending", "requested"}
+        if not any(r.get("status") in alive for r in list(relays) + list(runs or [])):
+            last = relays[0] if relays else {}
+            add("chain:broken", "late", "high", f"no relay or results run alive (last relay {last.get('databaseId')}: "
+                f"{last.get('conclusion')} at {last.get('updatedAt') or last.get('createdAt')}); start relay.yml")
     return out
 
 
@@ -185,10 +194,12 @@ def main() -> int:
     ap.add_argument("--mirror", default="https://entrepreneur123.github.io/india", help="the copy the app reads first")
     ap.add_argument("--out", type=pathlib.Path, required=True)
     ap.add_argument("--runs", type=pathlib.Path, help="gh run list --json databaseId,conclusion,createdAt output")
+    ap.add_argument("--relays", type=pathlib.Path, help="gh run list --workflow relay.yml --json databaseId,conclusion,status,createdAt,updatedAt")
     a = ap.parse_args()
     runs = json.loads(a.runs.read_text()) if a.runs and a.runs.exists() else []
     now = dt.datetime.now(dt.timezone.utc)
-    found = checks(a.site.rstrip("/"), now, runs=runs, mirror=a.mirror.rstrip("/") or None)
+    relays = json.loads(a.relays.read_text()) if a.relays and a.relays.exists() else None
+    found = checks(a.site.rstrip("/"), now, runs=runs, mirror=a.mirror.rstrip("/") or None, relays=relays)
     opened, resolved = update(a.out, found, now)
     for k in opened:
         print(f"::warning::incident opened: {k}: {found[k]['detail']}")

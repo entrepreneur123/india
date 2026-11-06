@@ -117,3 +117,17 @@ def test_a_maharashtra_sheet_never_tried_or_a_reader_crash_is_medium():
     assert got["mh-crash:2026-10-31_MH_SAHYADRI-PRABHALAXMI"]["severity"] == "medium"
     assert got["mh:2026-10-31:Maharashtra Gajraj"]["severity"] == "low"          # tried and refused: a PDF link is right
     assert "mh-stuck:2026-10-31_MH_GAJRAJ" not in got
+
+
+def test_a_broken_relay_chain_opens_an_incident():
+    """06-11-2026: GitHub cancelled the waiting relay at 03:19 UTC; nothing would start the 1 PM run on time."""
+    now = dt.datetime(2026, 11, 6, 4, 30, tzinfo=UTC)
+    site = {"/v2/today.json": feed([], now.isoformat()), "/v2/index.json": {"noDraw": []}}
+    def chk(relays, runs=None):
+        return watch.checks("https://x.test", now, fetch=lambda u: site[u.removeprefix("https://x.test")],
+                            fetch_text=lambda u: "<title>Lottery Result Today 06.11.2026</title>", runs=runs, relays=relays)
+    dead = [{"databaseId": 166, "status": "completed", "conclusion": "cancelled", "updatedAt": "2026-11-06T03:19:28Z"}]
+    assert "chain:broken" in chk(dead)
+    assert "chain:broken" not in chk([{"databaseId": 167, "status": "in_progress"}] + dead)
+    assert "chain:broken" not in chk(dead, runs=[{"databaseId": 1, "status": "in_progress", "conclusion": ""}])
+    assert "chain:broken" not in chk(None)   # relay list not readable: no check, no false alarm

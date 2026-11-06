@@ -31,6 +31,9 @@ jobs:
         run: |
           gh run list --repo "$GITHUB_REPOSITORY" --workflow results.yml --limit 6 \
             --json databaseId,conclusion,createdAt,status > runs.json || echo "[]" > runs.json
+          # unreadable -> no file -> no chain check (never a false alarm from a gh hiccup)
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow relay.yml --limit 3 \
+            --json databaseId,conclusion,createdAt,updatedAt,status > relays.json || rm -f relays.json
       - name: Check the live site
         working-directory: pipeline
         run: |
@@ -41,7 +44,7 @@ jobs:
             git -C ../ops checkout -q --orphan ops
             git -C ../ops rm -rfq .
           fi
-          python3 -m lottery_pipeline.watch --site https://lottodost.com --out ../ops/ops --runs ../runs.json
+          python3 -m lottery_pipeline.watch --site https://lottodost.com --out ../ops/ops --runs ../runs.json --relays ../relays.json
           python3 -c "import json;s=json.load(open('../ops/ops/incidents.json'));[print(f'| {k} | {v[\"severity\"]} | {v[\"detail\"]} |') for k,v in s['open'].items()]" \
             | sed '1i | open incident | severity | detail |\n|---|---|---|' >> "$GITHUB_STEP_SUMMARY"
       - name: Keep the record
