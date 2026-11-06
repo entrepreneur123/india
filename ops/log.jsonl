@@ -55,3 +55,5 @@
 {"at": "2026-11-05T20:06+00:00", "event": "resolved", "id": "review:2026-11-04_NL8PM"}
 {"at": "2026-11-06T03:22+00:00", "event": "open", "id": "mh:2026-11-05:Maharashtra Akarshak Pushkaraj", "kind": "unread", "severity": "low", "detail": "Maharashtra Akarshak Pushkaraj 2026-11-05: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-06T03:22+00:00", "event": "open", "id": "mh:2026-11-05:Maharashtra Sahyadri Deeplaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-05: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-06T15:15+00:00", "event": "open", "id": "review:2026-11-06_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-06_NL8PM: gazette OCR did not confirm the 1st prize 51K 81306 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-06T15:15+00:00", "event": "open", "id": "review:2026-11-06_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-06_NL1PM: gazette OCR did not confirm the 1st prize 92B 15335 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
