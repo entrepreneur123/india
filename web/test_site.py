@@ -590,3 +590,11 @@ def test_a_maharashtra_series_gets_one_page_for_all_its_weekday_draws(tmp_path, 
     assert not (out / "maharashtra/akshay-").exists() and not (out / "maharashtra/maharashtra").exists()   # no series of one
     assert 'href="/maharashtra/gajlaxmi/"' in (out / "maharashtra/gajlaxmi-ravi/index.html").read_text()   # game -> series
     assert "https://example.in/maharashtra/gajlaxmi/" in (out / "sitemap.xml").read_text()
+
+
+def test_a_one_word_monthly_draw_does_not_take_the_series_address():
+    # 06-11-2026: "Mah. Sahyadri (Monthly)" got /maharashtra/sahyadri/ and pushed the Sahyadri series page out
+    monthly = dict(MH_DRAW, id="2026-11-06_MH_SAHYADRI", name="Maharashtra Sahyadri", kind="monthly")
+    assert sitegen.Site.mh_game_path(monthly) == "/maharashtra/sahyadri-monthly/"
+    assert sitegen.Site.mh_game_path(dict(MH_DRAW, name="Maharashtra Akshay", kind="weekly")) == "/maharashtra/akshay/"
+    assert sitegen.Site.mh_game_path(MH_DRAW) == "/maharashtra/gajlaxmi-ravi/"

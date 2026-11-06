@@ -1143,7 +1143,12 @@ class Site:
 
     @staticmethod
     def mh_game_path(d: dict) -> str:
-        return "/maharashtra/" + draw_slug(d).removeprefix("maharashtra-") + "/"
+        slug = draw_slug(d).removeprefix("maharashtra-")
+        # A one-word monthly or bumper name ("Sahyadri" monthly, 06-11-2026) would take the address of the
+        # series page (/maharashtra/sahyadri/: every weekly Sahyadri draw): it gets its kind in its address.
+        if "-" not in slug and d.get("kind") in ("monthly", "bumper") and not slug.isdigit():
+            slug += "-" + d["kind"]
+        return "/maharashtra/" + slug + "/"
 
     def mh_games(self) -> dict[str, list[dict]]:
         """Every Maharashtra draw by its game page, newest first (a weekly game draws once a week)."""
