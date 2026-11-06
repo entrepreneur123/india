@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-06T04:37+00:00",
+ "generated": "2026-11-06T11:11+00:00",
  "site": "sc-domain:lottodost.com",
  "start": "2026-10-09",
  "end": "2026-11-06",
@@ -7,7 +7,7 @@
   {
    "country": "ind",
    "clicks": 192,
-   "impressions": 2533,
+   "impressions": 2534,
    "ctr": 0.0758,
    "position": 7.7
   },
@@ -344,6 +344,13 @@
   },
   {
    "date": "2026-11-05",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "date": "2026-11-06",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
@@ -1504,8 +1511,8 @@
   {
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 53,
-   "impressions": 353,
-   "ctr": 0.1501,
+   "impressions": 354,
+   "ctr": 0.1497,
    "position": 4.2
   },
   {
@@ -11308,6 +11315,14 @@
    "impressions": 5,
    "ctr": 0,
    "position": 9.4
+  },
+  {
+   "date": "2026-11-05",
+   "page": "https://lottodost.com/maharashtra/akshay/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
   }
  ],
  "image_days": [
@@ -11397,6 +11412,13 @@
   },
   {
    "date": "2026-11-05",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-06",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
