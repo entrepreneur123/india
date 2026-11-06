@@ -1,4 +1,4 @@
-# Search Console 2026-10-08 – 2026-11-05 (generated 2026-11-05T11:12+00:00)
+# Search Console 2026-10-09 – 2026-11-06 (generated 2026-11-06T04:37+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
@@ -230,12 +230,12 @@
 ## Index state
 | url | verdict | coverage | last crawl |
 |---|---|---|---|
-| https://lottodost.com/ | PASS | Submitted and indexed | 2026-11-04T18:40:44Z |
+| https://lottodost.com/ | PASS | Submitted and indexed | 2026-11-05T23:36:31Z |
 | https://lottodost.com/bn/ | PASS | Submitted and indexed | 2026-11-03T09:13:33Z |
 | https://lottodost.com/hi/ | PASS | Submitted and indexed | 2026-11-02T08:12:25Z |
 | https://lottodost.com/kerala/ | PASS | Submitted and indexed | 2026-11-04T08:40:02Z |
 | https://lottodost.com/maharashtra/ | PASS | Submitted and indexed | 2026-11-03T11:37:47Z |
-| https://lottodost.com/night-8pm/ | PASS | Submitted and indexed | 2026-11-04T09:55:05Z |
+| https://lottodost.com/night-8pm/ | PASS | Submitted and indexed | 2026-11-06T02:06:29Z |
 | https://lottodost.com/day-6pm/ | PASS | Submitted and indexed | 2026-10-28T22:51:00Z |
 | https://lottodost.com/morning-1pm/ | PASS | Submitted and indexed | 2026-11-04T20:12:49Z |
 | https://lottodost.com/yesterday/ | PASS | Submitted and indexed | 2026-10-29T07:50:11Z |
