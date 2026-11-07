@@ -1,4 +1,4 @@
-# Search Console 2026-10-10 – 2026-11-07 (generated 2026-11-07T04:38+00:00)
+# Search Console 2026-10-10 – 2026-11-07 (generated 2026-11-07T10:28+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
@@ -231,7 +231,7 @@
 ## Index state
 | url | verdict | coverage | last crawl |
 |---|---|---|---|
-| https://lottodost.com/ | PASS | Submitted and indexed | 2026-11-06T08:05:21Z |
+| https://lottodost.com/ | PASS | Submitted and indexed | 2026-11-07T06:26:31Z |
 | https://lottodost.com/bn/ | PASS | Submitted and indexed | 2026-11-03T09:13:33Z |
 | https://lottodost.com/hi/ | PASS | Submitted and indexed | 2026-11-06T17:56:30Z |
 | https://lottodost.com/kerala/ | PASS | Submitted and indexed | 2026-11-04T08:40:02Z |

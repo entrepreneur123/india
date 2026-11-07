@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-07T04:38+00:00",
+ "generated": "2026-11-07T10:28+00:00",
  "site": "sc-domain:lottodost.com",
  "start": "2026-10-10",
  "end": "2026-11-07",
@@ -12712,7 +12712,7 @@
    "url": "https://lottodost.com/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-11-06T08:05:21Z",
+   "lastCrawl": "2026-11-07T06:26:31Z",
    "canonical": "https://lottodost.com/"
   },
   {
