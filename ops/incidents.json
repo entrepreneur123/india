@@ -23,6 +23,30 @@
    "severity": "low",
    "detail": "2026-11-06_NL1PM: gazette OCR did not confirm the 1st prize 92B 15335 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-06T15:15+00:00"
+  },
+  "mh:2026-11-06:Maharashtra Ganeshlaxmi Dhan": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Ganeshlaxmi Dhan 2026-11-06: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-07T03:09+00:00"
+  },
+  "mh:2026-11-06:Maharashtra Sahyadri": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri 2026-11-06: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-07T03:09+00:00"
+  },
+  "mh:2026-11-06:Maharashtra Sahyadri Rajlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Rajlaxmi 2026-11-06: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-07T03:09+00:00"
+  },
+  "mh:2026-11-06:Maharashtra Vaibhavlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Vaibhavlaxmi 2026-11-06: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-07T03:09+00:00"
   }
  },
  "resolved": {
