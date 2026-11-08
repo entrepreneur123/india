@@ -73,3 +73,4 @@
 {"at": "2026-11-08T06:37+00:00", "event": "open", "id": "mh:2026-11-07:Maharashtra Ganeshlaxmi Diwali", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Diwali 2026-11-07: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-08T06:37+00:00", "event": "open", "id": "mh:2026-11-07:Maharashtra Maharashtralaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Maharashtralaxmi 2026-11-07: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-08T06:37+00:00", "event": "open", "id": "mh:2026-11-07:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-11-07: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-08T16:00+00:00", "event": "open", "id": "review:2026-11-08_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-08_NL1PM: gazette OCR did not confirm the 1st prize 92B 58381 (lower prizes 99% confirmed): compare by eye with tools/eyecheck.py"}
