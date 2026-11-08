@@ -70,3 +70,6 @@
 {"at": "2026-11-07T18:48+00:00", "event": "resolved", "id": "mh:2026-11-05:Maharashtra Sahyadri Deeplaxmi"}
 {"at": "2026-11-07T18:48+00:00", "event": "resolved", "id": "review:2026-11-06_NL8PM"}
 {"at": "2026-11-07T18:48+00:00", "event": "resolved", "id": "review:2026-11-06_NL1PM"}
+{"at": "2026-11-08T06:37+00:00", "event": "open", "id": "mh:2026-11-07:Maharashtra Ganeshlaxmi Diwali", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Diwali 2026-11-07: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-08T06:37+00:00", "event": "open", "id": "mh:2026-11-07:Maharashtra Maharashtralaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Maharashtralaxmi 2026-11-07: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-08T06:37+00:00", "event": "open", "id": "mh:2026-11-07:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-11-07: still a PDF link (OCR tries 2)"}
