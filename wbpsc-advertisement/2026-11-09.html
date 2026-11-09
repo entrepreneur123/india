@@ -1,0 +1,2220 @@
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-173573423-1"></script> 
+<script src="JS/jquery.min.js"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-173573423-1');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0,shrink-to-fit=no">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="icon" href="image/tablogo.png" type="image/gif" sizes="16x16">
+  <title>Public Service Commission,WB</title>
+  <script src="JS/crypto-min.js"></script>
+  
+ <!-- <script src="https://www.google.com/recaptcha/api.js?render=6LfIU2EtAAAAAFvGTUsMq1PnvaUFhUYJcmV4OSt7"></script> -->
+  
+   <script>
+   const SECRET_KEY = "85ab0072d84644a0ae53ab66e70c02160c374bca4d505d8d9b2fdee905b42db2";
+    function onSubmitForm(theForm) {
+    	//debugger;
+    	var value= document.getElementById("captchaImage").innerHTML;
+    	var content = value.toString().replace(/\t/g, '').split('\r\n');
+    	if (content != theForm.captcha.value)
+        {
+    	    alert('invalid Captcha!');   
+            access();
+            document.getElementById("captcha").value="";
+            return false;
+        }
+       /*  else
+        {
+            return true;
+        }
+    	 */
+        //grecaptcha.ready(function() {
+         //   grecaptcha.execute('6LfIU2EtAAAAAFvGTUsMq1PnvaUFhUYJcmV4OSt7', {action: 'login'})
+         //   .then(function(token) {
+         //       document.getElementById("g-recaptcha-response").value = token;
+				//ENCRYPTION LOGIC - STARTS
+			const username = document.getElementById("enrollment_number").value;
+		    const password = document.getElementById("password").value;
+		    document.getElementById("enrollment_number").value = encryptField(username);
+		    document.getElementById("password").value = encryptField(password);
+			//alert(document.getElementById("enrollment_number").value);
+			//alert(document.getElementById("password").value);
+				//ENCRYPTION LOGIC - ENDS
+                document.getElementById("loginForm").submit();
+        //    });
+        //});
+        //return false;
+    }
+
+    function encryptField(value) 
+    {
+        return value;
+    }
+    </script>
+  
+ <script src="JS/captcha_password.js"></script>
+ <script language="javascript">
+ function fillSetCaptchaSession(capt) {
+	    var xhr = new XMLHttpRequest();
+	    var captcha = capt; // read from input, not image
+	//alert("cap= "+captcha);
+	    xhr.open("GET", "verify?query=captcha&captcha=" + encodeURIComponent(captcha), true);
+	    xhr.onreadystatechange = function () {
+	        if (xhr.readyState === 4 && xhr.status === 200) {
+	            if (xhr.responseText !== "NA") {
+	                //document.getElementById("captchaMsg").innerHTML = "Captcha verified!";
+	                // window.location.href = "editprofile.jsp";
+	            }
+	        }
+	    };
+	    xhr.send();
+	} 
+function access(){ 
+   var s=captcha();
+   document.getElementById("captchaImage").innerHTML = s;
+   fillSetCaptchaSession(s);
+} 
+
+function accessForgot(){ 
+	   // server-generated captcha image (answer kept in Redis, works on every app server)
+	   document.getElementById("captchaImageForgot").src = "forgotPasswordCaptcha?t=" + new Date().getTime();
+	   var f = document.getElementById("captchaForgot");
+	   if (f) { f.value = ""; }
+	} 
+
+</script> 
+<!-- <script type="text/javascript" language="JavaScript">
+	function checkCaptcha(theForm) {
+	var value= document.getElementById("captchaImage").innerHTML;
+	var content = value.toString().replace(/\t/g, '').split('\r\n');
+	if (content != theForm.captcha.value)
+    {
+	    alert('invalid Captcha!');   
+        access();
+        document.getElementById("captcha").value="";
+        return false;
+    }
+    else
+    {
+        return true;
+    }   
+}
+	
+</script>  -->
+<style>
+  .carousel-inner img {
+      width: 100%;
+      height: 100%;
+  }
+  /* old website link*/
+	.blink{
+	  background-color:white;	
+	}
+	.spans{
+		animation: blink 3s linear infinite;
+	}
+@keyframes blink{
+0%{opacity: 0;}
+50%{opacity: 1.5;}
+100%{opacity: 2;}
+}
+ /* go to top*/
+ #scroll {
+    position:fixed;
+    right:20px;
+    bottom:40px;
+    cursor:pointer;
+    width:50px;
+    height:50px;
+    background-color:#3498db;
+    text-indent:-9999px;
+    display:none;
+    -webkit-border-radius:60px;
+    -moz-border-radius:60px;
+    border-radius:60px;
+     z-index: 99 !important;
+}
+#scroll span {
+    position:absolute;  
+    top:50%;
+    left:50%;
+    margin-left:-8px;
+    margin-top:-12px;
+    height:0;
+    width:0;
+    border:8px solid transparent;
+    border-bottom-color:#ffffff;
+}
+#scroll:hover {
+    background-color:#3498db;
+    opacity:1;filter:"alpha(opacity=100)";
+    -ms-filter:"alpha(opacity=100)";
+} 
+
+
+@include media-breakpoint-up(sm) {
+  #back-to-top{
+    display: none;
+  }
+}
+
+</style>
+<style type="text/css">
+ .navbar li {
+	padding-right: 20px;
+}
+
+.btn-group a
+{
+color:white;
+}
+
+div.goog-te-gadget-simple
+{
+border-radius:5px;
+padding:2px;
+margin-left:5px;
+margin-top:2px;
+}
+a.goog-te-menu-value:hover
+{
+text-decoration: none;
+}
+.card
+{
+box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+border-radius:5px;
+}
+
+.dropdown-submenu {
+                position: relative;
+                
+            }
+
+            .dropdown-submenu> a:after {
+                content: " >";
+                float: right;
+                
+            }
+
+            .dropdown-submenu>.dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+                font-weight: bold;
+            }
+
+            .dropdown-submenu:hover>.dropdown-menu {
+                display: block;
+                font-weight: bold;
+            }
+</style>
+<script>
+
+/* $(".nocolor").click(function () {
+    $("body").css({ "-moz-filter": "grayscale(0%)", "-webkit-filter": "grayscale(0%)", "filter": "white", "filter": "grayscale(0%)" });
+
+    $("body").css("background", "black)");
+
+}); */
+if(document.querySelector(".nocolor")!=null)
+{
+document.querySelector(".nocolor").addEventListener("click", function () {
+    document.body.style.filter = "grayscale(0%)";
+    document.body.style.background = "black";
+});
+}
+$(".btn-group, .dropdown").hover(
+        function () {
+            $('>.dropdown-menu', this).stop(true, true).fadeIn("fast");
+            $(this).addClass('open');
+        },
+        function () {
+            $('>.dropdown-menu', this).stop(true, true).fadeOut("fast");
+            $(this).removeClass('open');
+        });
+</script>
+<style>
+.navbar.main{
+ background-image: linear-gradient(to right, rgba(3, 79,132, 0.15), rgba(3, 79,132, 0), rgba(3, 79,132, 0.75));
+}
+ .carousel-inner img {
+      width: 100%;
+      height: 100%;
+  }
+</style>
+</head >
+<body style="font-family: 'Open Sans', sans-serif;background-color:#F1F6F7;" onload="access();">
+
+
+
+
+
+
+<head>
+
+<!-- <link rel="stylesheet" href="http://psc.wb.gov.in/CSS/bootstrap.min.css">
+<link rel="stylesheet" href="http://psc.wb.gov.in/CSS/bootstrap-select.min.css">
+<link rel="stylesheet" href="http://psc.wb.gov.in/CSS/submenudropdown.css">
+<link rel="stylesheet" href="http://psc.wb.gov.in/font-awesome/css/font-awesome.min.css"> 
+<link rel="stylesheet" type="text/css" href="http://psc.wb.gov.in/CSS/bootstrap-datepicker3.css">  
+<link rel="stylesheet" type="text/css" href="http://psc.wb.gov.in/CSS/datatables.min.css">
+<script src="http://psc.wb.gov.in/JS/jquery.min.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg==" crossorigin="anonymous"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha512-n6dYFOG599s4/mGlA6E+YLgtg9uPTOMDUb0IprSMDYVLr0ctiRryPEQ8gpM4DCMlx7M2G3CK+ZcaoOoJolzdCg==" crossorigin="anonymous"></script> -->
+
+<!-- <script src="http://psc.wb.gov.in/JS/popper.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/bootstrap.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/valid.js"></script>
+<script src="http://psc.wb.gov.in/JS/ajaxStateCity.js"></script>
+<script src="http://psc.wb.gov.in/JS/Design_JS_File.js"></script>
+<script type="text/javascript" src="http://psc.wb.gov.in/JS/datatables.min.js"></script>
+<script type="text/javascript" src="http://psc.wb.gov.in/JS/bootstrap-datepicker.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/bootstrap-select.min.js"></script>-->
+
+<!-- <link rel="stylesheet" href="CSS/bootstrap.min.css">
+ -->
+ <link rel="stylesheet" href="CSS/bootstrap.min.css"> 
+<link rel="stylesheet" href="CSS/bootstrap-select.min.css">
+<link rel="stylesheet" href="CSS/submenudropdown.css">
+<link rel="stylesheet" href="font-awesome/css/font-awesome.min.css"> 
+<link rel="stylesheet" type="text/css" href="CSS/bootstrap-datepicker3.css">  
+<link rel="stylesheet" type="text/css" href="CSS/datatables.min.css">
+<link rel="stylesheet" type="text/css" href="CSS/registration.css">
+
+<script src="JS/jquery.min.js"></script>
+<script src="JS/bootstrap-select.min.js"></script>
+<script src="JS/popper.min.js"></script>
+<script src="JS/bootstrap.min.js"></script>
+<script src="JS/valid.js"></script>
+<script src="JS/ajaxStateCity.js"></script>
+<script src="JS/Design_JS_File.js"></script>
+<script type="text/javascript" src="JS/datatables.min.js"></script>
+<script type="text/javascript" src="JS/bootstrap-datepicker.min.js"></script>
+
+
+<!-- <!-- jQuery FIRST -->
+
+
+<!--Bootstrap JS AFTER jQuery-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+<!--Bootstrap CSS-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+ 
+ 
+
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<style>
+.general-color
+{
+   background-color: #034F84;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 0px; /* Set the fixed height of the footer here */
+  line-height: 40px; /* Vertically center the text there */
+  background-color: #3a4659;
+}
+
+div.general-border{
+border-color:#034F84;
+}
+.row-content {
+  margin: 0px auto;
+  padding: 10px 0px 10px 0px;
+  min-height: 400px;
+}
+ body
+{
+	   font-family: 'Open Sans', sans-serif;
+	   margin-bottom:10px;
+}   
+html {
+  position: relative;
+  min-height: 100%;
+}  
+.carousel {
+  margin-bottom: 1rem;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+  bottom: 3rem;
+  z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item {
+  height: 38rem;
+  background-color: #777;
+}
+.carousel-item > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  height: 38rem;
+}
+
+@media (min-width: 40em) {
+  /* Bump up size of carousel content */
+  .carousel-caption p {
+    margin-bottom: 1.25rem;
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  .featurette-heading {
+    font-size: 50px;
+  }
+}
+
+@media (min-width: 62em) {
+  .featurette-heading {
+    margin-top: 7rem;
+  }
+}
+html {
+  font-size: 0.7rem;
+}
+
+@include media-breakpoint-up(sm) {
+  html {
+    font-size: 1.0rem;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  html {
+    font-size: 1.2rem;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  html {
+    font-size: 1.4rem;
+  }
+}
+
+/* tooltips*/
+
+</style>
+</head>
+
+
+
+<a href="#" id="scroll" style="display: none;"><span></span></a>
+ 
+<!--  font size navbar  edited on 18_09_2018-->
+<nav class="navbar navbar-dark py-0  navbar-expand-lg py-md-0 main" style="backround-color:#303E6A;"> <span>
+		<a ><img src="image/logoPSCWB.png" alt="logo" class=""
+		style="margin:7px;width:80%;padding:2px;"></a>
+		</span>
+	<button class="navbar-toggler mt-1 d-none" type="button" style="color: blue;"
+		data-toggle="collapse" data-target="#navbarNav" aria-expanded="false"
+		aria-label="Toggle navigation">
+		<i class="fa fa-bars"></i>
+	</button>
+	<div id="navbarNav" class="navbar-collapse collapse">
+		<ul class="navbar-nav mr-auto">
+		
+		</ul>
+		<ul class="navbar-nav">
+			<li class="nav-item py-0 font-weight-bold">
+				<p id="btn-decrease" style="cursor: pointer;font-size:12px;color:white;">&nbsp;A<sup>-</sup></p>
+				
+			</li>
+			<li class="nav-item py-0 font-weight-bold">
+				<p id="btn-orig" style="cursor: pointer;font-size:13px;color:white;">&nbsp;A</p>
+			</li>
+			<li class="nav-item py-0 font-weight-bold">
+				<p id="btn-increase" style="cursor: pointer;font-size:14px;color:white;">&nbsp;A<sup>+</sup></p>
+			</li>
+			
+			<li class="nav-item py-0 font-weight-bold">
+          <a  href="#" data-toggle="modal" style="text-decoration: none;color:white;" data-target="#helpdesk"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Help Desk&nbsp;</a> <font color="#fff">Server 1</font>        
+			</li>
+			 
+			
+		</ul>
+	</div>
+</nav>
+<!--  ends here -->
+<!--  nav bar -->
+<nav class="navbar  navbar-expand-lg navbar-dark " style="background-color:#034F84" id="navbar"> <!-- use sticky-top to make nav bar stick when scroll drown -->
+  <a class="navbar-brand" href="#"></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse text-uppercase justify-content-between font-weight-bold" id="navbarSupportedContent">
+    <ul class="navbar-nav justify-content-center text-light btn-group" >
+    
+   <!--  <li class="nav-item dropdown ">
+        <a class="nav-link text-light"  href="index.jsp"><i class="fa fa-home fa-lg" aria-hidden="true"></i></a>
+      </li>
+       -->
+    
+    <li class="nav-item dropdown" data-toggle="tooltip" data-placement="auto" title="Home">
+        <!-- <a class="nav-link text-light"  href="http://wbpsc.gov.in" ><i class="fa fa-home fa-md" aria-hidden="true"></i>&nbsp;Home</a> -->
+        <a class="nav-link text-light"  href="index.jsp" ><i class="fa fa-home fa-md" aria-hidden="true"></i>&nbsp;Home</a></a>
+      </li>
+      
+      
+       <li class="nav-item dropdown" >
+        <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          About PSC, WB</a>
+        <ul class="dropdown-menu font-weight-bold" aria-labelledby="navbarDropdown" style="background-color:#034F84">
+          <li><a class="dropdown-item font-weight-bold" href="aboutus.jsp">History</a></li>
+          <li><a class="dropdown-item font-weight-bold" href="Constitutional_Provision.jsp">Constitutional Provision</a></li>
+          <li><a class="dropdown-item font-weight-bold" href="composition.jsp">Composition</a></li>
+           <li><a class="dropdown-item font-weight-bold" href="Roles_and_Functions.jsp">Roles and Functions</a></li>
+           <li><a class="dropdown-item font-weight-bold" href="annual_report.jsp">Annual Reports</a></li>
+            <li> <a class="dropdown-item font-weight-bold" href="gallery.jsp">Gallery</a></li>
+          
+          </ul>
+      </li>
+    
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-light"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          &nbsp;Advertisement/ Announcement</a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="background-color:#034F84">
+         <li> <a class="dropdown-item font-weight-bold" href="notification_announcement.jsp">Announcement&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+         <li> <a class="dropdown-item font-weight-bold" href="advertisement.jsp">Advertisement</a></li>
+        </ul>
+      </li>
+          
+       <li class="nav-item dropdown" >
+        <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Examination</a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color:#034F84" >
+         <li class="dropdown-submenu"><a class="dropdown-item font-weight-bold" href="JavaScript:Void(0);">Examination schedule</a>
+         <ul class="dropdown-menu" style="background-color:#034F84" >
+               <li><a class="dropdown-item font-weight-bold" href="written_test.jsp">Written Test</a>
+               </li>
+               <li><a class="dropdown-item font-weight-bold" href="Interview_PT.jsp">Interview / PT</a></li>
+             </ul>
+         
+         </li>
+            <li class="dropdown-submenu "><a class="dropdown-item font-weight-bold"  href="JavaScript:Void(0);">Departmental Exam</a>
+               <ul class="dropdown-menu" style="background-color:#034F84" >
+               <li><a class="dropdown-item font-weight-bold" href="departmental_exam.jsp">Examination</a></li>
+          <li><a class="dropdown-item font-weight-bold" href="question_paper.jsp">Question Paper</a></li>
+             </ul>
+               </li>         
+          <li><a class="dropdown-item font-weight-bold" href="syllabus.jsp">Syllabus</a></li>
+        
+          <li><a class="dropdown-item font-weight-bold" href="previous_year_question_paper.jsp">Previous Years Question Paper</a></li>
+      
+          <li><a class="dropdown-item font-weight-bold" href="answer_key.jsp">Answer Key</a></li>
+          <li><a class="dropdown-item font-weight-bold" href="list-ineligible-candidates.jsp">LIST OF unsuitable CANDIDATES</a></li>
+        
+          <li><a class="dropdown-item font-weight-bold" href="list_of_debarred_candidate.jsp">List of Debarred Candidates</a></li>
+        </ul>
+      </li>  
+     
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-light font-weight-bold" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Result/ Recommendation</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color:#034F84">
+            <li><a class="dropdown-item font-weight-bold" href="results.jsp">Results</a></li> 
+          
+          <li><a class="dropdown-item font-weight-bold" href="recommendation.jsp">Recommendation</a></li>
+          </ul>
+      </li>
+      
+      
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-light font-weight-bold" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Refund Policy</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color:#034F84">
+            <li><a class="dropdown-item font-weight-bold" href="terms_and_condition.jsp">Terms and Conditions</a></li>         
+          	<li>
+				<a class="dropdown-item font-weight-bold" href="privacy.jsp">Privacy Policy</a>
+			</li>
+			
+			<li>
+				<a  class="dropdown-item font-weight-bold" href="refund-cancellation.jsp">Refund / Cancellation Policy</a>
+			</li>
+			
+			<li>
+				<a class="dropdown-item font-weight-bold" href="list_of_services_and_pricing.jsp">List of services and their pricing</a>
+			</li>
+          </ul>
+      </li>
+
+     <li class="nav-item dropdown ">
+        <a class="nav-link text-light font-weight-bold"  href="tender.jsp">Tender</a>
+      </li>
+     
+     <li class="nav-item dropdown">
+        <a class="nav-link text-light font-weight-bold" href="rti.jsp">RTI</a>
+      </li>
+      
+      <li class="nav-item dropdown">
+        <a class="nav-link text-light font-weight-bold" href="contactus.jsp">Contact Us</a>
+      </li>
+        
+    </ul> 
+  </div>
+</nav>
+<!-- Modal for Login-->
+ <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:#034F84;">
+        <h5 class="modal-title text-white font-weight-bold" id="exampleModalLabel">Sign In</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+  	<form  id="loginForm" action="Login" method="post" autocomplete="off" onsubmit="return onSubmitForm(this);">
+      <div class="modal-body">
+      <div class="form-group col-md-12">  	
+    	<label for="error" style="color:red;">
+		
+         </label>
+         <label for="success" style="color:green;">
+        
+        
+        </label>      
+        </div>
+       	<div class="form-group col-md-12">
+     		 <label for="Enrollment_Number">Enrollment Number</label>
+     		 <input type="text" class="form-control" id="enrollment_number" name="enrollment_number" onkeyup='handleInput(event)' placeholder="Enter your Enrollment Number" autocomplete="off" required>
+     		 <!-- <input type="hidden" id="enrollment_number" name="enrollment_number" > -->
+    	</div>
+	    <div class="form-group col-md-12">
+	      <label for="password">Password</label>
+	      <input type="password" class="form-control" id="password" name="password" pattern="^\S{8,}$" placeholder="Enter the Password" autocomplete="off" required>
+	      <!-- <input type="hidden" id="password" name="password"> -->
+	    </div>
+	  
+	   <div class="card-header text-white card border-white form-group col-md-10 mx-auto" style="background-color:#034F84;"
+							style="margin-top: 20px;">
+		<b>Type in Box Below : &nbsp;&nbsp;&nbsp;<font style="font-size:18px;"><span id="captchaImage"></span></font> <font style="float:right;padding:8px;"><a href="JavaScript:Void(0);" onclick="javascript:access();"><i class="fa fa-refresh fa-lg text-warning" aria-hidden="true"></i></a></font></b>
+		</div>
+						
+		<div class="card-header text-white card border-white form-group col-md-10 mx-auto" style="background-color:#034F84;">
+		<input type="text" class="form-control"
+			id="captcha" placeholder="Type Here:" name="captcha"  maxlength="5" autocomplete="off" required>
+			<div class="invalid-tooltip">
+		       Please Enter Valid Captcha.
+			      </div>
+		</div>
+		<div class="row">
+			<div class="form-group col-md-6 text-center" style="margin-top: 7px;">
+		      <label for="password"><a href="JavaScript:Void(0);" id="forgotClick" style="float:left;">Forgot Password?</a></label>
+		    </div>
+		    <div class="form-group col-md-6 text-center" style="margin-top: 7px;">
+		      <label for="forgotEnrollment"><a href="forgotEnrollment" id="forgotEnrollment" style="float:right;">Forgot Enrollment Number?</a></label>
+		  </div>
+		</div>
+      
+	  
+	  </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">&nbsp;Sign in&nbsp;</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="test">Close</button>
+        </div>
+         <div class="form-group col-md-12 blink ">
+	      <label for="refertootherlink" class="spans"><a href="https://www.pscwbonline.gov.in/apps/login/login.html" onclick="return confirm('You are redirecting to candidate login page of  www.pscwbonline.gov.in')" target="_blank" class="btn btn-info btn-lg active" role="button" aria-pressed="true">Login at www.pscwbonline.gov.in</a></label>
+	      <label for="refertootherlink" class="spans" style="float:right;"><a href="https://pscwb.ucanapply.com/" onclick="return confirm('You are redirecting to candidate login page of  www.pscwbapplication.in')" target="_blank" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Login at www.pscwbapplication.in</a></label>
+	  </div>
+	  
+        <input type="hidden"
+           id="g-recaptcha-response"
+           name="g-recaptcha-response"/>
+      
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+
+
+
+<!-- Forgot password -->
+<div class="modal fade" id="forgotpassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:#2f5ba3;">
+        <h5 class="modal-title" id="exampleModalLabel" style="color:#fff;">Forgot Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="ForgotPassword" method="post">
+      <div class="modal-body">
+       	<div class="form-group col-md-12">
+     		 <label for="Enrollment_Number">Enrollment Number</label>
+     		 <input type="text" class="form-control" name="enrollment_number" id="enrollment_number" onkeyup='handleInput(event)' placeholder="Enter your Enrollment Number" required>
+    	</div>
+    	
+	    <div class="form-group col-md-12">
+	      <label for="DateofBirth">Date of Birth</label>
+	      <input  class="form-control" id="date" name="date_of_birth" placeholder="Date of Birth" autocomplete="off" required>
+	    </div>
+	  
+	  <div class="form-group col-md-12">
+	      <label for="info" style="text-align:justify;">Write your Enrollment No and select your date of birth then Press SEND. You will get the password message at your mobile.</label>
+	  </div>
+	  <div class="card-header text-white card border-white form-group col-md-10 mx-auto" style="background-color:#034F84;"
+							style="margin-top: 20px;">
+		<b>Type in Box Below : &nbsp;&nbsp;&nbsp;<font style="font-size:18px;"><img id="captchaImageForgot" alt="Captcha" style="height:40px;vertical-align:middle;background:#fff;border-radius:3px;"></font> <font style="float:right;padding:8px;"><a href="JavaScript:Void(0);" onclick="javascript:accessForgot();"><i class="fa fa-refresh fa-lg text-warning" aria-hidden="true"></i></a></font></b>
+		</div>
+						
+		<div class="card-header text-white card border-white form-group col-md-10 mx-auto" style="background-color:#034F84;">
+		<input type="text" class="form-control"
+			id="captchaForgot" placeholder="Type Here:" name="captchaForgot"  maxlength="5" autocomplete="off" required>
+			<div class="invalid-tooltip">
+		       Please Enter Valid Captcha.
+			      </div>
+		</div>
+      <div class="form-group col-md-12">
+	      <label for="password"><a href="JavaScript:Void(0);" id="loginClick">Login</a></label>
+	  </div>
+	  </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Send</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="test">Close</button>
+      </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+<!-- Modal ends here -->
+
+<div class="modal fade" id="helpdesk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:#2f5ba3;">
+        <h5 class="modal-title font-weight-bold" id="exampleModalLabel" style="color:#fff;">Help Desk</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="ForgotPassword" method="post">
+      <div class="modal-body text-justify">
+	   <h6 class="card-title text-center font-weight-bold">Working Day from 10:30 A.M. to 4:30 P.M.</h6>
+	   <h6 class="card-title">&nbsp;</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;(033) 2262-4181 [Related to Offline payment]</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;(033) 4003-5104 [Related to Online payment]</h6>
+	   <h6 class="card-title">&nbsp;</h6>
+	   <h6 class="card-title font-weight-bold" style="margin-left:30px;">For Technical Support</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;(033) 2419-7715</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;(033) 2419-8187</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;(033) 2466-1540</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;91631 29676</h6>
+	   <h6 class="card-title" style="margin-left:30px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;91631 29722</h6>
+	   <h6 class="card-title">&nbsp;</h6>
+	   <h6 class="card-title font-weight-bold" style="margin-left:30px;"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp; Email Help Desk :- <i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp;pscwbit01@gmail.com [For general queries and <br>technical purposes]&nbsp;&nbsp;&nbsp;&nbsp; <i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp;lopscwb2018@gmail.com [For legal matters]</h6>
+	 </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="test">Close</button>
+      </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<script type="text/javascript">
+//for forgot password
+function forgotpassword() {
+    $("#login").removeClass("fade").modal("hide");
+    $("#forgotpassword").modal("show").addClass("fade");
+    accessForgot();
+}
+
+$("#forgotClick").on("click", function () {
+	forgotpassword();
+});
+
+$("#test").on("click", function () {
+    $(".modal-backdrop").fadeOut("slow");
+});
+
+// for login
+$("#loginClick").on("click", function () {
+	login();
+});
+
+function login() {
+    $("#forgotpassword").removeClass("fade").modal("hide");
+    $("#login").modal("show").addClass("fade");
+}
+
+</script>
+<script>
+
+$('#btn-increase').on('click', function() {
+	  var fontSize = $('html').css('font-size');
+	  var newFontSize = parseInt(fontSize)+1;
+	  
+	  $('html').css('font-size', newFontSize+'px')
+	})
+
+	$('#btn-decrease').on('click', function() {
+	  var fontSize = $('html').css('font-size');
+	  var newFontSize = parseInt(fontSize)-.5;
+	  
+	  $('html').css('font-size', newFontSize+'px')
+	})
+
+	$('#btn-orig').on('click', function() {
+	  $('html').css('font-size', '70%')
+	})
+
+</script>
+<script type="text/javascript">
+window.setTimeout(function() {
+    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove(); 
+    });
+}, 4000);
+
+//go to to
+$(document).ready(function(){ 
+    $(window).scroll(function(){ 
+        if ($(this).scrollTop() > 100) { 
+            $('#scroll').fadeIn(); 
+        } else { 
+            $('#scroll').fadeOut(); 
+        } 
+    }); 
+    $('#scroll').click(function(){ 
+        $("html, body").animate({ scrollTop: 0 }, 600); 
+        return false; 
+    }); 
+});
+</script>
+<script>
+$(".btn-group, .dropdown").hover(
+        function () {
+            $('>.dropdown-menu', this).stop(true, true).fadeIn("fast");
+            $(this).addClass('open');
+        },
+        function () {
+            $('>.dropdown-menu', this).stop(true, true).fadeOut("fast");
+            $(this).removeClass('open');
+        });
+</script>
+<script>
+	$(document).ready(function(){
+	var date_input=$('input[name="date_of_birth"]'); //our date input has the name "date_of_birth" as define in html
+	var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+	date_input.datepicker({
+	format: 'dd/mm/yyyy',
+	container: container,
+	todayHighlight: true,
+	autoclose: true,
+	})
+	})	
+</script>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+	<div class="col-sm-12">
+		<nav aria-label="breadcrumb" style="margin-top:10px;">
+		<ol class="breadcrumb bg-white">
+			<li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Advertisement</li>
+		</ol>
+		</nav>
+	</div>
+	<!-- End -->
+
+	<!-- Main Content -->
+	<div class="col-sm-12">
+		<div class="col-sm-12 row">
+			<div class="card col-sm-2" style="background-color: #034F84;">
+				<div class="card-body">
+					<a href="2018.jsp" class="card-link text-center text-white"
+						style="font-size: 13px; margin-left: 30px;"><i
+						class="fa fa-archive fa-fw" aria-hidden="true"></i> Year 2018</a>
+				</div>
+			</div>
+			&nbsp;
+			<div class="card col-sm-2" style="background-color: #034F84;">
+				<div class="card-body">
+					<a href="2019.jsp" class="card-link text-center text-white"
+						style="font-size: 13px; margin-left: 30px;"><i
+						class="fa fa-archive fa-fw" aria-hidden="true"></i> Year 2019</a>
+				</div>
+			</div>
+		</div>
+		<div class="card" style="border: none; shadow: none; margin-top: 5px;">
+			<div class="card-header text-white text-uppercase font-weight-bold"
+				style="background-color: #034F84; font-size: 15px;">Advertisement
+				2020-2022</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-hover" id="table"
+						style="margin-top: 20px;">
+						<thead class="text-dark">
+							<tr class="text-justify table-bordered">
+								<th scope="col">Advertisement No.</th>
+								<th scope="col">Advertisement name</th>
+								<th scope="col" class="text-center" width="10%">Application
+									Start Date</th>
+								<th scope="col" class="text-center" width="10%">Application
+									End Date</th>
+								<th scope="col" class="text-center">Download (Click PDF to
+									Download)</th>
+								<th scope="col" class="text-center">Uploaded On</th>
+								<th scope="col">Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+							<tr class="text-justify text-uppercase">
+								<td>07/2023</td>
+								<td>(ADVT. NO. 07/2023) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF SENIOR SCIENTIFIC OFFICER (TOXICOLOGY & CHEMISTRY SECTION UNDER CHEMISTRY DIVISION) OF THE WEST BENGAL FORENSIC SCIENCE LABORATORY IN THE WEST BENGAL GENERAL SERVICE UNDER THE DEPARTMENT OF HOME AND HILL AFFAIRS DEPARTMENT, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									25 July 2023
+								</td>
+								<td class="text-center">
+									17 August 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Ad_20230919113548_AdvtNo-07-2023.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									19 September 2023
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>05/2023</td>
+								<td>(ADVT. NO. 05/2023) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT DIRECTOR OF AGRICULTURE IN THE WEST BENGAL AGRICULTURAL SERVICE (ADMN) UNDER THE DEPARTMENT OF AGRICULTURE, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									25 July 2023
+								</td>
+								<td class="text-center">
+									17 August 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20230720125721_AdvtNO05-2023.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									20 July 2023
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>03/2023</td>
+								<td>ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DIRECTOR OF HORTICULTURE IN DIRECTORATE OF HORTICULTURE UNDER THE DEPT. OF FOOD PROCESSING INDUSTRIES & HORTICULTURE, GOVT. OF W.B. [ADVT. NO. 03/2023]</td>
+								<td class="text-center">
+									25 May 2023
+								</td>
+								<td class="text-center">
+									15 June 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20230426142626_Advt-03-2023.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									26 April 2023
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>02/2023</td>
+								<td>(ADVT. NO. 02/2023)-ADVERTISEMENT FOR RECTT. TO THE POST OF JOINT DIRECTOR OF TEXTILES (POWERLOOM, HOSIERY & READYMADE GARMENTS DIVISION) IN THE DIRECTORATE OF TEXTILES (POWERLOOM, HOSIERY & READYMADE GARMENTS DIVISION) UNDER THE DEPARTMENT OF MICRO, SMALL AND MEDIUM ENTERPRISES & TEXTILES, GOVT. OF W.B.</td>
+								<td class="text-center">
+									28 February 2023
+								</td>
+								<td class="text-center">
+									21 March 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20230225141922_Advt.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									25 February 2023
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>01/2023</td>
+								<td>(ADVT. NO. 01/2023) WEST BENGAL CIVIL SERVICE (EXECUTIVE) ETC. EXAMINATION, 2023</td>
+								<td class="text-center">
+									28 February 2023
+								</td>
+								<td class="text-center">
+									21 March 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20230225140434_Advt.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									25 February 2023
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>19/2022</td>
+								<td>(ADVT NO. 19/2022) WEST BENGAL JUDICIAL SERVICE EXAMINATION, 2022</td>
+								<td class="text-center">
+									10 January 2023
+								</td>
+								<td class="text-center">
+									31 January 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221230104513_ADVT.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									30 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>18/2022</td>
+								<td>(ADVT. NO. 18/2022):- ADVERTISEMENT FOR THE POST OF PSYCHIATRIST IN W.B.G.S.  UNDER THE DEPARTMENT OF CORRECTIONAL ADMINISTRATION, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									03 January 2023
+								</td>
+								<td class="text-center">
+									24 January 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221224213000_Advt_18_22.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									24 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>17/2022</td>
+								<td>(ADVT. NO. 17/2022):- ADVERTISEMENT FOR THE POST OF PSYCHOLOGIST IN W.B.G.S. UNDER THE DEPARTMENT OF CORRECTIONAL ADMINISTRATION, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									03 January 2023
+								</td>
+								<td class="text-center">
+									24 January 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221224212542_Advt_17_22.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									24 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>16/2022</td>
+								<td>(ADVT. NO. 16/2022) - ADVERTISEMENT FOR RECTT. TO THE POST OF VETERINARY OFFICER IN WEST BENGAL ANIMAL HUSBANDRY & VETERINARY SERVICES IN THE DIRECTORATE OF ANIMAL RESOURCES & ANIMAL HEALTH UNDER THE ANIMAL RESOURCES DEVELOPMENT DEPARTMENT, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									30 January 2023
+								</td>
+								<td class="text-center">
+									20 February 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221219120528_Advt-16-22_merged_compressed.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									19 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>15/2022</td>
+								<td>(ADVT. NO. 15/2022)-ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT ENGINEER (MECHANICAL & ELECTRICAL) IN WEST BENGAL SERVICE OF ENGINEERS (MECHANICAL & ELECTRICAL) IN IRRIGATION & WATERWAYS DIRECTORATE UNDER THE IRRIGATION & WATERWAYS DEPARTMENT,GOVT. OF W.B.</td>
+								<td class="text-center">
+									06 December 2022
+								</td>
+								<td class="text-center">
+									27 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221203124900_Advt15-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									03 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>14/2022</td>
+								<td>(ADVT. NO.: 14/2022) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF LIBRARY ASSISTANT IN WEST BENGAL LEGISLATIVE ASSEMBLY SECRETARIAT, GOVT. OF W.B</td>
+								<td class="text-center">
+									06 December 2022
+								</td>
+								<td class="text-center">
+									27 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221203123055_ADVT14-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									03 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>13/2022</td>
+								<td>(ADVT NO. 13/2022) WEST BENGAL AUDIT AND ACCOUNTS SERVICE RECRUITMENT EXAMINATION 2022.</td>
+								<td class="text-center">
+									14 December 2022
+								</td>
+								<td class="text-center">
+									04 January 2023
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221203122429_Advt13-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									03 December 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>12/2022</td>
+								<td>(ADVT. NO. 12/2022) -ADVERTISEMENT FOR RECTT. TO THE POST OF KEEPER, STATE ARCHAEOLOGICAL MUSEUM IN W.B.G.S. IN THE DIRECTORATE OF ARCHAEOLOGY AND MUSEUMS UNDER THE INFORMATION AND CULTURAL AFFAIRS DEPARTMENT, GOVT. OF W.B.</td>
+								<td class="text-center">
+									02 December 2022
+								</td>
+								<td class="text-center">
+									23 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221126221241_Advt-Keeper-12-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									26 November 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>11/2022</td>
+								<td>(ADVT. NO. 11/2022) -ADVERTISEMENT FOR RECTT. TO THE POST OF PLANT PATHOLOGIST IN W.B.G.S. IN THE DIRECTORATE OF CINCHONA & OTHER MEDICINAL PLANT UNDER THE DEPTT. OF FOOD PROCESSING INDUSTRIES & HORTICULTURE, GOVT. OF W.B.</td>
+								<td class="text-center">
+									02 December 2022
+								</td>
+								<td class="text-center">
+									23 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221126215846_Advt-11-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									26 November 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>10/2022</td>
+								<td>LIMITED DEPARTMENTAL EXAMINATION OF ELIGIBLE EMPLOYEES OF THE GOVERNMENT OF WEST BENGAL FOR PROMOTION TO THE POSTS IN THE WEST BENGAL AUDIT AND ACCOUNTS SERVICE, 2022.</td>
+								<td class="text-center">
+									21 November 2022
+								</td>
+								<td class="text-center">
+									15 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Ad_20221117231250_Advt.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									17 November 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>09/2022</td>
+								<td>(ADVT. NO. 09/2022)- ADVERTISEMENT FOR RECRUITMENT TO THE POSTS OF JUNIOR ENGINEERS (CIVIL/MECHANICAL/ELECTRICAL) FOR W.B. SUB-ORDINATE SERVICE OF ENGINEERS IN VARIOUS DEPTT., DIRECTORATES, OTHER OFFICES AND ESTABLISHMENTS OF  GOVT. OF W.B.</td>
+								<td class="text-center">
+									16 November 2022
+								</td>
+								<td class="text-center">
+									07 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221115120312_Advertisement_PDF_compressed.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									15 November 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>08/2022</td>
+								<td>(ADVT. NO. 08/2022)-ADVERTISEMENT FOR RECRUITMENT TO THE POSTS OF DEPUTY DIRECTOR (ENGINEERING) IN RIVER RESEARCH INSTITUTE UNDER THE IRRIGATION & WATERWAYS, GOVT. OF WB</td>
+								<td class="text-center">
+									10 November 2022
+								</td>
+								<td class="text-center">
+									01 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221105114817_Advt_merged_compressed.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									05 November 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>07/2022</td>
+								<td>(ADVT. NO. 07/2022)-ADVERTISEMENT FOR RECRUITMENT TO THE POSTS OF INSPECTOR OF FACTORIES IN W.B.F.S. UNDER THE LABOUR DEPARTMENT, GOVT. OF WB</td>
+								<td class="text-center">
+									10 November 2022
+								</td>
+								<td class="text-center">
+									01 December 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20221105113614_Advertisement_merged_compressed.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									05 November 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>06/2022</td>
+								<td>(ADVT. NO. 06/2022)-ADVERTISEMENT FOR RECRUITMENT TO THREE CATEGORIES OF POSTS IN THE NARCOTICS DIVISION OF FORENSIC SCIENCE LABORATORY, WB UNDER THE HOME AND HILL AFFAIRS DEPARTMENT, GOVT. OF WB</td>
+								<td class="text-center">
+									19 October 2022
+								</td>
+								<td class="text-center">
+									15 November 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20220929000600_6-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									29 September 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>29[3(XI)]/2019</td>
+								<td>(ADVT. NO.: 29[3(XI)]/2019) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT PROFESSOR IN MUSIC (METHODOLOGY COURSE) FOR GOVT. TEACHERS TRAINING COLLEGES IN W.B.E.S. UNDER THE HIGHER EDUCATION DEPARTMENT, GOVT. OF W.B</td>
+								<td class="text-center">
+									27 September 2022
+								</td>
+								<td class="text-center">
+									17 October 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20220917131406_Music.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									17 September 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>5/2022</td>
+								<td>(ADVT. NO.: 5/2022) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF FOREMAN (CHEMICAL) UNDER THE TECHNICAL EDUCATION, TRAINING AND SKILL DEVELOPMENT DEPARTMENT, GOVT. OF W.B</td>
+								<td class="text-center">
+									23 September 2022
+								</td>
+								<td class="text-center">
+									13 October 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20220917125914_Foreman.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									17 September 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>04/2022</td>
+								<td>(ADVT. NO.: 04/2022) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DISTRICT OFFICER UNDER THE TECHNICAL EDUCATION, TRAINING & SKILL DEVELOPMENT DEPARTMENT, GOVT. OF W.B</td>
+								<td class="text-center">
+									30 August 2022
+								</td>
+								<td class="text-center">
+									19 September 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Ad_20220828152301_04-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									28 August 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>03/2022</td>
+								<td>(ADVT. NO.: 03/2022) ADVERTISEMENT FOR RECRUITMENT TO THE VARIOUS POST IN COLLEGE OF NURSING, ASANSOL LABOUR DEPARTMENT, GOVT. OF WEST BENGAL</td>
+								<td class="text-center">
+									11 July 2022
+								</td>
+								<td class="text-center">
+									01 August 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20220711164205_03-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									11 July 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>02/2022</td>
+								<td>WEST BENGAL CIVIL SERVICE (EXECUTIVE) ETC. EXAMINATION, 2022 (ADVT. NO. 02/2022)</td>
+								<td class="text-center">
+									03 March 2022
+								</td>
+								<td class="text-center">
+									05 April 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20220226175656_advt_02-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									26 February 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>12/2021</td>
+								<td>(ADVT NO. 12/2021) WEST BENGAL AUDIT AND ACCOUNTS SERVICE RECRUITMENT EXAMINATION 2021.</td>
+								<td class="text-center">
+									07 February 2022
+								</td>
+								<td class="text-center">
+									27 February 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20220207123607_ADVT_12-2021_AACC_advt_Syllabus.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									07 February 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>01/2022</td>
+								<td>(ADVT. NO.: 01/2022) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT DIRECTOR OF INDUSTRIAL TRAINING/ PRINCIPAL OF INDUSTRIAL TRAINING INSTITUTES UNDER DEPARTMENT OF TECHNICAL EDUCATION AND TRAINING, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									01 February 2022
+								</td>
+								<td class="text-center">
+									15 April 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20220127113956_Advt_1-2022.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									27 January 2022
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>16/2021</td>
+								<td>(ADVT. NO.: 16/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DIRECTOR OF TECHNICAL EDUCATION UNDER HIGHER EDUCATION DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									08 January 2022
+								</td>
+								<td class="text-center">
+									28 January 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20211229145723_Advt16-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									29 December 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>15/2021</td>
+								<td>(ADVT. NO.: 15/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF PROTOCOL OFFICER UNDER INFORMATION AND CULTURAL AFFAIRS DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									30 December 2021
+								</td>
+								<td class="text-center">
+									19 January 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20211224151010_PROTOCOL.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									24 December 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>14/2021</td>
+								<td>(ADVT. NO.: 14/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT PROFESSOR IN VARIOUS SUBJECTS FOR GOVERNMENT TEACHERS TRAINING COLLEGES IN THE WEST BENGAL EDUCATION SERVICE UNDER THE HIGHER EDUCATION DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									30 December 2021
+								</td>
+								<td class="text-center">
+									19 January 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20211224145959_PROF.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									24 December 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>13/2021</td>
+								<td>(ADVT. NO.: 13/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF GEOGRAPHY MISTRESS, DOWHILL GIRLS SCHOOL, KURSEONG UNDER SCHOOL EDUCATION DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									30 December 2021
+								</td>
+								<td class="text-center">
+									19 January 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20211224145348_GEOGRAPHY.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									24 December 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>11/2021</td>
+								<td>DETAILED ADVERTISEMENT OF LIMITED DEPARTMENTAL EXAMINATION OF ELIGIBLE EMPLOYEES OF THE GOVERNMENT OF WEST BENGAL FOR PROMOTION TO THE POSTS IN THE WEST BENGAL AUDIT AND ACCOUNTS SERVICE, 2021. [ADVT. NO. 11/2021]</td>
+								<td class="text-center">
+									20 December 2021
+								</td>
+								<td class="text-center">
+									20 January 2022
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20211215132029_advt11-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									15 December 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>10/2021</td>
+								<td>(ADVT. NO.: 10/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DISTRICT ORGANISER OF PHYSICAL EDUCATION UNDER SCHOOL EDUCATION DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									24 August 2021
+								</td>
+								<td class="text-center">
+									13 September 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210816140642_10-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									16 August 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>09/2021</td>
+								<td>(ADVT. NO.: 09/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DEPUTY DIRECTOR OF TECHNICAL EDUCATION AND TRAINING UNDER TECHNICAL EDUCATION, TRAINING AND  SKILL DEVELOPMENT, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									12 August 2021
+								</td>
+								<td class="text-center">
+									01 September 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210810171634_09-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									10 August 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>08/2021</td>
+								<td>(ADVT. NO. 08/2021) DETAILED ADVERTISEMENT OF WEST BENGAL JUDICIAL SERVICE EXAMINATION, 2021</td>
+								<td class="text-center">
+									14 July 2021
+								</td>
+								<td class="text-center">
+									05 August 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210709121138_wbjs2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									09 July 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>07/2021</td>
+								<td>(ADVT. NO.: 07/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT PROFESSOR IN VARIOUS SUBJECTS FOR GOVERNMENT ENGINEERING AND TECNOLOGICAL COLLEGES IN W.B.G.S UNDER THE DEPARTMENT OF HIGHER EDUCATION, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									09 July 2021
+								</td>
+								<td class="text-center">
+									29 July 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210705181939_Advt.7-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									05 July 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>6/2021</td>
+								<td>(ADVT. NO.: 06/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF SUB-EDITOR FOR BENGALI AND ENGLISH LANGUAGE UNDER INFORMATION AND CULTURAL AFFIARS, GOVT. OF WEST BENGAL.</td>
+								<td class="text-center">
+									20 April 2021
+								</td>
+								<td class="text-center">
+									11 May 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210412122258_Advt6-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 April 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>5/2021</td>
+								<td>(ADVT. NO.: 05/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF INSPECTOR OF FACTORIES (CHEMICAL) UNDER LABOUR DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									13 April 2021
+								</td>
+								<td class="text-center">
+									03 May 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210412121939_Advt5-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 April 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>04/2021</td>
+								<td>(ADVT. NO.: 04/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT DIRECTOR OF TECHNICAL EDUCATION AND TRAINING UNDER TECHNICAL EDUCATION, TRAINING AND &#8203;SKILL DEVELOPMENT, GOVERNMENT OF WEST BENGAL</td>
+								<td class="text-center">
+									12 March 2021
+								</td>
+								<td class="text-center">
+									09 April 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210312154116_Advt4-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 March 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>03/2021</td>
+								<td>(ADVT NO: 03/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF FISHERY EXTENTION OFFICER UNDER FISHERIES, AQUACULTURE, AQUATIC RESOUCES AND FISHING HARBOURS, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									24 February 2021
+								</td>
+								<td class="text-center">
+									17 March 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210212153035_Advt_03-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 February 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>02/2021</td>
+								<td>(ADVT NO: 02/2021) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF PRINCIPAL FOR GOVT. TEACHERS TRAINING COLLEGES UNDER HIGHER EDUCATION DEPARTMENT, GOVERNMENT OF WEST BENGAL.</td>
+								<td class="text-center">
+									22 February 2021
+								</td>
+								<td class="text-center">
+									15 March 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210211153808_ADVT_2-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									11 February 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>01/2021</td>
+								<td>ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DIRECTOR, CULTURAL RESEARCH INSTITUTE UNDER BACKWARD CLASSES WELFARE DEPARTMENT, GOVERNMENT OF WEST BENGAL.(ADVT NO: 01/2021)</td>
+								<td class="text-center">
+									03 February 2021
+								</td>
+								<td class="text-center">
+									23 February 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20210201161152_Advt1-2021.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									01 February 2021
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>22/2020</td>
+								<td>(ADVT NO: 22/2020) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT DIRECTOR, ANIMAL RESOURCES DEVELOPMENT (FODDER), UNDER ANIMAL RESOURCES DEVELOPMENT DEPARTMENT, GOVERNMENT OF WEST BENGAL</td>
+								<td class="text-center">
+									11 January 2021
+								</td>
+								<td class="text-center">
+									01 February 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20201231152837_22-2020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									31 December 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>21/2020</td>
+								<td>(ADVT NO: 21/2020) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT ENGINEER (ELECTRICAL) UNDER PUBLIC WORKS DEPARTMENT,GOVERNMENT OF WEST BENGAL</td>
+								<td class="text-center">
+									11 January 2021
+								</td>
+								<td class="text-center">
+									01 February 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20201231152448_21-2020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									31 December 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>20/2020</td>
+								<td>(ADVT NO: 20/2020) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DIRECTOR, ANIMAL HUSBANDRY & VETERINARY SERVICES UNDER DEPARTMENT OF ANIMAL RESOURCES DEVELOPMENT, GOVERNMENT OF WEST BENGAL</td>
+								<td class="text-center">
+									16 January 2021
+								</td>
+								<td class="text-center">
+									05 February 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20201231152155_20-2020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									31 December 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>18/2020</td>
+								<td>WEST BENGAL CIVIL SERVICE (EXECUTIVE) ETC. EXAMINATION, 2021 (ADVT. NO. 18/2020)</td>
+								<td class="text-center">
+									24 December 2020
+								</td>
+								<td class="text-center">
+									20 January 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=An_20201219123929_Advertisementandsyllabus18-2020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									19 December 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>17/2020</td>
+								<td>(ADVT NO. 17/2020) WEST BENGAL AUDIT AND ACCOUNTS SERVICE RECRUITMENT EXAMINATION 2020</td>
+								<td class="text-center">
+									15 December 2020
+								</td>
+								<td class="text-center">
+									11 January 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20201209114222_ADVT172020schemesyllabus.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									07 December 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>16/2020</td>
+								<td>(ADVT NO: 16/2020) ADVERTISEMENT FOR RECRUITMENT TO THE POST OF GEO-HYDROLOGICAL / GEOLOGICAL ASSISTANT UNDER DEPARTMENT OF WATER RESOURCES INVESTIGATION AND DEVELOPMENT, GOVERNMENT OF WEST BENGAL </td>
+								<td class="text-center">
+									16 December 2020
+								</td>
+								<td class="text-center">
+									05 January 2021
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20201207134104_AdvtNo_16_2020Geo_Hydrological_GeologicalAssistant.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									07 December 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>15/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POST OF ASSISTANT SOIL CHEMIST UNDER DEPT. OF FORESTS, GOVERNMENT OF WEST BENGAL (ADVT. NO. 15/2020)</td>
+								<td class="text-center">
+									13 August 2020
+								</td>
+								<td class="text-center">
+									02 September 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200812182827_Advt152020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 August 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>14/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POST OF JUNIOR SCIENTIFIC OFFICER AT WEST BENGAL GENERAL SERVICE, GOVT. OF WEST BENGAL (ADVT. NO. 14/2020)</td>
+								<td class="text-center">
+									13 August 2020
+								</td>
+								<td class="text-center">
+									02 September 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200812182020_Advt142020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 August 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>13/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POST OF ASSISTANT ENGINEER (CIVIL) IN VARIOUS DEPARTMENTS OF GOVT. OF WEST BENGAL (ADVT. NO. 13/2020)</td>
+								<td class="text-center">
+									14 July 2020
+								</td>
+								<td class="text-center">
+									31 August 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200720123921_13-2020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									09 July 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>11/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF INDUSTRIAL CHEMIST AT WEST BENGAL GENERAL SERVICE, GOVT. OF W.B. (ADVT. NO. 11/2020)</td>
+								<td class="text-center">
+									09 July 2020
+								</td>
+								<td class="text-center">
+									29 July 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200708112645_Advt112020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									08 July 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>12/2020</td>
+								<td>DETAILED ADVERTISEMENT OF WEST BENGAL JUDICIAL SERVICE EXAMINATION, 2020 (ADVT NO. 12/2020)</td>
+								<td class="text-center">
+									07 July 2020
+								</td>
+								<td class="text-center">
+									02 August 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200706102201_Advt122020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									06 July 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>10/2020</td>
+								<td>ADVERTISEMENT FOR RECRUITMENT TO THE POST OF DEPUTY DIRECTOR/ASSISTANT DIRECTOR  OF VOCATIONAL EDUCATION AND TRAINING UNDER THE DEPARTMENT OF TECHNICAL EDUCATION,TRAINING & SKILL DEVELOPMENT AND LIBRARIAN, STATE CENTRAL LIBRARY, KOLKATA UNDER THE DEPARTMENT OF MASS EDUCATION EXTENSION AND LIBRARY SERVICES ,GOVT. OF W.B, (ADVT. NO. 10/2020) </td>
+								<td class="text-center">
+									20 March 2020
+								</td>
+								<td class="text-center">
+									15 June 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200319142529_Advt102020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									19 March 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>9/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF PREPARATORY SCHOOL MISTRESS, VICTORIA BOYS SCHOOL,  KURSEONG (MEN UNSUITABLE) AT SCHOOL EDUCATION, GOVT. OF W.B. (ADVT. NO. 9/2020)</td>
+								<td class="text-center">
+									19 February 2020
+								</td>
+								<td class="text-center">
+									11 March 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200219115431_advt92020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									19 February 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>8/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF INSPECTOR OF LEGAL METROLOGY AT CONSUMER AFFAIRS DEPARTMENT, GOVT. OF W.B (ADVT. NO. 8/2020)</td>
+								<td class="text-center">
+									17 February 2020
+								</td>
+								<td class="text-center">
+									11 March 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200217101426_advt82020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									17 February 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>7/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POST OF GEOLOGIST AND MINING OFFICER  UNDER INDUSTRY, COMMERCE AND ENTERPRISES,GOVT. OF WEST BENGAL (ADVT. NO. 7/2020)</td>
+								<td class="text-center">
+									13 February 2020
+								</td>
+								<td class="text-center">
+									05 March 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200212183553_Advt13022020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									12 February 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>6/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF DISTRICT ORGANISER OF PHYSICAL EDUCATION AT SCHOOL EDUCATION, GOVT. OF W.B.(ADVT. NO. 6/2020)</td>
+								<td class="text-center">
+									04 February 2020
+								</td>
+								<td class="text-center">
+									24 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200204112424_04022020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									04 February 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>5/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF INSTRUCTER IN VARIOUS TRADES AT GOVT. I.T.I. AND STOREKEEPER (TECHNICAL) AT GOVT. I.T.I. (ADVT. NO. 5/2020)</td>
+								<td class="text-center">
+									28 January 2020
+								</td>
+								<td class="text-center">
+									17 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Ad_20200122180111_2735255.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									22 January 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>4/2020</td>
+								<td>ADVERTISEMENT FOR RECRUITMENT TO THE POST OF ASSISTANT DIRECTOR OF HORTICULTURE AND GEOGRAPHY MISTRESS, DOWHILL GIRLS SCHOOL, KURSEONG UNDER GOVT. OF W.B. (ADVT. NO. 4/2020)</td>
+								<td class="text-center">
+									17 January 2020
+								</td>
+								<td class="text-center">
+									06 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200117160435_Advt42020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									17 January 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>2/2020</td>
+								<td>ADVERTISEMENT FOR RECRUITMENT TO THE POST OF WORKSHOP INSTRUCTOR/INSTRUCTOR IN VARIOUS TRADE/DISCIPLINE IN W.B.G.S. UNDER THE DEPARTMENT OF TECHNICAL EDUCATION, TRAINING AND SKILL DEVELOPMENT, GOVT. OF W.B. ADVT. NO. 2/2020</td>
+								<td class="text-center">
+									16 January 2020
+								</td>
+								<td class="text-center">
+									07 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200116171539_2732246.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									16 January 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>03/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF ASSISTANT ENGINEER (MECHANICAL/ELECTRICAL)  .UNDER THE DEPT. OF PUBLIC HEALTH ENGINEERING, GOVT. OF WEST BENGAL (ADVT NO. 03/2020)</td>
+								<td class="text-center">
+									15 January 2020
+								</td>
+								<td class="text-center">
+									07 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200115185006_Advt.No.3-2020.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									15 January 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>01/2020</td>
+								<td>ADVERTISEMENT FOR RECTT. TO THE POSTS OF LABORATORY ASSISTANT IN VARIOUS DISCIPLINES IN GOVT. POLYTECHNICS, W.B. UNDER THE DEPT. OF TECHNICAL EDUCATION, TRAINING AND SKILL DEVELOPMENT, GOVT. OF W.B. (ADVT. NO. 01/2020)</td>
+								<td class="text-center">
+									08 January 2020
+								</td>
+								<td class="text-center">
+									07 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Cur_20200108172219_2730434.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									08 January 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+							<tr class="text-justify text-uppercase">
+								<td>38/2019</td>
+								<td>ADVERTISEMENT FOR RECRUITMENT TO THE POST OF GEO-PHYSICAL ASSISTANT UNDER THE DEPARTMENT OF WATER RESOURCES INVESTIGATION AND DEVELOPMENT, ADVT. NO. 38/2019</td>
+								<td class="text-center">
+									08 January 2020
+								</td>
+								<td class="text-center">
+									07 February 2020
+								</td>
+								<td class="text-center"><a
+									href="Download?param1=Ad_20200102180705_2730190.pdf&param2=advertisement"
+									target="_blank" style="text-decoration: none;">&nbsp;<img
+										src="image/pdf.png" width="10px" height="10px" /></a></td>
+								<td class="text-center">
+									02 January 2020
+								</td>
+								<td>-</td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<footer class="footer" >
+<div class="container-fluid general-color" id="footer">
+<div class="row justify-content-between">
+    <div class="col-12 col-sm-5">
+      <span class="text-white">Content Owned by Public Service Commission, West Bengal, India.</span>
+    </div>
+    <div class="col-12 col-sm-7 d-none d-sm-block">
+      <span class="text-white float-right">Copyright &copy; 2020 Public Service Commission, West Bengal.</span>
+    </div>
+    <div class="col-12 col-sm-7 d-block d-sm-none text-center">
+      <span class="text-white">&copy; Site Designed, Developed by <a href="http://nielit.gov.in/kolkata/" target="_blank" class="text-info">NIELIT, Kolkata</a></span>
+    </div>
+  </div>
+ </div> 
+</footer>
+<!-- 
+<script src="http://psc.wb.gov.in/JS/jquery.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/bootstrap-select.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/popper.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/bootstrap.min.js"></script>
+<script src="http://psc.wb.gov.in/JS/valid.js"></script>
+<script src="http://psc.wb.gov.in/JS/ajaxStateCity.js"></script>
+<script src="http://psc.wb.gov.in/JS/Design_JS_File.js"></script>
+<script type="text/javascript" src="http://psc.wb.gov.in/JS/datatables.min.js"></script>
+<script type="text/javascript" src="http://psc.wb.gov.in/JS/bootstrap-datepicker.min.js"></script>
+ -->
+
+
+<script>
+$(document).ready(function(){
+    $(window).scroll(function () {
+           if ($(this).scrollTop() > 50) {
+               $('#back-to-top').fadeIn();
+           } else {
+               $('#back-to-top').fadeOut();
+           }
+       });
+       // scroll body to 0px on click
+       $('#back-to-top').click(function () {
+           $('#back-to-top').tooltip('hide');
+           $('body,html').animate({
+               scrollTop: 0
+           }, 800);
+           return false;
+       });
+       
+       $('#back-to-top').tooltip('show');
+});
+</script>
+<script>
+function isChar(evt) {
+	evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if(!(charCode >= 65 && charCode <= 90) && !(charCode >= 97 && charCode <= 122) && (charCode != 32 && charCode != 0)) { 
+    	return false;
+    }
+    return true;
+}
+</script>
+<script>
+function isChar_Special_character(evt) {
+	evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if(!(charCode >= 65 && charCode <= 122) && (charCode != 32 && charCode != 0) && !(charCode >= 48 && charCode <= 57)) { 
+    	return false;
+    }
+    return true;
+}
+</script>
+</body>
+</html>
+	<script>
+		$(function() {
+			$('table tr:eq(0)').prepend('<th>Sl. No</th')
+			var id = 0;
+			$('table tr:gt(0)').each(function() {
+				id++
+				$(this).prepend('<td class="text-center">' + id + '</td>')
+			})
+		})
+	</script>
+
+	<script>
+		$(document).ready(function() {
+			$('#table').DataTable();
+		});
+	</script>
+	<style>
+.iffyTip {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.hideText2 {
+	max-width: 200px;
+}
+
+.hideText1 {
+	max-width: 250px;
+}
+
+.hideText3 {
+	max-width: 350px;
+}
+</style>
+</body>
+</html>

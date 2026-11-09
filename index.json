@@ -1,906 +1,906 @@
 {
  "afcat": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://afcat.cdac.in/ failed after 2 attempts: HTTP Error 404: ",
   "ok": false,
   "url": "https://afcat.cdac.in/"
  },
  "aiims-delhi": {
-  "bytes": 206091,
-  "date": "2026-11-02",
+  "bytes": 213581,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.aiims.edu/index.php/en/notices/recruitment/aiims-recruitment"
  },
  "airforce-agniveer": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://agnipathvayu.cdac.in/ failed after 2 attempts: HTTP Error 503: Service Unavailable",
   "ok": false,
   "url": "https://agnipathvayu.cdac.in/"
  },
  "ap-slprb": {
   "bytes": 23855,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://slprb.ap.gov.in/"
  },
  "ap-slprb-press": {
   "bytes": 12829,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://slprb.ap.gov.in/UI/pressRelease.aspx"
  },
  "ap-slprb-recruitments": {
   "bytes": 10758,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://slprb.ap.gov.in/UI/Recruitments.aspx"
  },
  "appsc": {
   "bytes": 6079,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.ap.gov.in/"
  },
  "appsc-portal": {
-  "bytes": 393987,
-  "date": "2026-11-02",
+  "bytes": 406366,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://portal-psc.ap.gov.in/Default.aspx"
  },
  "apsc-assam": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://apsc.nic.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://apsc.nic.in/"
  },
  "army": {
   "bytes": 11148,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://joinindianarmy.nic.in/"
  },
  "assam-police": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://police.assam.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://police.assam.gov.in/"
  },
  "assam-rifles": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.assamrifles.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://www.assamrifles.gov.in/"
  },
  "bank-of-india": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://bankofindia.bank.in/career failed after 2 attempts: HTTP Error 403: Forbidden",
   "ok": false,
   "url": "https://bankofindia.bank.in/career"
  },
  "bel": {
-  "bytes": 433178,
-  "date": "2026-11-02",
+  "bytes": 507666,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://bel-india.in/"
  },
  "bhel": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.bhel.com/recruitments failed after 2 attempts: HTTP Error 404: Not Found",
   "ok": false,
   "url": "https://www.bhel.com/recruitments"
  },
  "bpcl": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.bharatpetroleum.in/careers/job-openings failed after 2 attempts: HTTP Error 403: Forbidden",
   "ok": false,
   "url": "https://www.bharatpetroleum.in/careers/job-openings"
  },
  "bpsc": {
-  "bytes": 296533,
-  "date": "2026-11-02",
+  "bytes": 296531,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://bpsc.bihar.gov.in/"
  },
  "bpsc-advertisement": {
-  "bytes": 232593,
-  "date": "2026-11-02",
+  "bytes": 232623,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://bpsc.bihar.gov.in/advertisement/"
  },
  "bpsc-whats-new": {
-  "bytes": 162679,
-  "date": "2026-11-02",
+  "bytes": 162680,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://bpsc.bihar.gov.in/whats-new/"
  },
  "bsf": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://rectt.bsf.gov.in/ failed after 2 attempts: HTTP Error 403: Forbidden",
   "ok": false,
   "url": "https://rectt.bsf.gov.in/"
  },
  "bssc": {
-  "bytes": 15098,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://bssc.bihar.gov.in/ failed after 2 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1000)>",
+  "ok": false,
   "url": "https://bssc.bihar.gov.in/"
  },
  "bssc-noticeboard": {
-  "bytes": 452369,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://bssc.bihar.gov.in/NoticeBoard.htm failed after 2 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1000)>",
+  "ok": false,
   "url": "https://bssc.bihar.gov.in/NoticeBoard.htm"
  },
  "cg-vyapam": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://vyapam.cgstate.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://vyapam.cgstate.gov.in/"
  },
  "cgpsc": {
   "bytes": 76110,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.cg.gov.in/"
  },
  "cgpsc-advertisement": {
   "bytes": 27640,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.cg.gov.in/Advertisement.php"
  },
  "cgpsc-home": {
-  "bytes": 87334,
-  "date": "2026-11-02",
+  "bytes": 88918,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.cg.gov.in/Home_Welcome.php"
  },
  "cgpsc-notifications": {
-  "bytes": 31613,
-  "date": "2026-11-02",
+  "bytes": 32897,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.cg.gov.in/Notifications.php"
  },
  "cgpsc-result": {
-  "bytes": 56950,
-  "date": "2026-11-02",
+  "bytes": 57172,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.cg.gov.in/Result.php"
  },
  "cisf": {
-  "bytes": 5653,
-  "date": "2026-11-02",
+  "bytes": 5959,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://cisfrectt.cisf.gov.in/"
  },
  "coast-guard": {
   "bytes": 23404,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://joinindiancoastguard.cdac.in/"
  },
  "crpf": {
-  "bytes": 83015,
-  "date": "2026-11-02",
+  "bytes": 83846,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rect.crpf.gov.in/"
  },
  "ctet": {
   "bytes": 92515,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://ctet.nic.in/"
  },
  "drdo": {
-  "date": "2026-11-02",
-  "error": "GET https://www.drdo.gov.in/drdo/careers failed after 2 attempts: <urlopen error timed out>",
+  "date": "2026-11-09",
+  "error": "GET https://www.drdo.gov.in/drdo/careers failed after 2 attempts: HTTP Error 404: Not Found",
   "ok": false,
   "url": "https://www.drdo.gov.in/drdo/careers"
  },
  "dsssb": {
-  "bytes": 77585,
-  "date": "2026-11-02",
+  "bytes": 78305,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/"
  },
  "dsssb-vacancies": {
-  "bytes": 69716,
-  "date": "2026-11-02",
+  "bytes": 69891,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/dsssb-vacancies"
  },
  "employment-news": {
   "bytes": 68808,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://employmentnews.gov.in/NewEmp/AllJobs.aspx?k=All"
  },
  "epfo": {
-  "bytes": 280621,
-  "date": "2026-11-02",
+  "bytes": 280638,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.epfindia.gov.in/"
  },
  "epfo-archive": {
-  "bytes": 223097,
-  "date": "2026-11-02",
+  "bytes": 223144,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.epfo.gov.in/archive-recruitments"
  },
  "epfo-recruitments": {
-  "bytes": 210633,
-  "date": "2026-11-02",
+  "bytes": 210680,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.epfo.gov.in/recruitments/"
  },
  "esic": {
-  "bytes": 84232,
-  "date": "2026-11-02",
+  "bytes": 84311,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.esic.gov.in/recruitments"
  },
  "fci": {
-  "bytes": 290055,
-  "date": "2026-11-02",
+  "bytes": 292116,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://fci.gov.in/recruitments.php"
  },
  "fci-app": {
   "bytes": 1794359,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://fci.gov.in/main.43358fbc0f97cc90.js"
  },
  "gprb-advts": {
   "bytes": 2623,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gprb.gujarat.gov.in/advertisement-list.htm"
  },
  "gprb-latest": {
-  "bytes": 60592,
-  "date": "2026-11-02",
+  "bytes": 60410,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gprb.gujarat.gov.in/latestupdate-list.htm"
  },
  "gpsc": {
-  "bytes": 432887,
-  "date": "2026-11-02",
+  "bytes": 529661,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gpsc.gujarat.gov.in/"
  },
  "gsssb": {
   "bytes": 22455,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gsssb.gujarat.gov.in/"
  },
  "gsssb-news": {
   "bytes": 19872,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gsssb.gujarat.gov.in/News/Index"
  },
  "gsssb-notification": {
   "bytes": 20834,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gsssb.gujarat.gov.in/Notification"
  },
  "gujarat-gprb": {
-  "bytes": 139557,
-  "date": "2026-11-02",
+  "bytes": 142545,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://gprb.gujarat.gov.in/"
  },
  "hppsc": {
   "bytes": 59407,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://hppsc.hp.gov.in/"
  },
  "hppsc-notifications": {
   "bytes": 1014,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://hppsc.hp.gov.in/HomeContent/NotificationsPV"
  },
  "hppsc-whatsnew": {
-  "bytes": 5762,
-  "date": "2026-11-02",
+  "bytes": 7150,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://hppsc.hp.gov.in/HomeContent/WhatsNewPV"
  },
  "hpsc": {
-  "bytes": 48627,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://hpsc.gov.in/ failed after 2 attempts: HTTP Error 500: Internal Server Error",
+  "ok": false,
   "url": "https://hpsc.gov.in/"
  },
  "ibps": {
-  "bytes": 214075,
-  "date": "2026-11-02",
+  "bytes": 218681,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.ibps.in/"
  },
  "ibps-crp-updates": {
-  "bytes": 113586,
-  "date": "2026-11-02",
+  "bytes": 112279,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.ibps.in/index.php/crp-updates/"
  },
  "ibps-recruitment": {
-  "bytes": 106430,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://www.ibps.in/index.php/recruitment failed after 2 attempts: <urlopen error [SSL: UNEXPECTED_MESSAGE] unexpected message (_ssl.c:1000)>",
+  "ok": false,
   "url": "https://www.ibps.in/index.php/recruitment"
  },
  "india-post": {
-  "bytes": 374117,
-  "date": "2026-11-02",
+  "bytes": 385985,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.indiapost.gov.in/"
  },
  "india-post-gds": {
   "bytes": 83684,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://indiapostgdsonline.gov.in/"
  },
  "indian-bank": {
   "bytes": 247,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://indianbank.bank.in/career/"
  },
  "indiapost-vacancies": {
-  "bytes": 148409,
-  "date": "2026-11-02",
+  "bytes": 185499,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.indiapost.gov.in/vacancies"
  },
  "iocl": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://iocl.com/latest-job-opening failed after 2 attempts: HTTP Error 307: Temporary Redirect",
   "ok": false,
   "url": "https://iocl.com/latest-job-opening"
  },
  "itbp": {
-  "bytes": 95467,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://recruitment.itbpolice.nic.in/ failed after 2 attempts: <urlopen error timed out>",
+  "ok": false,
   "url": "https://recruitment.itbpolice.nic.in/"
  },
  "itbp-news": {
-  "bytes": 97100,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://recruitment.itbpolice.nic.in/statics/news failed after 2 attempts: <urlopen error timed out>",
+  "ok": false,
   "url": "https://recruitment.itbpolice.nic.in/statics/news"
  },
  "itbp-results": {
-  "bytes": 55264,
-  "date": "2026-11-02",
-  "ok": true,
+  "date": "2026-11-09",
+  "error": "GET https://recruitment.itbpolice.nic.in/statics/results failed after 2 attempts: <urlopen error timed out>",
+  "ok": false,
   "url": "https://recruitment.itbpolice.nic.in/statics/results"
  },
  "jssc": {
-  "bytes": 44590,
-  "date": "2026-11-02",
+  "bytes": 44686,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://jssc.jharkhand.gov.in/"
  },
  "jssc-advertisements": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://jssc.jharkhand.gov.in/notices/advertisements failed after 2 attempts: The read operation timed out",
   "ok": false,
   "url": "https://jssc.jharkhand.gov.in/notices/advertisements"
  },
  "jssc-notices": {
   "bytes": 29949,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://jssc.jharkhand.gov.in/notices"
  },
  "jssc-other-notices": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://jssc.jharkhand.gov.in/notices/other-notices failed after 2 attempts: The read operation timed out",
   "ok": false,
   "url": "https://jssc.jharkhand.gov.in/notices/other-notices"
  },
  "jssc-result": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://jssc.jharkhand.gov.in/result failed after 2 attempts: The read operation timed out",
   "ok": false,
   "url": "https://jssc.jharkhand.gov.in/result"
  },
  "jssc-whats-new": {
-  "bytes": 36015,
-  "date": "2026-11-02",
+  "bytes": 36153,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://jssc.jharkhand.gov.in/whats-new"
  },
  "karnataka-police": {
   "bytes": 304478,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://ksp.karnataka.gov.in/"
  },
  "kea": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://kea.kar.nic.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://kea.kar.nic.in/"
  },
  "kerala-psc": {
-  "bytes": 71453,
-  "date": "2026-11-02",
+  "bytes": 71174,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://keralapsc.gov.in/"
  },
  "kpsc-karnataka": {
-  "bytes": 193765,
-  "date": "2026-11-02",
+  "bytes": 195959,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://kpsc.karnataka.gov.in/"
  },
  "ksp-recruitment": {
   "bytes": 163153,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://ksp.karnataka.gov.in/info-3/%E0%B2%A8%E0%B3%87%E0%B2%AE%E0%B2%95%E0%B2%BE%E0%B2%A4%E0%B2%BF/kn"
  },
  "kvs": {
-  "bytes": 241865,
-  "date": "2026-11-02",
+  "bytes": 241954,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://kvsangathan.nic.in/"
  },
  "kvs-recruitment": {
-  "bytes": 146034,
-  "date": "2026-11-02",
+  "bytes": 146474,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/"
  },
  "lic": {
-  "bytes": 223844,
-  "date": "2026-11-02",
+  "bytes": 223982,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://licindia.in/careers"
  },
  "mp-esb": {
   "bytes": 14515,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://esb.mp.gov.in/"
  },
  "mp-esb-calendar": {
   "bytes": 483,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://esb.mp.gov.in/Exams_Schedule/exams_schedule.htm"
  },
  "mp-esb-en": {
   "bytes": 1105,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://esb.mp.gov.in/e_default.html"
  },
  "mp-esb-home-frame": {
   "bytes": 8966,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://esb.mp.gov.in/home_n.html"
  },
  "mp-esb-leftmenu": {
   "bytes": 2024,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://esb.mp.gov.in/leftmenu.html"
  },
  "mp-esb-notices": {
-  "bytes": 13449,
-  "date": "2026-11-02",
+  "bytes": 11947,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://esb.mp.gov.in/advertisement/Important_message_candidate.htm"
  },
  "mppsc": {
-  "bytes": 52916,
-  "date": "2026-11-02",
+  "bytes": 57434,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://mppsc.mp.gov.in/"
  },
  "mpsc": {
   "bytes": 4363,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://mpsc.gov.in/"
  },
  "nabard": {
-  "bytes": 102134,
-  "date": "2026-11-02",
+  "bytes": 102139,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.nabard.org/"
  },
  "nabard-careers": {
   "bytes": 65639,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.nabard.org/Hindi/ftrcontent.aspx?id=660"
  },
  "nabard-notices": {
   "bytes": 640914,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26"
  },
  "navy": {
-  "bytes": 91029,
-  "date": "2026-11-02",
+  "bytes": 92118,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.joinindiannavy.gov.in/"
  },
  "niacl": {
-  "bytes": 4278390,
-  "date": "2026-11-02",
+  "bytes": 4283031,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.newindia.co.in/recruitment/list"
  },
  "nielit": {
   "bytes": 2401,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.nielit.gov.in/recruitment"
  },
  "nta": {
-  "bytes": 719726,
-  "date": "2026-11-02",
+  "bytes": 729940,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://nta.ac.in/"
  },
  "ntpc": {
-  "bytes": 1014480,
-  "date": "2026-11-02",
+  "bytes": 1013833,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://careers.ntpc.co.in/recruitment/"
  },
  "nvs": {
   "bytes": 884,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://navodaya.gov.in/"
  },
  "odisha-police": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://odishapolice.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://odishapolice.gov.in/"
  },
  "osssc": {
-  "bytes": 67147,
-  "date": "2026-11-02",
+  "bytes": 67351,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.osssc.gov.in/"
  },
  "pib-upsc-rss": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3 failed after 2 attempts: HTTP Error 403: Forbidden",
   "ok": false,
   "url": "https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3"
  },
  "ppsc": {
-  "bytes": 1073147,
-  "date": "2026-11-02",
+  "bytes": 1075919,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://ppsc.gov.in/"
  },
  "ppsc-open-ads": {
-  "bytes": 1073157,
-  "date": "2026-11-02",
+  "bytes": 1075929,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://ppsc.gov.in/index.aspx?page=27&tabid=48&tablinkid=27&tablinkyes=1"
  },
  "punjab-police": {
   "bytes": 562890,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.punjabpolice.gov.in/"
  },
  "punjab-police-recruitment": {
   "bytes": 51096,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.punjabpolice.gov.in/en/recruitments/punjab-police-recruitment/"
  },
  "punjab-sssb": {
-  "bytes": 86151,
-  "date": "2026-11-02",
+  "bytes": 87060,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://sssb.punjab.gov.in/"
  },
  "rajasthan-bser": {
   "bytes": 12354,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rajeduboard.rajasthan.gov.in/"
  },
  "rajasthan-police": {
   "bytes": 53826,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://police.rajasthan.gov.in/"
  },
  "rbi-announcements": {
-  "bytes": 116340,
-  "date": "2026-11-02",
+  "bytes": 118712,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/resultsnew.aspx"
  },
  "rbi-vacancies": {
-  "bytes": 118195,
-  "date": "2026-11-02",
+  "bytes": 117991,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx"
  },
  "rpsc": {
-  "bytes": 244939,
-  "date": "2026-11-02",
+  "bytes": 229012,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rpsc.rajasthan.gov.in/"
  },
  "rpsc-ads": {
-  "bytes": 1007467,
-  "date": "2026-11-02",
+  "bytes": 1009306,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rpsc.rajasthan.gov.in/viewcommon?Slice=RA"
  },
  "rrb-cen-list": {
-  "bytes": 79675,
-  "date": "2026-11-02",
+  "bytes": 82036,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rrb.indianrailways.gov.in/cencall/cen-list"
  },
  "rrb-chennai": {
-  "bytes": 160987,
-  "date": "2026-11-02",
+  "bytes": 161598,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rrbchennai.gov.in/"
  },
  "rrb-indianrailways": {
   "bytes": 79556,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rrb.indianrailways.gov.in/"
  },
  "rrb-mumbai": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.rrbmumbai.gov.in/ failed after 2 attempts: <urlopen error [Errno -2] Name or service not known>",
   "ok": false,
   "url": "https://www.rrbmumbai.gov.in/"
  },
  "rrb-news": {
-  "bytes": 247,
-  "date": "2026-11-02",
+  "bytes": 246,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rrb.indianrailways.gov.in/offrings/vacancy/news-updates"
  },
  "rrb-secunderabad": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://rrbsecunderabad.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://rrbsecunderabad.gov.in/"
  },
  "rrb-secunderabad-cen": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://rrbsecunderabad.gov.in/employment-notice failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://rrbsecunderabad.gov.in/employment-notice"
  },
  "rrb-secunderabad-notices": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://rrbsecunderabad.gov.in/notices failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://rrbsecunderabad.gov.in/notices"
  },
  "rssb": {
-  "bytes": 22852,
-  "date": "2026-11-02",
+  "bytes": 22496,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://rssb.rajasthan.gov.in/"
  },
  "ssb": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.ssbrectt.gov.in/ failed after 2 attempts: <urlopen error [Errno -2] Name or service not known>",
   "ok": false,
   "url": "https://www.ssbrectt.gov.in/"
  },
  "territorial-army": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://jointerritorialarmy.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://jointerritorialarmy.gov.in/"
  },
  "tgpsc": {
-  "bytes": 45346,
-  "date": "2026-11-02",
+  "bytes": 43771,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://websitenew.tgpsc.gov.in/"
  },
  "tn-trb": {
-  "date": "2026-11-02",
-  "error": "GET https://www.trb.tn.gov.in/ failed after 2 attempts: HTTP Error 500: Internal Server Error",
-  "ok": false,
+  "bytes": 40269,
+  "date": "2026-11-09",
+  "ok": true,
   "url": "https://www.trb.tn.gov.in/"
  },
  "tnpsc": {
   "bytes": 8993,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://www.tnpsc.gov.in/"
  },
  "tnpsc-home": {
-  "bytes": 98717,
-  "date": "2026-11-02",
+  "bytes": 95346,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://tnpsc.gov.in/home.aspx"
  },
  "tnusrb": {
-  "bytes": 42773,
-  "date": "2026-11-02",
+  "bytes": 43167,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://tnusrb.tn.gov.in/"
  },
  "tnusrb-press": {
-  "bytes": 30147,
-  "date": "2026-11-02",
+  "bytes": 30255,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://tnusrb.tn.gov.in/pressreleases.php"
  },
  "uco-bank": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://ucobank.bank.in/en/job-opportunities failed after 2 attempts: <urlopen error [Errno -2] Name or service not known>",
   "ok": false,
   "url": "https://ucobank.bank.in/en/job-opportunities"
  },
  "ukpsc": {
-  "bytes": 127527,
-  "date": "2026-11-02",
+  "bytes": 131071,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.uk.gov.in/"
  },
  "uksssc": {
-  "bytes": 125902,
-  "date": "2026-11-02",
+  "bytes": 126064,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://sssc.uk.gov.in/"
  },
  "upessc": {
-  "bytes": 146392,
-  "date": "2026-11-02",
+  "bytes": 146414,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upessc.up.gov.in/"
  },
  "upessc-news": {
   "bytes": 74552,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upessc.up.gov.in/Home/news"
  },
  "upessc-press": {
   "bytes": 73722,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upessc.up.gov.in/Home/Press_Release"
  },
  "uppsc": {
-  "bytes": 158319,
-  "date": "2026-11-02",
+  "bytes": 165344,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://uppsc.up.nic.in/"
  },
  "upsc": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.upsc.gov.in/ failed after 2 attempts: HTTP Error 403: Forbidden",
   "ok": false,
   "url": "https://www.upsc.gov.in/"
  },
  "upsc-eadmit": {
-  "bytes": 2775,
-  "date": "2026-11-02",
+  "bytes": 2776,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsconline.gov.in/eadmitcard/index.php"
  },
  "upsc-online": {
-  "bytes": 5745,
-  "date": "2026-11-02",
+  "bytes": 5746,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsconline.gov.in/"
  },
  "upsc-ora-admit": {
   "bytes": 4250,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsconline.gov.in/oraadmitcard/"
  },
  "upsc-whats-new": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://www.upsc.gov.in/whats-new failed after 2 attempts: HTTP Error 403: Forbidden",
   "ok": false,
   "url": "https://www.upsc.gov.in/whats-new"
  },
  "upsssc": {
-  "bytes": 17618,
-  "date": "2026-11-02",
+  "bytes": 113731,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsssc.gov.in/"
  },
  "upsssc-advt-status": {
-  "bytes": 113669,
-  "date": "2026-11-02",
+  "bytes": 113743,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsssc.gov.in/News.aspx?id=9"
  },
  "upsssc-registration": {
-  "bytes": 113669,
-  "date": "2026-11-02",
+  "bytes": 113743,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsssc.gov.in/AllNotifications.aspx"
  },
  "upsssc-results": {
   "bytes": 23217,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsssc.gov.in/ResultsDire.aspx"
  },
  "upsssc-upcoming": {
-  "bytes": 113669,
-  "date": "2026-11-02",
+  "bytes": 113743,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://upsssc.gov.in/GroupNews.aspx?id=6"
  },
  "wb-police": {
-  "bytes": 47055,
-  "date": "2026-11-02",
+  "bytes": 45473,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://prb.wb.gov.in/"
  },
  "wb-police-exam-notifications": {
   "bytes": 19832,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://prb.wb.gov.in/quick/examination-notifications"
  },
  "wb-police-recruitments": {
-  "bytes": 25640,
-  "date": "2026-11-02",
+  "bytes": 26601,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://prb.wb.gov.in/recruitments"
  },
  "wbpsc": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://wbpsc.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://wbpsc.gov.in/"
  },
  "wbpsc-advertisement": {
   "bytes": 88542,
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.wb.gov.in/advertisement.jsp"
  },
  "wbpsc-new": {
-  "bytes": 158184,
-  "date": "2026-11-02",
+  "bytes": 163875,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.wb.gov.in/"
  },
  "wbpsc-whats-new": {
-  "bytes": 1490684,
-  "date": "2026-11-02",
+  "bytes": 1497613,
+  "date": "2026-11-09",
   "ok": true,
   "url": "https://psc.wb.gov.in/whats_new.jsp"
  },
  "wbssc": {
-  "date": "2026-11-02",
+  "date": "2026-11-09",
   "error": "GET https://wbssc.gov.in/ failed after 2 attempts: <urlopen error timed out>",
   "ok": false,
   "url": "https://wbssc.gov.in/"
