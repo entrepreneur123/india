@@ -35,6 +35,18 @@
    "severity": "high",
    "detail": "results run 42599492311 failed (2026-11-09T10:15:01Z)",
    "first_seen": "2026-11-09T12:45+00:00"
+  },
+  "review:2026-11-09_NL8PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-09_NL8PM: gazette OCR did not confirm the 1st prize 82E 50561 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-09T17:38+00:00"
+  },
+  "review:2026-11-09_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-09_NL1PM: gazette OCR did not confirm the 1st prize 96J 86800 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-09T17:38+00:00"
   }
  },
  "resolved": {
