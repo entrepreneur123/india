@@ -29,6 +29,12 @@
    "severity": "low",
    "detail": "Maharashtra Mohini 2026-11-08: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-09T02:35+00:00"
+  },
+  "run:42599492311": {
+   "kind": "failed-run",
+   "severity": "high",
+   "detail": "results run 42599492311 failed (2026-11-09T10:15:01Z)",
+   "first_seen": "2026-11-09T12:45+00:00"
   }
  },
  "resolved": {
