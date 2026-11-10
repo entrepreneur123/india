@@ -96,3 +96,6 @@
 {"at": "2026-11-10T15:40+00:00", "event": "open", "id": "review:2026-11-10_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-10_NL1PM: gazette OCR did not confirm the 1st prize 92B 90750 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py"}
 {"at": "2026-11-10T19:38+00:00", "event": "open", "id": "home:2026-11-11:date", "kind": "wrong", "severity": "medium", "detail": "home title 'Lottery Result Today 10.11.2026 – Lottery Sambad 1 PM, 6 PM, 8 PM, Kerala, Maharashtra' lacks 11.11.2026"}
 {"at": "2026-11-10T19:38+00:00", "event": "resolved", "id": "mh:2026-11-08:Maharashtra Mohini"}
+{"at": "2026-11-10T19:52+00:00", "event": "resolved", "id": "review:2026-11-09_NL8PM"}
+{"at": "2026-11-10T19:52+00:00", "event": "resolved", "id": "review:2026-11-09_NL1PM"}
+{"at": "2026-11-10T19:52+00:00", "event": "resolved", "id": "home:2026-11-11:date"}
