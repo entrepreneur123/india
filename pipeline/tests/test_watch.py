@@ -131,3 +131,11 @@ def test_a_broken_relay_chain_opens_an_incident():
     assert "chain:broken" not in chk([{"databaseId": 167, "status": "in_progress"}] + dead)
     assert "chain:broken" not in chk(dead, runs=[{"databaseId": 1, "status": "in_progress", "conclusion": ""}])
     assert "chain:broken" not in chk(None)   # relay list not readable: no check, no false alarm
+
+
+def test_the_jobs_app_served_on_the_lottery_domain_opens_an_incident():
+    now = dt.datetime(2026, 10, 30, 12, 0, tzinfo=UTC)
+    ok = ALL_29 + [draw("2026-10-30", "NL1PM"), draw("2026-10-30", "KL", KL_TIERS)]
+    jobs = '<title>Sarkari Job Alerts</title><link rel="canonical" href="https://entrepreneur123.github.io/india/jobs/">'
+    assert "site:other-app" in run(now, ok, home=jobs)
+    assert "site:other-app" not in run(now, ok)

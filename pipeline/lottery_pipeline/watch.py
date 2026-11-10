@@ -144,6 +144,14 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
             add("mh:hub-title", "wrong", "medium", f"/maharashtra/ English title has Marathi text: {t.group(1)[:80]!r}")
     except Exception:  # noqa: BLE001
         pass
+    # The jobs app shares the data branch but is its own site on github.io; 10-11-2026 the Cloudflare copy
+    # carried it, ~2,000 off-topic pages under lottodost.com/jobs/ (canonical to github.io).
+    try:
+        jobs = fetch_text(f"{site}/jobs/")
+        if re.search(r'rel="canonical" href="[^"]*/jobs/', jobs):
+            add("site:other-app", "wrong", "medium", f"{site}/jobs/ serves the jobs app; it belongs on github.io only")
+    except Exception:  # noqa: BLE001
+        pass
     # failed results runs (from `gh run list --json`)
     for r in runs or []:
         if r.get("conclusion") == "failure":

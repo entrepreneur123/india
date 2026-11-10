@@ -15,6 +15,7 @@ import argparse
 import html
 import json
 import pathlib
+import shutil
 
 MARK = "<!-- lottodost-redirect -->"
 # Other apps that share the data branch and stay on github.io (they are not part of lottodost.com):
@@ -62,6 +63,10 @@ def stub_tree(root: pathlib.Path, to: str, prefix: str) -> int:
 
 
 def purge(root: pathlib.Path) -> int:
+    """Make a copy of the github.io tree fit for lottodost.com: drop every stub, and the other apps' trees,
+    which are separate sites (canonical to github.io) and off-topic for a lottery domain."""
+    for app in OTHER_APPS:
+        shutil.rmtree(root / app, ignore_errors=True)
     n = 0
     for f in root.rglob("*.html"):
         if MARK in f.read_text(encoding="utf-8", errors="ignore")[:300]:

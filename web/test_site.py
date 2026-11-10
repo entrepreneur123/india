@@ -310,8 +310,7 @@ def test_github_copy_redirects_every_page_to_the_real_site(tmp_path, monkeypatch
         f.write_text(text)
     assert redirect_stubs.stub_tree(out, "https://lottodost.com/", "/india") == len(pages)
     assert all(f.read_text() == text for f, text in jobs_pages.items())  # the jobs app on the same branch is left alone
-    for f in jobs_pages:
-        f.unlink()
+    (out / "jobs/app.js").write_text("// jobs app")
     home = (out / "index.html").read_text()
     assert '<meta http-equiv="refresh" content="0; url=https://lottodost.com/">' in home
     assert '<link rel="canonical" href="https://lottodost.com/">' in home
@@ -323,8 +322,11 @@ def test_github_copy_redirects_every_page_to_the_real_site(tmp_path, monkeypatch
     assert (out / "v2/today.json").read_text() == "{}"          # the app's JSON mirror is untouched
     # The Cloudflare copy starts from this tree: whatever the site build does not rewrite is removed, never served.
     (out / "result/18-10-2026/1pm/index.html").write_text("<html>real page</html>")
+    # ...and the jobs app (its own site on github.io) never ships on lottodost.com: 10-11-2026 it did, ~2,000
+    # off-topic pages ("Blinkit delivery partner job") under lottodost.com/jobs/ with canonicals to github.io.
     assert redirect_stubs.purge(out) == len(pages) - 1
     assert sorted(out.rglob("*.html")) == [out / "result/18-10-2026/1pm/index.html"]
+    assert not (out / "jobs").exists()
 
 
 def test_share_kit_has_ready_posts_and_stays_out_of_search(tmp_path, monkeypatch):
