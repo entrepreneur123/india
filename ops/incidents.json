@@ -41,6 +41,12 @@
    "severity": "low",
    "detail": "Maharashtra Tejaswini 2026-11-09: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-10T03:26+00:00"
+  },
+  "review:2026-11-10_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-10_NL1PM: gazette OCR did not confirm the 1st prize 92B 90750 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-10T15:40+00:00"
   }
  },
  "resolved": {
