@@ -17,6 +17,30 @@
    "severity": "low",
    "detail": "2026-11-09_NL1PM: gazette OCR did not confirm the 1st prize 96J 86800 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-09T17:38+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Gajlaxmi Som": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Gajlaxmi Som 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Ganeshlaxmi Bhagyashali": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Ganeshlaxmi Bhagyashali 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Sahyadri Dhanlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Dhanlaxmi 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Tejaswini": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Tejaswini 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00"
   }
  },
  "resolved": {
