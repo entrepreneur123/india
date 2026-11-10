@@ -1,11 +1,5 @@
 {
  "open": {
-  "mh:2026-11-08:Maharashtra Mohini": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Mohini 2026-11-08: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-09T02:35+00:00"
-  },
   "review:2026-11-09_NL8PM": {
    "kind": "review",
    "severity": "low",
@@ -47,6 +41,12 @@
    "severity": "low",
    "detail": "2026-11-10_NL1PM: gazette OCR did not confirm the 1st prize 92B 90750 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-10T15:40+00:00"
+  },
+  "home:2026-11-11:date": {
+   "kind": "wrong",
+   "severity": "medium",
+   "detail": "home title 'Lottery Result Today 10.11.2026 – Lottery Sambad 1 PM, 6 PM, 8 PM, Kerala, Maharashtra' lacks 11.11.2026",
+   "first_seen": "2026-11-10T19:38+00:00"
   }
  },
  "resolved": {
@@ -357,6 +357,13 @@
    "detail": "results run 42599492311 failed (2026-11-09T10:15:01Z)",
    "first_seen": "2026-11-09T12:45+00:00",
    "resolved": "2026-11-09T21:10+00:00"
+  },
+  "mh:2026-11-08:Maharashtra Mohini": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Mohini 2026-11-08: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-09T02:35+00:00",
+   "resolved": "2026-11-10T19:38+00:00"
   }
  }
 }
