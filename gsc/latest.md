@@ -1,9 +1,9 @@
-# Search Console 2026-10-12 – 2026-11-09 (generated 2026-11-09T11:50+00:00)
+# Search Console 2026-10-13 – 2026-11-10 (generated 2026-11-10T11:26+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| ind | 192 | 2536 | 7.6% | 7.7 |
+| ind | 192 | 2537 | 7.6% | 7.7 |
 | bgd | 2 | 68 | 2.9% | 23 |
 | bra | 0 | 23 | 0.0% | 45.8 |
 | kor | 6 | 11 | 54.5% | 1.2 |
@@ -33,7 +33,8 @@
 | 2026-11-06 | 0 | 1 | 0.0% | 1 |
 | 2026-11-07 | 1 | 2 | 50.0% | 3 |
 | 2026-11-08 | 0 | 0 | 0.0% | 0 |
-| 2026-11-09 | 0 | 0 | 0.0% | 0 |
+| 2026-11-09 | 0 | 1 | 0.0% | 1 |
+| 2026-11-10 | 0 | 0 | 0.0% | 0 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -192,7 +193,7 @@
 |---|---|---|---|---|
 | https://lottodost.com/maharashtra/akshay/ | 53 | 354 | 15.0% | 4.2 |
 | https://lottodost.com/maharashtra/gajlaxmi-budh/ | 16 | 212 | 7.5% | 6.1 |
-| https://lottodost.com/maharashtra/gajlaxmi-shukra/ | 21 | 207 | 10.1% | 6.1 |
+| https://lottodost.com/maharashtra/gajlaxmi-shukra/ | 21 | 208 | 10.1% | 6.1 |
 | https://lottodost.com/maharashtra/padmini/ | 6 | 135 | 4.4% | 5.4 |
 | https://lottodost.com/maharashtra/tejaswini/ | 7 | 133 | 5.3% | 6.4 |
 | https://lottodost.com/lottery-tax/ | 1 | 119 | 0.8% | 8.7 |
@@ -235,11 +236,11 @@
 | url | verdict | coverage | last crawl |
 |---|---|---|---|
 | https://lottodost.com/ | PASS | Submitted and indexed | 2026-11-07T06:26:31Z |
-| https://lottodost.com/bn/ | PASS | Submitted and indexed | 2026-11-03T09:13:33Z |
-| https://lottodost.com/hi/ | PASS | Submitted and indexed | 2026-11-06T17:56:30Z |
-| https://lottodost.com/kerala/ | PASS | Submitted and indexed | 2026-11-04T08:40:02Z |
-| https://lottodost.com/maharashtra/ | PASS | Submitted and indexed | 2026-11-06T09:36:29Z |
-| https://lottodost.com/night-8pm/ | PASS | Submitted and indexed | 2026-11-06T02:06:29Z |
-| https://lottodost.com/day-6pm/ | PASS | Submitted and indexed | 2026-10-28T22:51:00Z |
-| https://lottodost.com/morning-1pm/ | PASS | Submitted and indexed | 2026-11-04T20:12:49Z |
-| https://lottodost.com/yesterday/ | PASS | Submitted and indexed | 2026-10-29T07:50:11Z |
+| https://lottodost.com/bn/ | NEUTRAL | Crawled - currently not indexed | 2026-11-03T09:13:33Z |
+| https://lottodost.com/hi/ | NEUTRAL | Crawled - currently not indexed | 2026-11-06T17:56:30Z |
+| https://lottodost.com/kerala/ | NEUTRAL | Crawled - currently not indexed | 2026-11-04T08:40:02Z |
+| https://lottodost.com/maharashtra/ | NEUTRAL | Crawled - currently not indexed | 2026-11-06T09:36:29Z |
+| https://lottodost.com/night-8pm/ | NEUTRAL | Crawled - currently not indexed | 2026-11-06T02:06:29Z |
+| https://lottodost.com/day-6pm/ | NEUTRAL | Crawled - currently not indexed | 2026-10-28T22:51:00Z |
+| https://lottodost.com/morning-1pm/ | NEUTRAL | Crawled - currently not indexed | 2026-11-04T20:12:49Z |
+| https://lottodost.com/yesterday/ | NEUTRAL | Crawled - currently not indexed | 2026-10-29T07:50:11Z |
