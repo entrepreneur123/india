@@ -33,6 +33,7 @@ WAKE_BEFORE = dt.timedelta(minutes=15)
 # 00:01 IST publishes it, and the 1 PM run publishes again at its start (FLIP: no waiting) as a backup.
 FLIP = "00:00"
 FLIP_CRON = "31 18 * * *"
+FLIP_AT, FLIP_TARGET = "18:31", "FLIP"     # the relay starts the midnight run itself (target=FLIP)
 # The 8 PM run also reads the day's Maharashtra sheets (draws ~4-5 PM IST, ~2 min a sheet) before its
 # draw is due, so it starts at 19:10 IST.
 WAKE = {"NL1PM": "06:45", "NL8PM": "13:40"}
@@ -73,6 +74,8 @@ def due(now: dt.datetime, done: set[str] = frozenset()) -> dict:
 
 def mode(now: dt.datetime, event: str, cron: str = "", target: str = "", done: set[str] = frozenset()) -> dict:
     """`done`: the slots already published today (from today.json)."""
+    if target == FLIP_TARGET:                    # started by the relay at 00:01 IST
+        return _flip()
     if target:                                   # started by the relay for this draw
         return _draw(target)
     if event == "workflow_dispatch":             # by hand: catalog refresh, all recent days
@@ -97,8 +100,11 @@ def relay(now: dt.datetime) -> dict:
     are split: the relay then starts another relay instead (`next=relay`)."""
     day = now.date()
     for d in (day, day + dt.timedelta(days=1)):
-        for slot, start, _ in DRAWS:
-            wake = _at(d, WAKE[slot]) if slot in WAKE else _at(d, start) - dt.timedelta(minutes=5) - WAKE_BEFORE
+        wakes = [(_at(d, WAKE[slot]) if slot in WAKE else _at(d, start) - dt.timedelta(minutes=5) - WAKE_BEFORE, slot)
+                 for slot, start, _ in DRAWS]
+        # The midnight run too: GitHub started its cron 79 min late on 10-11-2026 (home:2026-11-11:date).
+        wakes.append((_at(d, FLIP_AT), FLIP_TARGET))
+        for wake, slot in sorted(wakes):
             if wake > now + dt.timedelta(minutes=2):
                 if wake - now > MAX_SLEEP:
                     return {"sleep": int(MAX_SLEEP.total_seconds()), "next": "relay", "target": ""}

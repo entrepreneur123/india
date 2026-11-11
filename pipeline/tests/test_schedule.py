@@ -40,7 +40,8 @@ def test_relay_wakes_15_minutes_before_each_draw_and_splits_long_waits():
     assert sc.relay(at("12:00"))["target"] == "SK6PM" and sc.relay(at("12:00"))["sleep"] == 15 * 60
     assert sc.relay(at("12:14"))["target"] == "NL8PM"                 # too close to 12:15: the next one
     assert sc.relay(at("12:50")) == {"sleep": 50 * 60, "next": "results", "target": "NL8PM"}  # 13:40: Maharashtra first
-    night = sc.relay(at("15:00"))                                      # tomorrow 07:15 is 16 h away
+    assert sc.relay(at("15:00"))["target"] == "FLIP"                    # the midnight run (00:01 IST) comes next
+    night = sc.relay(at("18:40"))                                      # tomorrow's 06:45 is 12 h away
     assert night == {"sleep": int(sc.MAX_SLEEP.total_seconds()), "next": "relay", "target": ""}
     last = sc.relay(at("03:00", 28))   # the 1 PM run starts at 12:15 IST (Maharashtra morning sheets, a second publish of today's page)
     assert last["next"] == "results" and last["target"] == "NL1PM" and last["sleep"] == 3 * 3600 + 45 * 60
@@ -55,3 +56,12 @@ def test_the_midnight_run_publishes_todays_date_even_when_late_and_the_1_pm_run_
     assert sc.mode(at("06:46"), "workflow_dispatch", target="NL1PM")["flip"] == "00:00"   # publish at once, no wait
     assert sc.mode(at("10:16"), "workflow_dispatch", target="KL")["flip"] == ""
     assert sc.mode(at("15:12"), "schedule", "10 15 * * *")["flip"] == ""
+
+
+def test_the_relay_starts_the_midnight_run_itself():
+    # 10-11-2026: GitHub started the 18:31 UTC cron at 19:50, so the home page kept yesterday's date
+    # until 01:22 IST (home:2026-11-11:date). The relay starts the midnight run on time instead.
+    night = sc.relay(at("16:45"))                                      # after the gazette runs
+    assert night == {"sleep": int((at("18:31") - at("16:45")).total_seconds()), "next": "results", "target": "FLIP"}
+    m = sc.mode(at("18:31"), "workflow_dispatch", target="FLIP")
+    assert m["force"] is True and m["require"] == "" and m["deep"] is False and m["mh"] is False

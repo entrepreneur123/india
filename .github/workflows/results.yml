@@ -10,7 +10,7 @@
 # On busy days GitHub starts them hours late (27-10-2026: the 07:17 run began at 13:15). So every run
 # ends by starting relay.yml, which starts the next draw's run itself 15 minutes before it (a
 # workflow_dispatch begins within seconds), and a late cron run does what is due when it starts.
-#   18:31                 00:01 IST: the home page turns to the new day's date (deploy only, nothing to fetch)
+#   18:31                 00:01 IST: the home page turns to the new day's date (deploy only, nothing to fetch); the relay starts it too (target FLIP)
 #   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35; publishes today's page again at its start
 #   09:17                 Kerala 3 PM IST draw = 09:30 UTC; copies appear ~10:40 UTC, polling from 10:35
 #   10:47 (backup 12:17)  6 PM IST draw = 12:30 UTC, polling from 12:35
@@ -49,7 +49,7 @@ on:
         type: boolean
         default: false
       target:
-        description: "Set by relay.yml: the draw to wait for (NL1PM, KL, SK6PM, NL8PM); empty = by hand"
+        description: "Set by relay.yml: the draw to wait for (NL1PM, KL, SK6PM, NL8PM) or FLIP (midnight page); empty = by hand"
         type: string
         default: ""
 
