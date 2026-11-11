@@ -47,6 +47,12 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-10: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-11T00:35+00:00"
+  },
+  "run:43031182002": {
+   "kind": "failed-run",
+   "severity": "high",
+   "detail": "results run 43031182002 failed (2026-11-11T13:40:01Z)",
+   "first_seen": "2026-11-11T15:05+00:00"
   }
  },
  "resolved": {
