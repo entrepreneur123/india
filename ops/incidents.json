@@ -1,35 +1,5 @@
 {
  "open": {
-  "mh:2026-11-09:Maharashtra Gajlaxmi Som": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Gajlaxmi Som 2026-11-09: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-10T03:26+00:00"
-  },
-  "mh:2026-11-09:Maharashtra Ganeshlaxmi Bhagyashali": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Ganeshlaxmi Bhagyashali 2026-11-09: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-10T03:26+00:00"
-  },
-  "mh:2026-11-09:Maharashtra Sahyadri Dhanlaxmi": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Sahyadri Dhanlaxmi 2026-11-09: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-10T03:26+00:00"
-  },
-  "mh:2026-11-09:Maharashtra Tejaswini": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Tejaswini 2026-11-09: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-10T03:26+00:00"
-  },
-  "review:2026-11-10_NL1PM": {
-   "kind": "review",
-   "severity": "low",
-   "detail": "2026-11-10_NL1PM: gazette OCR did not confirm the 1st prize 92B 90750 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
-   "first_seen": "2026-11-10T15:40+00:00"
-  },
   "mh:2026-11-10:Maharashtra Gajraj": {
    "kind": "unread",
    "severity": "low",
@@ -416,6 +386,41 @@
    "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
    "first_seen": "2026-11-11T07:03+00:00",
    "resolved": "2026-11-11T10:36+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Gajlaxmi Som": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Gajlaxmi Som 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00",
+   "resolved": "2026-11-11T19:43+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Ganeshlaxmi Bhagyashali": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Ganeshlaxmi Bhagyashali 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00",
+   "resolved": "2026-11-11T19:43+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Sahyadri Dhanlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Dhanlaxmi 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00",
+   "resolved": "2026-11-11T19:43+00:00"
+  },
+  "mh:2026-11-09:Maharashtra Tejaswini": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Tejaswini 2026-11-09: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-10T03:26+00:00",
+   "resolved": "2026-11-11T19:43+00:00"
+  },
+  "review:2026-11-10_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-10_NL1PM: gazette OCR did not confirm the 1st prize 92B 90750 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-10T15:40+00:00",
+   "resolved": "2026-11-11T19:43+00:00"
   }
  }
 }
