@@ -10,12 +10,12 @@
    }
   },
   {
-   "count": 180,
+   "count": 160,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 180
+    "visits": 160
    }
   },
   {
@@ -83,16 +83,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 20,
-   "dimensions": {
-    "date": "2026-10-28",
-    "siteTag": "70803c3adff14678a3c5b780bf918a89"
-   },
-   "sum": {
-    "visits": 20
-   }
-  },
   {
    "count": 100,
    "dimensions": {
@@ -236,12 +226,12 @@
  ],
  "pages": [
   {
-   "count": 230,
+   "count": 210,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 220
+    "visits": 200
    }
   },
   {
@@ -337,7 +327,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
+    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
    },
    "sum": {
     "visits": 0
@@ -418,7 +408,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
+    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
    },
    "sum": {
     "visits": 0
