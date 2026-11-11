@@ -47,6 +47,12 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-10: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-11T00:35+00:00"
+  },
+  "site:other-app": {
+   "kind": "wrong",
+   "severity": "medium",
+   "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
+   "first_seen": "2026-11-11T07:03+00:00"
   }
  },
  "resolved": {
