@@ -106,3 +106,5 @@
 {"at": "2026-11-11T10:36+00:00", "event": "resolved", "id": "site:other-app"}
 {"at": "2026-11-11T15:05+00:00", "event": "open", "id": "run:43031182002", "kind": "failed-run", "severity": "high", "detail": "results run 43031182002 failed (2026-11-11T13:40:01Z)"}
 {"at": "2026-11-11T15:27+00:00", "event": "open", "id": "run:43046742667", "kind": "failed-run", "severity": "high", "detail": "results run 43046742667 failed (2026-11-11T15:16:42Z)"}
+{"at": "2026-11-11T17:17+00:00", "event": "open", "id": "review:2026-11-11_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-11_NL8PM: gazette OCR did not confirm the 1st prize 51B 06480 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-11T17:17+00:00", "event": "open", "id": "review:2026-11-11_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-11_NL1PM: gazette OCR did not confirm the 1st prize 77E 73025 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
