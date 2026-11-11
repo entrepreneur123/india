@@ -99,3 +99,6 @@
 {"at": "2026-11-10T19:52+00:00", "event": "resolved", "id": "review:2026-11-09_NL8PM"}
 {"at": "2026-11-10T19:52+00:00", "event": "resolved", "id": "review:2026-11-09_NL1PM"}
 {"at": "2026-11-10T19:52+00:00", "event": "resolved", "id": "home:2026-11-11:date"}
+{"at": "2026-11-11T00:35+00:00", "event": "open", "id": "mh:2026-11-10:Maharashtra Gajraj", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajraj 2026-11-10: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-11T00:35+00:00", "event": "open", "id": "mh:2026-11-10:Maharashtra Padmini", "kind": "unread", "severity": "low", "detail": "Maharashtra Padmini 2026-11-10: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-11T00:35+00:00", "event": "open", "id": "mh:2026-11-10:Maharashtra Sahyadri Mahalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-10: still a PDF link (OCR tries 2)"}
