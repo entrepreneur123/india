@@ -120,3 +120,4 @@
 {"at": "2026-11-12T00:55+00:00", "event": "open", "id": "mh:2026-11-11:Maharashtra Sahyadri Vijayalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-11: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-12T02:51+00:00", "event": "open", "id": "site:other-app", "kind": "wrong", "severity": "medium", "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only"}
 {"at": "2026-11-12T10:55+00:00", "event": "resolved", "id": "site:other-app"}
+{"at": "2026-11-12T16:02+00:00", "event": "open", "id": "review:2026-11-12_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-12_NL1PM: gazette OCR did not confirm the 1st prize 74E 88756 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
