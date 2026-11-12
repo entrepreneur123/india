@@ -74,7 +74,12 @@ jobs:
       # If the 3-hour mark passes between here and the build, it skips the PDFs with a warning.
       - name: pdftotext
         if: steps.plan.outputs.full == 'true'
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+        run: |   # retried: the runners' package mirror did not resolve for ~1 h on 11-11-2026
+          for try in 1 2 3; do
+            sudo apt-get update -qq -o Acquire::Retries=3 && sudo apt-get install -y -qq -o Acquire::Retries=3 poppler-utils && break
+            [ "$try" = 3 ] && exit 100
+            echo "::warning::apt failed (try $try); retrying"; sleep $(( try * 60 ))
+          done
 
       - name: Fetch and build
         working-directory: jobs/pipeline
