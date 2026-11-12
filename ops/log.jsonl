@@ -115,3 +115,6 @@
 {"at": "2026-11-11T19:43+00:00", "event": "resolved", "id": "review:2026-11-10_NL1PM"}
 {"at": "2026-11-11T19:53+00:00", "event": "resolved", "id": "run:43031182002"}
 {"at": "2026-11-11T21:26+00:00", "event": "resolved", "id": "run:43046742667"}
+{"at": "2026-11-12T00:55+00:00", "event": "open", "id": "mh:2026-11-11:Maharashtra Akshay", "kind": "unread", "severity": "low", "detail": "Maharashtra Akshay 2026-11-11: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-12T00:55+00:00", "event": "open", "id": "mh:2026-11-11:Maharashtra Gajlaxmi Budh", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajlaxmi Budh 2026-11-11: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-12T00:55+00:00", "event": "open", "id": "mh:2026-11-11:Maharashtra Sahyadri Vijayalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-11: still a PDF link (OCR tries 2)"}
