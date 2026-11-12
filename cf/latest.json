@@ -1,25 +1,25 @@
 {
  "countries": [
   {
-   "count": 380,
+   "count": 320,
    "dimensions": {
     "countryName": "IN"
    },
    "sum": {
-    "visits": 250
+    "visits": 200
    }
   },
   {
-   "count": 160,
+   "count": 180,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 160
+    "visits": 180
    }
   },
   {
-   "count": 70,
+   "count": 60,
    "dimensions": {
     "countryName": "KR"
    },
@@ -71,28 +71,9 @@
    "sum": {
     "visits": 10
    }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "countryName": "DE"
-   },
-   "sum": {
-    "visits": 10
-   }
   }
  ],
  "daily": [
-  {
-   "count": 100,
-   "dimensions": {
-    "date": "2026-10-29",
-    "siteTag": "70803c3adff14678a3c5b780bf918a89"
-   },
-   "sum": {
-    "visits": 80
-   }
-  },
   {
    "count": 120,
    "dimensions": {
@@ -222,25 +203,35 @@
    "sum": {
     "visits": 10
    }
+  },
+  {
+   "count": 40,
+   "dimensions": {
+    "date": "2026-11-11",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 40
+   }
   }
  ],
  "pages": [
   {
-   "count": 210,
+   "count": 170,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 200
+    "visits": 170
    }
   },
   {
-   "count": 80,
+   "count": 50,
    "dimensions": {
-    "requestPath": "/maharashtra/akshay/"
+    "requestPath": "/maharashtra/"
    },
    "sum": {
-    "visits": 80
+    "visits": 50
    }
   },
   {
@@ -253,12 +244,12 @@
    }
   },
   {
-   "count": 30,
+   "count": 40,
    "dimensions": {
-    "requestPath": "/maharashtra/"
+    "requestPath": "/maharashtra/akshay/"
    },
    "sum": {
-    "visits": 30
+    "visits": 40
    }
   },
   {
@@ -399,10 +390,10 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-vijayalaxmi/"
+    "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
    },
    "sum": {
-    "visits": 0
+    "visits": 10
    }
   },
   {
@@ -426,19 +417,10 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
+    "requestPath": "/maharashtra/gajlaxmi-mangal/"
    },
    "sum": {
     "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/old-results/"
-   },
-   "sum": {
-    "visits": 0
    }
   },
   {
@@ -448,6 +430,15 @@
    },
    "sum": {
     "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/result/07-11-2026/"
+   },
+   "sum": {
+    "visits": 10
    }
   }
  ]
