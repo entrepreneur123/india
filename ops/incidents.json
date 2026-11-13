@@ -29,12 +29,6 @@
    "severity": "low",
    "detail": "2026-11-13_NL1PM: gazette OCR did not confirm the 1st prize 79D 71173 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-13T19:52+00:00"
-  },
-  "site:other-app": {
-   "kind": "wrong",
-   "severity": "medium",
-   "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
-   "first_seen": "2026-11-13T20:55+00:00"
   }
  },
  "resolved": {
@@ -350,8 +344,8 @@
    "kind": "wrong",
    "severity": "medium",
    "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
-   "first_seen": "2026-11-13T17:13+00:00",
-   "resolved": "2026-11-13T18:09+00:00"
+   "first_seen": "2026-11-13T20:55+00:00",
+   "resolved": "2026-11-13T21:25+00:00"
   },
   "mh:2026-11-09:Maharashtra Gajlaxmi Som": {
    "kind": "unread",

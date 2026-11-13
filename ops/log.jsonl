@@ -138,3 +138,4 @@
 {"at": "2026-11-13T19:52+00:00", "event": "resolved", "id": "mh:2026-11-11:Maharashtra Sahyadri Vijayalaxmi"}
 {"at": "2026-11-13T19:52+00:00", "event": "resolved", "id": "review:2026-11-12_NL1PM"}
 {"at": "2026-11-13T20:55+00:00", "event": "open", "id": "site:other-app", "kind": "wrong", "severity": "medium", "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only"}
+{"at": "2026-11-13T21:25+00:00", "event": "resolved", "id": "site:other-app"}
