@@ -1,29 +1,5 @@
 {
  "open": {
-  "mh:2026-11-11:Maharashtra Akshay": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Akshay 2026-11-11: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-12T00:55+00:00"
-  },
-  "mh:2026-11-11:Maharashtra Gajlaxmi Budh": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Gajlaxmi Budh 2026-11-11: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-12T00:55+00:00"
-  },
-  "mh:2026-11-11:Maharashtra Sahyadri Vijayalaxmi": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-11: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-12T00:55+00:00"
-  },
-  "review:2026-11-12_NL1PM": {
-   "kind": "review",
-   "severity": "low",
-   "detail": "2026-11-12_NL1PM: gazette OCR did not confirm the 1st prize 74E 88756 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
-   "first_seen": "2026-11-12T16:02+00:00"
-  },
   "mh:2026-11-12:Maharashtra Akarshak Pushkaraj": {
    "kind": "unread",
    "severity": "low",
@@ -41,23 +17,21 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-12: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-13T07:10+00:00"
+  },
+  "review:2026-11-13_NL8PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-13_NL8PM: gazette OCR did not confirm the 1st prize 57G 69303 (lower prizes 100% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-13T19:52+00:00"
+  },
+  "review:2026-11-13_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-13_NL1PM: gazette OCR did not confirm the 1st prize 79D 71173 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-13T19:52+00:00"
   }
  },
  "resolved": {
-  "mh:2026-10-28:Maharashtra Akshay": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Akshay 2026-10-28: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-10-30T16:25+00:00",
-   "resolved": "2026-10-30T19:28+00:00"
-  },
-  "mh:2026-10-28:Maharashtra Sahyadri Vijayalaxmi": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-10-28: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-10-30T16:25+00:00",
-   "resolved": "2026-10-30T19:28+00:00"
-  },
   "mh:2026-10-30:Maharashtra List of Authorized Lottery schemes Period Dt 02/011/2026 to 08/011/2026": {
    "kind": "unread",
    "severity": "low",
@@ -456,6 +430,34 @@
    "detail": "2026-11-11_NL1PM: gazette OCR did not confirm the 1st prize 77E 73025 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-11T17:17+00:00",
    "resolved": "2026-11-12T18:38+00:00"
+  },
+  "mh:2026-11-11:Maharashtra Akshay": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Akshay 2026-11-11: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-12T00:55+00:00",
+   "resolved": "2026-11-13T19:52+00:00"
+  },
+  "mh:2026-11-11:Maharashtra Gajlaxmi Budh": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Gajlaxmi Budh 2026-11-11: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-12T00:55+00:00",
+   "resolved": "2026-11-13T19:52+00:00"
+  },
+  "mh:2026-11-11:Maharashtra Sahyadri Vijayalaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-11: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-12T00:55+00:00",
+   "resolved": "2026-11-13T19:52+00:00"
+  },
+  "review:2026-11-12_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-12_NL1PM: gazette OCR did not confirm the 1st prize 74E 88756 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-12T16:02+00:00",
+   "resolved": "2026-11-13T19:52+00:00"
   }
  }
 }
