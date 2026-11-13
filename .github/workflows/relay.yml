@@ -14,7 +14,10 @@ permissions:
 
 concurrency:
   group: relay
-  cancel-in-progress: true
+  # A newer relay started by a results run replaces the old one. The backup cron must not: on 13-11-2026
+  # GitHub started the 04:13 cron at 12:13, it cancelled the relay that was about to start the 6 PM run at
+  # 12:15, and (12:15 being under two minutes away) went on to wait for 8 PM: the 6 PM result was late.
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
 jobs:
   relay:

@@ -65,3 +65,12 @@ def test_the_relay_starts_the_midnight_run_itself():
     assert night == {"sleep": int((at("18:31") - at("16:45")).total_seconds()), "next": "results", "target": "FLIP"}
     m = sc.mode(at("18:31"), "workflow_dispatch", target="FLIP")
     assert m["force"] is True and m["require"] == "" and m["deep"] is False and m["mh"] is False
+
+
+def test_a_late_backup_relay_never_cancels_the_running_one():
+    # 13-11-2026: the 04:13 backup cron started at 12:13, cancelled the relay due to start the 6 PM run
+    # at 12:15, and skipped to 8 PM (late:2026-11-13:SK6PM).
+    import pathlib
+    wf = (pathlib.Path(__file__).parents[2] / ".github/workflows/relay.yml").read_text()
+    assert "cancel-in-progress: ${{ github.event_name != 'schedule' }}" in wf
+    assert "cancel-in-progress: true" not in wf
