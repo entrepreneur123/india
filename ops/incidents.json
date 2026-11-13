@@ -41,12 +41,6 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-12: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-13T07:10+00:00"
-  },
-  "site:other-app": {
-   "kind": "wrong",
-   "severity": "medium",
-   "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
-   "first_seen": "2026-11-13T17:13+00:00"
   }
  },
  "resolved": {
@@ -376,8 +370,8 @@
    "kind": "wrong",
    "severity": "medium",
    "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
-   "first_seen": "2026-11-12T02:51+00:00",
-   "resolved": "2026-11-12T10:55+00:00"
+   "first_seen": "2026-11-13T17:13+00:00",
+   "resolved": "2026-11-13T18:09+00:00"
   },
   "mh:2026-11-09:Maharashtra Gajlaxmi Som": {
    "kind": "unread",
