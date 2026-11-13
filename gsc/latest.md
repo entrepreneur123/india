@@ -1,4 +1,4 @@
-# Search Console 2026-10-15 – 2026-11-12 (generated 2026-11-12T11:30+00:00)
+# Search Console 2026-10-16 – 2026-11-13 (generated 2026-11-13T11:15+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
@@ -6,7 +6,7 @@
 | ind | 196 | 2545 | 7.7% | 7.7 |
 | bgd | 2 | 68 | 2.9% | 23 |
 | bra | 0 | 23 | 0.0% | 45.8 |
-| kor | 6 | 11 | 54.5% | 1.2 |
+| kor | 6 | 12 | 50.0% | 1.2 |
 | usa | 0 | 9 | 0.0% | 29 |
 | are | 0 | 7 | 0.0% | 17 |
 | rus | 0 | 6 | 0.0% | 37.3 |
@@ -36,6 +36,7 @@
 | 2026-11-09 | 0 | 1 | 0.0% | 1 |
 | 2026-11-10 | 4 | 7 | 57.1% | 1.9 |
 | 2026-11-11 | 0 | 1 | 0.0% | 27 |
+| 2026-11-12 | 0 | 1 | 0.0% | 1 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -209,14 +210,14 @@
 | https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/ | 7 | 47 | 14.9% | 4.5 |
 | https://lottodost.com/result/29-10-2026/ | 4 | 44 | 9.1% | 13.5 |
 | https://lottodost.com/result/27-10-2026/maharashtra-padmini/ | 3 | 40 | 7.5% | 5.5 |
+| https://lottodost.com/ | 9 | 38 | 23.7% | 14.6 |
 | https://lottodost.com/night-8pm/ | 1 | 38 | 2.6% | 7.1 |
-| https://lottodost.com/ | 9 | 37 | 24.3% | 15.0 |
 | https://lottodost.com/kerala/ | 3 | 37 | 8.1% | 17 |
 | https://lottodost.com/morning-1pm/ | 2 | 36 | 5.6% | 21.4 |
 | https://lottodost.com/result/24-10-2026/ | 0 | 35 | 0.0% | 10.0 |
 | https://lottodost.com/maharashtra/sahyadri-dhanlaxmi/ | 2 | 28 | 7.1% | 5.9 |
 | https://lottodost.com/result/28-10-2026/kerala/ | 1 | 27 | 3.7% | 14.4 |
-| https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/ | 3 | 25 | 12.0% | 5.6 |
+| https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/ | 3 | 26 | 11.5% | 5.4 |
 | https://lottodost.com/claim-prize/ | 0 | 21 | 0.0% | 8.1 |
 | https://lottodost.com/maharashtra// | 4 | 20 | 20.0% | 3.4 |
 | https://lottodost.com/hi/lottery-tax/ | 0 | 20 | 0.0% | 8.1 |
@@ -231,7 +232,7 @@
 | https://lottodost.com/result/23-10-2026/ | 0 | 12 | 0.0% | 10.2 |
 | https://lottodost.com/hi/claim-prize/ | 0 | 11 | 0.0% | 6.5 |
 | https://lottodost.com/bn/night-8pm/ | 1 | 10 | 10.0% | 21.6 |
-| https://lottodost.com/hi/result/28-10-2026/8pm/ | 2 | 9 | 22.2% | 4.3 |
+| https://lottodost.com/privacy | 1 | 10 | 10.0% | 5.5 |
 
 ## Index state
 | url | verdict | coverage | last crawl |

@@ -1,12 +1,12 @@
 {
  "countries": [
   {
-   "count": 320,
+   "count": 210,
    "dimensions": {
     "countryName": "IN"
    },
    "sum": {
-    "visits": 200
+    "visits": 130
    }
   },
   {
@@ -74,16 +74,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 120,
-   "dimensions": {
-    "date": "2026-10-30",
-    "siteTag": "70803c3adff14678a3c5b780bf918a89"
-   },
-   "sum": {
-    "visits": 80
-   }
-  },
   {
    "count": 140,
    "dimensions": {
@@ -213,25 +203,35 @@
    "sum": {
     "visits": 40
    }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "date": "2026-11-13",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 10
+   }
   }
  ],
  "pages": [
   {
-   "count": 170,
+   "count": 160,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 170
+    "visits": 160
    }
   },
   {
-   "count": 50,
+   "count": 60,
    "dimensions": {
     "requestPath": "/maharashtra/"
    },
    "sum": {
-    "visits": 50
+    "visits": 60
    }
   },
   {
@@ -241,15 +241,6 @@
    },
    "sum": {
     "visits": 50
-   }
-  },
-  {
-   "count": 40,
-   "dimensions": {
-    "requestPath": "/maharashtra/akshay/"
-   },
-   "sum": {
-    "visits": 40
    }
   },
   {
@@ -264,7 +255,7 @@
   {
    "count": 30,
    "dimensions": {
-    "requestPath": "/maharashtra//"
+    "requestPath": "/maharashtra/akshay/"
    },
    "sum": {
     "visits": 30
@@ -273,16 +264,7 @@
   {
    "count": 20,
    "dimensions": {
-    "requestPath": "/maharashtra/gajlaxmi-budh/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 20,
-   "dimensions": {
-    "requestPath": "/maharashtra/ganeshlaxmi-vijayee/"
+    "requestPath": "/maharashtra//"
    },
    "sum": {
     "visits": 20
@@ -291,25 +273,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-prabhalaxmi/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/maharashtra/gajlaxmi/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/16-10-2026/"
+    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
    },
    "sum": {
     "visits": 0
@@ -327,87 +291,6 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-dhanlaxmi/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/maharashtra/ganeshlaxmi-shubh/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/claim-prize/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-padmini/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/maharashtra/akshay/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/bn/night-8pm/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-gajlaxmi-mangal/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
     "requestPath": "/result/30-10-2026/maharashtra-gajlaxmi-shukra/"
    },
    "sum": {
@@ -417,7 +300,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/gajlaxmi-mangal/"
+    "requestPath": "/result/07-11-2026/"
    },
    "sum": {
     "visits": 10
@@ -435,7 +318,88 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/result/07-11-2026/"
+    "requestPath": "/old-results/"
+   },
+   "sum": {
+    "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/hi/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/bn/night-8pm/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/hi/maharashtra/akshay/"
+   },
+   "sum": {
+    "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/result/27-10-2026/maharashtra-padmini/"
+   },
+   "sum": {
+    "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/maharashtra/ganeshlaxmi-shubh/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/result/16-10-2026/"
+   },
+   "sum": {
+    "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/hi/maharashtra/gajlaxmi/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/maharashtra/sahyadri-prabhalaxmi/"
    },
    "sum": {
     "visits": 10

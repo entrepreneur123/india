@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-12T11:30+00:00",
+ "generated": "2026-11-13T11:15+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-15",
- "end": "2026-11-12",
+ "start": "2026-10-16",
+ "end": "2026-11-13",
  "countries": [
   {
    "country": "ind",
@@ -14,8 +14,8 @@
   {
    "country": "kor",
    "clicks": 6,
-   "impressions": 11,
-   "ctr": 0.5455,
+   "impressions": 12,
+   "ctr": 0.5,
    "position": 1.2
   },
   {
@@ -390,6 +390,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 27
+  },
+  {
+   "date": "2026-11-12",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
   }
  ],
  "queries_india": [
@@ -1581,9 +1588,9 @@
   {
    "page": "https://lottodost.com/",
    "clicks": 9,
-   "impressions": 37,
-   "ctr": 0.2432,
-   "position": 15.0
+   "impressions": 38,
+   "ctr": 0.2368,
+   "position": 14.6
   },
   {
    "page": "https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/",
@@ -1658,9 +1665,9 @@
   {
    "page": "https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/",
    "clicks": 3,
-   "impressions": 25,
-   "ctr": 0.12,
-   "position": 5.6
+   "impressions": 26,
+   "ctr": 0.1154,
+   "position": 5.4
   },
   {
    "page": "https://lottodost.com/result/27-10-2026/maharashtra-padmini/",
@@ -1840,9 +1847,9 @@
   {
    "page": "https://lottodost.com/privacy",
    "clicks": 1,
-   "impressions": 9,
-   "ctr": 0.1111,
-   "position": 5.8
+   "impressions": 10,
+   "ctr": 0.1,
+   "position": 5.5
   },
   {
    "page": "https://lottodost.com/result/19-01-2026/",
@@ -3791,6 +3798,13 @@
    "position": 5
   },
   {
+   "page": "https://lottodost.com/result/02-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
    "page": "https://lottodost.com/result/04-08-2026/6pm/",
    "clicks": 0,
    "impressions": 2,
@@ -4237,6 +4251,13 @@
    "impressions": 2,
    "ctr": 0,
    "position": 9
+  },
+  {
+   "page": "https://lottodost.com/result/24-04-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "page": "https://lottodost.com/result/24-06-2026/",
@@ -6183,22 +6204,6 @@
    "position": 2
   },
   {
-   "date": "2026-11-02",
-   "page": "https://lottodost.com/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 4
-  },
-  {
-   "date": "2026-11-02",
-   "page": "https://lottodost.com/result/24-10-2026/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 2
-  },
-  {
    "date": "2026-11-03",
    "page": "https://lottodost.com/",
    "clicks": 0,
@@ -6413,6 +6418,46 @@
    "impressions": 1,
    "ctr": 0,
    "position": 27
+  },
+  {
+   "date": "2026-11-12",
+   "page": "https://lottodost.com/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "date": "2026-11-12",
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "date": "2026-11-12",
+   "page": "https://lottodost.com/privacy",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "date": "2026-11-12",
+   "page": "https://lottodost.com/result/02-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "date": "2026-11-12",
+   "page": "https://lottodost.com/result/24-04-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   }
  ],
  "image_days": [
@@ -6544,6 +6589,13 @@
   },
   {
    "date": "2026-11-11",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-12",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
