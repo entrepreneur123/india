@@ -126,3 +126,6 @@
 {"at": "2026-11-12T18:38+00:00", "event": "resolved", "id": "mh:2026-11-10:Maharashtra Sahyadri Mahalaxmi"}
 {"at": "2026-11-12T18:38+00:00", "event": "resolved", "id": "review:2026-11-11_NL8PM"}
 {"at": "2026-11-12T18:38+00:00", "event": "resolved", "id": "review:2026-11-11_NL1PM"}
+{"at": "2026-11-13T07:10+00:00", "event": "open", "id": "mh:2026-11-12:Maharashtra Akarshak Pushkaraj", "kind": "unread", "severity": "low", "detail": "Maharashtra Akarshak Pushkaraj 2026-11-12: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-13T07:10+00:00", "event": "open", "id": "mh:2026-11-12:Maharashtra Ganeshlaxmi Gaurav", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Gaurav 2026-11-12: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-13T07:10+00:00", "event": "open", "id": "mh:2026-11-12:Maharashtra Sahyadri Deeplaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-12: still a PDF link (OCR tries 2)"}
