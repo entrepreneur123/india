@@ -41,23 +41,15 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-12: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-13T07:10+00:00"
+  },
+  "site:other-app": {
+   "kind": "wrong",
+   "severity": "medium",
+   "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
+   "first_seen": "2026-11-13T17:13+00:00"
   }
  },
  "resolved": {
-  "mh:2026-10-29:Maharashtra Akarshak Pushkraj": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Akarshak Pushkraj 2026-10-29: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-10-30T16:25+00:00",
-   "resolved": "2026-10-30T16:59+00:00"
-  },
-  "mh:2026-10-29:Maharashtra Ganeshlaxmi Gaurav": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Ganeshlaxmi Gaurav 2026-10-29: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-10-30T16:25+00:00",
-   "resolved": "2026-10-30T16:59+00:00"
-  },
   "mh:2026-10-28:Maharashtra Akshay": {
    "kind": "unread",
    "severity": "low",
