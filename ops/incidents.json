@@ -1,35 +1,5 @@
 {
  "open": {
-  "mh:2026-11-12:Maharashtra Akarshak Pushkaraj": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Akarshak Pushkaraj 2026-11-12: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-13T07:10+00:00"
-  },
-  "mh:2026-11-12:Maharashtra Ganeshlaxmi Gaurav": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Ganeshlaxmi Gaurav 2026-11-12: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-13T07:10+00:00"
-  },
-  "mh:2026-11-12:Maharashtra Sahyadri Deeplaxmi": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-12: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-11-13T07:10+00:00"
-  },
-  "review:2026-11-13_NL8PM": {
-   "kind": "review",
-   "severity": "low",
-   "detail": "2026-11-13_NL8PM: gazette OCR did not confirm the 1st prize 57G 69303 (lower prizes 100% confirmed): compare by eye with tools/eyecheck.py",
-   "first_seen": "2026-11-13T19:52+00:00"
-  },
-  "review:2026-11-13_NL1PM": {
-   "kind": "review",
-   "severity": "low",
-   "detail": "2026-11-13_NL1PM: gazette OCR did not confirm the 1st prize 79D 71173 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
-   "first_seen": "2026-11-13T19:52+00:00"
-  },
   "mh:2026-11-13:Maharashtra Gajlaxmi Shukra": {
    "kind": "unread",
    "severity": "low",
@@ -468,6 +438,41 @@
    "detail": "2026-11-12_NL1PM: gazette OCR did not confirm the 1st prize 74E 88756 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-12T16:02+00:00",
    "resolved": "2026-11-13T19:52+00:00"
+  },
+  "mh:2026-11-12:Maharashtra Akarshak Pushkaraj": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Akarshak Pushkaraj 2026-11-12: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-13T07:10+00:00",
+   "resolved": "2026-11-14T18:32+00:00"
+  },
+  "mh:2026-11-12:Maharashtra Ganeshlaxmi Gaurav": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Ganeshlaxmi Gaurav 2026-11-12: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-13T07:10+00:00",
+   "resolved": "2026-11-14T18:32+00:00"
+  },
+  "mh:2026-11-12:Maharashtra Sahyadri Deeplaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-12: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-13T07:10+00:00",
+   "resolved": "2026-11-14T18:32+00:00"
+  },
+  "review:2026-11-13_NL8PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-13_NL8PM: gazette OCR did not confirm the 1st prize 57G 69303 (lower prizes 100% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-13T19:52+00:00",
+   "resolved": "2026-11-14T18:32+00:00"
+  },
+  "review:2026-11-13_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-13_NL1PM: gazette OCR did not confirm the 1st prize 79D 71173 (lower prizes 96% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-13T19:52+00:00",
+   "resolved": "2026-11-14T18:32+00:00"
   }
  }
 }
