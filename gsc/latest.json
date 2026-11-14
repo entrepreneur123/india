@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-13T11:15+00:00",
+ "generated": "2026-11-14T10:41+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-16",
- "end": "2026-11-13",
+ "start": "2026-10-17",
+ "end": "2026-11-14",
  "countries": [
   {
    "country": "ind",
@@ -397,6 +397,20 @@
    "impressions": 1,
    "ctr": 0,
    "position": 1
+  },
+  {
+   "date": "2026-11-13",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-14",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
   }
  ],
  "queries_india": [
@@ -6204,118 +6218,6 @@
    "position": 2
   },
   {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/",
-   "clicks": 0,
-   "impressions": 3,
-   "ctr": 0,
-   "position": 4
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/about/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/bn/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 2
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/claim-prize/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 6
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/contact/",
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 4
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/disclaimer/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 7
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/maharashtra/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/maharashtra/akshay/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 9
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/maharashtra/sagarlaxmi/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 5
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 2
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/mr/maharashtra/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 7
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/old-results/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 8
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/privacy",
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 7.5
-  },
-  {
-   "date": "2026-11-03",
-   "page": "https://lottodost.com/result/04-08-2026/6pm/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 10
-  },
-  {
    "date": "2026-11-04",
    "page": "https://lottodost.com/",
    "clicks": 0,
@@ -6596,6 +6498,20 @@
   },
   {
    "date": "2026-11-12",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-13",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-14",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,

@@ -1,63 +1,36 @@
 {
  "countries": [
   {
-   "count": 210,
+   "count": 130,
    "dimensions": {
-    "countryName": "IN"
+    "countryName": "US"
    },
    "sum": {
     "visits": 130
    }
   },
   {
-   "count": 180,
-   "dimensions": {
-    "countryName": "US"
-   },
-   "sum": {
-    "visits": 180
-   }
-  },
-  {
    "count": 60,
    "dimensions": {
-    "countryName": "KR"
+    "countryName": "IN"
    },
    "sum": {
     "visits": 50
    }
   },
   {
-   "count": 10,
+   "count": 50,
    "dimensions": {
-    "countryName": "NL"
+    "countryName": "KR"
    },
    "sum": {
-    "visits": 10
+    "visits": 40
    }
   },
   {
    "count": 10,
    "dimensions": {
-    "countryName": "BD"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "countryName": "PL"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "countryName": "GB"
+    "countryName": "CN"
    },
    "sum": {
     "visits": 10
@@ -74,26 +47,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 140,
-   "dimensions": {
-    "date": "2026-10-31",
-    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
-   },
-   "sum": {
-    "visits": 110
-   }
-  },
-  {
-   "count": 120,
-   "dimensions": {
-    "date": "2026-10-31",
-    "siteTag": "70803c3adff14678a3c5b780bf918a89"
-   },
-   "sum": {
-    "visits": 80
-   }
-  },
   {
    "count": 20,
    "dimensions": {
@@ -205,66 +158,39 @@
    }
   },
   {
-   "count": 10,
+   "count": 30,
    "dimensions": {
     "date": "2026-11-13",
     "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
    },
    "sum": {
-    "visits": 10
+    "visits": 30
    }
   }
  ],
  "pages": [
   {
-   "count": 160,
+   "count": 100,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 160
+    "visits": 100
    }
   },
   {
-   "count": 60,
+   "count": 70,
    "dimensions": {
     "requestPath": "/maharashtra/"
    },
    "sum": {
-    "visits": 60
-   }
-  },
-  {
-   "count": 50,
-   "dimensions": {
-    "requestPath": "/maharashtra/gajlaxmi-shukra/"
-   },
-   "sum": {
-    "visits": 50
-   }
-  },
-  {
-   "count": 30,
-   "dimensions": {
-    "requestPath": "/kerala/"
-   },
-   "sum": {
-    "visits": 20
-   }
-  },
-  {
-   "count": 30,
-   "dimensions": {
-    "requestPath": "/maharashtra/akshay/"
-   },
-   "sum": {
-    "visits": 30
+    "visits": 70
    }
   },
   {
    "count": 20,
    "dimensions": {
-    "requestPath": "/maharashtra//"
+    "requestPath": "/maharashtra/gajlaxmi-shukra/"
    },
    "sum": {
     "visits": 20
@@ -273,25 +199,7 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/maharashtra/sahyadri-mahalaxmi/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-tejaswini/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/30-10-2026/maharashtra-gajlaxmi-shukra/"
+    "requestPath": "/kerala/"
    },
    "sum": {
     "visits": 0
@@ -318,24 +226,6 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/old-results/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
     "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
    },
    "sum": {
@@ -345,46 +235,10 @@
   {
    "count": 10,
    "dimensions": {
-    "requestPath": "/bn/night-8pm/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/maharashtra/akshay/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/27-10-2026/maharashtra-padmini/"
-   },
-   "sum": {
-    "visits": 0
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
     "requestPath": "/maharashtra/ganeshlaxmi-shubh/"
    },
    "sum": {
     "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/result/16-10-2026/"
-   },
-   "sum": {
-    "visits": 0
    }
   },
   {
