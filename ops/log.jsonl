@@ -142,3 +142,4 @@
 {"at": "2026-11-14T02:16+00:00", "event": "open", "id": "mh:2026-11-13:Maharashtra Gajlaxmi Shukra", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajlaxmi Shukra 2026-11-13: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-14T02:16+00:00", "event": "open", "id": "mh:2026-11-13:Maharashtra Sahyadri Rajlaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Rajlaxmi 2026-11-13: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-14T02:16+00:00", "event": "open", "id": "mh:2026-11-13:Maharashtra Vaibhavlaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Vaibhavlaxmi 2026-11-13: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-14T15:51+00:00", "event": "open", "id": "review:2026-11-14_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-14_NL1PM: gazette OCR did not confirm the 1st prize 93L 72824 (lower prizes 97% confirmed): compare by eye with tools/eyecheck.py"}
