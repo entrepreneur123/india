@@ -35,6 +35,12 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-11-14: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-15T00:58+00:00"
+  },
+  "site:other-app": {
+   "kind": "wrong",
+   "severity": "medium",
+   "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only",
+   "first_seen": "2026-11-15T14:51+00:00"
   }
  },
  "resolved": {
