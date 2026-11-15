@@ -38,20 +38,6 @@
   }
  },
  "resolved": {
-  "mh:2026-10-31:Maharashtra Gajlaxmi Shani": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Gajlaxmi Shani 2026-10-31: still a PDF link (OCR tries 0)",
-   "first_seen": "2026-11-01T05:11+00:00",
-   "resolved": "2026-11-01T09:18+00:00"
-  },
-  "mh:2026-10-31:Maharashtra Ganeshlaxmi Samruddhi": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Ganeshlaxmi Samruddhi 2026-10-31: still a PDF link (OCR tries 0)",
-   "first_seen": "2026-11-01T05:11+00:00",
-   "resolved": "2026-11-01T09:18+00:00"
-  },
   "mh:2026-10-30:Maharashtra Gajraj": {
    "kind": "unread",
    "severity": "low",
