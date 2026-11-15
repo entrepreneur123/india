@@ -1,21 +1,12 @@
 {
  "countries": [
   {
-   "count": 130,
+   "count": 140,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 130
-   }
-  },
-  {
-   "count": 60,
-   "dimensions": {
-    "countryName": "IN"
-   },
-   "sum": {
-    "visits": 50
+    "visits": 140
    }
   },
   {
@@ -25,6 +16,15 @@
    },
    "sum": {
     "visits": 40
+   }
+  },
+  {
+   "count": 40,
+   "dimensions": {
+    "countryName": "IN"
+   },
+   "sum": {
+    "visits": 30
    }
   },
   {
@@ -47,16 +47,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 20,
-   "dimensions": {
-    "date": "2026-11-01",
-    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
-   },
-   "sum": {
-    "visits": 20
-   }
-  },
   {
    "count": 20,
    "dimensions": {
@@ -166,16 +156,26 @@
    "sum": {
     "visits": 30
    }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "date": "2026-11-14",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 10
+   }
   }
  ],
  "pages": [
   {
-   "count": 100,
+   "count": 110,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 100
+    "visits": 110
    }
   },
   {
@@ -185,15 +185,6 @@
    },
    "sum": {
     "visits": 70
-   }
-  },
-  {
-   "count": 20,
-   "dimensions": {
-    "requestPath": "/maharashtra/gajlaxmi-shukra/"
-   },
-   "sum": {
-    "visits": 20
    }
   },
   {
@@ -217,6 +208,15 @@
   {
    "count": 10,
    "dimensions": {
+    "requestPath": "/maharashtra/gajlaxmi-shukra/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
     "requestPath": "/hi/maharashtra/ganeshlaxmi-shubh/"
    },
    "sum": {
@@ -227,15 +227,6 @@
    "count": 10,
    "dimensions": {
     "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/maharashtra/ganeshlaxmi-shubh/"
    },
    "sum": {
     "visits": 10

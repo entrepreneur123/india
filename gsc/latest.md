@@ -1,9 +1,9 @@
-# Search Console 2026-10-17 – 2026-11-14 (generated 2026-11-14T10:41+00:00)
+# Search Console 2026-10-18 – 2026-11-15 (generated 2026-11-15T11:15+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| ind | 196 | 2545 | 7.7% | 7.7 |
+| ind | 196 | 2549 | 7.7% | 7.7 |
 | bgd | 2 | 68 | 2.9% | 23 |
 | bra | 0 | 23 | 0.0% | 45.8 |
 | kor | 6 | 12 | 50.0% | 1.2 |
@@ -38,7 +38,8 @@
 | 2026-11-11 | 0 | 1 | 0.0% | 27 |
 | 2026-11-12 | 0 | 1 | 0.0% | 1 |
 | 2026-11-13 | 0 | 0 | 0.0% | 0 |
-| 2026-11-14 | 0 | 0 | 0.0% | 0 |
+| 2026-11-14 | 0 | 4 | 0.0% | 4.2 |
+| 2026-11-15 | 0 | 0 | 0.0% | 0 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -205,8 +206,8 @@
 | https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/ | 13 | 90 | 14.4% | 5.7 |
 | https://lottodost.com/maharashtra/gajlaxmi-som/ | 1 | 80 | 1.2% | 8.0 |
 | https://lottodost.com/result/28-10-2026/ | 2 | 70 | 2.9% | 13.0 |
-| https://lottodost.com/maharashtra/sagarlaxmi/ | 7 | 61 | 11.5% | 4.7 |
-| https://lottodost.com/maharashtra/sahyadri-mahalaxmi/ | 4 | 60 | 6.7% | 6.2 |
+| https://lottodost.com/maharashtra/sagarlaxmi/ | 7 | 63 | 11.1% | 4.6 |
+| https://lottodost.com/maharashtra/sahyadri-mahalaxmi/ | 4 | 61 | 6.6% | 6.3 |
 | https://lottodost.com/day-6pm/ | 1 | 55 | 1.8% | 14.3 |
 | https://lottodost.com/result/25-10-2026/ | 5 | 49 | 10.2% | 10.7 |
 | https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/ | 7 | 47 | 14.9% | 4.5 |
