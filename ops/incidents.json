@@ -23,6 +23,18 @@
    "severity": "low",
    "detail": "2026-11-14_NL1PM: gazette OCR did not confirm the 1st prize 93L 72824 (lower prizes 97% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-14T15:51+00:00"
+  },
+  "mh:2026-11-14:Maharashtra Maharashtralaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Maharashtralaxmi 2026-11-14: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-15T00:58+00:00"
+  },
+  "mh:2026-11-14:Maharashtra Sahyadri Prabhalaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-11-14: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-15T00:58+00:00"
   }
  },
  "resolved": {

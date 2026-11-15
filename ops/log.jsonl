@@ -148,3 +148,5 @@
 {"at": "2026-11-14T18:32+00:00", "event": "resolved", "id": "mh:2026-11-12:Maharashtra Sahyadri Deeplaxmi"}
 {"at": "2026-11-14T18:32+00:00", "event": "resolved", "id": "review:2026-11-13_NL8PM"}
 {"at": "2026-11-14T18:32+00:00", "event": "resolved", "id": "review:2026-11-13_NL1PM"}
+{"at": "2026-11-15T00:58+00:00", "event": "open", "id": "mh:2026-11-14:Maharashtra Maharashtralaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Maharashtralaxmi 2026-11-14: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-15T00:58+00:00", "event": "open", "id": "mh:2026-11-14:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-11-14: still a PDF link (OCR tries 2)"}
