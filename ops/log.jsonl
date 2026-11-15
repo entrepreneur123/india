@@ -152,3 +152,5 @@
 {"at": "2026-11-15T00:58+00:00", "event": "open", "id": "mh:2026-11-14:Maharashtra Sahyadri Prabhalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Prabhalaxmi 2026-11-14: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-15T14:51+00:00", "event": "open", "id": "site:other-app", "kind": "wrong", "severity": "medium", "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only"}
 {"at": "2026-11-15T15:36+00:00", "event": "resolved", "id": "site:other-app"}
+{"at": "2026-11-15T16:23+00:00", "event": "open", "id": "review:2026-11-15_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-15_NL8PM: gazette OCR did not confirm the 1st prize 61K 55785 (lower prizes 97% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-15T16:23+00:00", "event": "open", "id": "review:2026-11-15_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-15_NL1PM: gazette OCR did not confirm the 1st prize 38D 06431 (lower prizes 97% confirmed): compare by eye with tools/eyecheck.py"}
