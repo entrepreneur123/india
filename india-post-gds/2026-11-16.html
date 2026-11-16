@@ -1,0 +1,1354 @@
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>
+	IndiaPost GDS Online
+</title><link href="CSS/HomePageCSSV2.css" rel="stylesheet" type="text/css" /><link href="CSS/HomePageInstructions.css" rel="stylesheet" type="text/css" /><link id="favicon" rel="icon" type="image/png" href="images/logo.png" />
+    <script type="text/javascript">
+        function resizeDiv() {
+            var rightdivheight = document.getElementById('NewsDiv').clientHeight;
+            var leftdivheight = document.getElementById('navbar').clientHeight;
+            if (leftdivheight > rightdivheight) {
+                document.getElementById('NewsDiv').style.height = leftdivheight + "px";
+            }
+            else {
+                document.getElementById('navbar').style.height = rightdivheight + "px";
+            }
+        }
+    </script>
+    
+    <script src="js/jQuery%20v3.6.0/jQuery_v3.6.0.js"></script>
+    <script src="js/jQuery%20v3.6.0/jQuery_v3.6.0.min.js"></script>
+    
+    <link href="js/jquery-ui-1.13.0/jquery-ui.css" rel="stylesheet" />
+    <script src="js/jquery-ui-1.13.0/jquery-ui.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('marquee').mouseover(function () {
+                $(this).attr('scrollamount', 0);
+            }).mouseout(function () {
+                $(this).attr('scrollamount', 5);
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+
+        function showRegDialog() {
+            $('#regdiv').dialog('open');
+            return false;
+        }
+        function showFeeDialog() {
+            $('#feediv').dialog('open');
+            return false;
+        }
+        function showCircleapplyDialog() {
+            $('#applydiv').dialog('open');
+            return false;
+        }
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('#regdiv').dialog({
+                resizable: false,
+                autoOpen: false,
+                title: null,
+                height: "auto",
+                width: "auto",
+                modal: true,
+                closeOnEscape: false,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('#feediv').dialog({
+                resizable: false,
+                autoOpen: false,
+                title: null,
+                height: "auto",
+                width: "auto",
+                modal: true,
+                closeOnEscape: false,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $('#applydiv').dialog({
+                resizable: false,
+                autoOpen: false,
+                title: null,
+                height: "auto",
+                width: "auto",
+                modal: true,
+                closeOnEscape: false,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        });
+
+    </script>
+    
+
+    <style type="text/css">
+        .auto-style1 {
+            font-family: Calibri;
+            font-size: medium;
+            text-align: left;
+            width: 200px;
+            height: 23px;
+        }
+
+        .headerribbon_layers {
+            width: 100%;
+            height: 30px;
+            background-color: #0077B6;
+        }
+
+        .headerribbon_content {
+            width: 100%;
+        }
+
+        .headerribbon {
+            width: 100%;
+            background-color: #FFF;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        .headerribbon_indiapost_logo {
+            /*width: 380px;
+            height: 100px;*/ /*text-align: left;
+            float: left;*/
+        }
+
+        .headerribbon_title_text {
+            /*height: 100px;*/
+            display: flex;
+            justify-content: center;
+            align-items: center; /*float: left;*/
+            font-family: Georgia;
+            font-size: min(38px, max(30px, 3vw)); /*font: 3vw Georgia;*/ /*line-height: 100px;*/
+            color: #B02925;
+        }
+
+        .headerribbon_emblem {
+            /*width: 220px;
+            height: 100px;*/ /*float: right;*/
+        }
+    </style>
+</head>
+<body class="body" onload="resizeDiv()">
+    <form method="post" action="./" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTY1NDU2MTA1MmRkSgLu46A9KZqlNZGxoHO/vhAA/VJBMXXdcaxQfiGmLQQ=" />
+</div>
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="8D0E13E6" />
+</div>
+        <div align="center">
+            <div class="HeaderColorDiv">
+                &nbsp;
+            </div>
+            <div class="width1000pxdiv">
+                
+                <div class="headerribbon_content">
+                    <div class="headerribbon">
+                        <div class="headerribbon_indiapost_logo">
+                            <img id="Image1" src="images/logo1.png" style="height:100px;" />
+                        </div>
+                        <div class="headerribbon_title_text">
+                            <div>
+                                GDS Online Engagement
+                            </div>
+                        </div>
+                        <div>
+                            <img id="Image2" src="images/Emblem_of_India.png" style="height:100px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="HeaderColorDiv">
+            </div>
+        </div>
+        <!--Test Menu Div Start-->
+        <div class="stylecleardiv">
+        </div>
+        <div align="center">
+            <div class="width1000pxdiv">
+                <div class="MenuItemDivbar">
+                    
+                Notification <span class="NotificationSpan"><a class="MenuSubitem" href="https://indiapostgdsonline.cept.gov.in"
+                    target="_blank">Descriptive Notification</a><br />
+                    
+                    
+                   
+                    
+                  
+                </div>
+                <div class="MenuItemDivbar">
+                    Stage 1.Registration <span class="NotificationSpan">
+                        
+                     
+                        
+                        
+                       
+                  
+
+                       
+
+                        
+                        
+                      
+                       
+
+                        
+                    </span>
+                </div>
+                <div class="MenuItemDivbar">
+                    Stage 2.Apply Online <span class="NotificationSpan">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+
+                     
+                     
+                      
+
+                        
+                        
+                      
+
+                    </span>
+                </div>
+                <div class="MenuItemDivbar">
+                    Fee Payment <span class="NotificationSpan">
+                        
+                       
+                      
+                       
+                        
+                        
+                        
+                    </span>
+                </div>
+                
+                <div class="MenuItemLastDivbar">
+                    Candidate Grievances <span class="NotificationSpan"><a class="MenuSubitem" href="https://indiapostgdsonline.cept.gov.in"
+                        target="_blank ">FAQ</a><br />
+                        <a class="MenuSubitem" href="https://cept.gov.in/gdsonlinecomplaints/loginM.aspx"
+                            target="_blank">Grievance</a><br />
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="stylecleardiv">
+        </div>
+        <div class="Height10pxdiv">
+        </div>
+        <div align="center">
+            <div class="centermsgdiv">
+                <span style="font-size: 18px;">
+                    <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">
+                        
+                         
+                       
+                        
+
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+
+                        
+                        
+                        
+                        
+
+                        
+                       
+                       
+                      
+                        
+                        
+                        
+                        
+                        
+                       
+
+                        
+                        
+                    </marquee>
+                </span>
+            </div>
+        </div>
+        <div class="Height10pxdiv">
+        </div>
+        
+                        
+                        
+                         
+                      
+
+                        
+                    </marquee>
+
+
+                    
+                    
+                    
+                    
+        <div class="Height10pxdiv">
+        </div>
+
+
+
+        
+        
+
+           
+
+               
+
+        <div align="center" style="min-height=80vh">
+            <div class="width1000pxdiv" align="left">
+                
+                <div id="container">
+                    <nav id="navbar" style="float: left">
+                        <div class="headingdiv">
+                            Candidate's Corner
+                        </div>
+                        <ul>
+                            
+                            <li><a href="#">Notification</a>
+                                <!-- First Tier Drop Down -->
+                                <ul>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in" target="_blank">Descriptive Notification</a></li>
+                                    
+                                    
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in" target="_blank">Circlewise Posts Notified</a></li>
+                                    
+                                 
+
+                                </ul>
+                            </li>
+
+                            <li><a href="#">Stage 1.Registration</a>
+                                <!-- First Tier Drop Down -->
+                                <ul>
+                                    
+
+                                
+                                    
+                                    
+                                    
+
+                                    
+                                    
+
+                                   
+
+                           
+
+                                
+
+                                    
+                                </ul>
+                            </li>
+
+                            <li><a href="#">Stage 2.Apply Online</a>
+                                <!-- First Tier Drop Down -->
+                                <ul>
+                                    
+
+                           
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                              
+                                  
+                                 
+
+                                </ul>
+                            </li>
+
+                            <li><a href="#">Fee Payment</a>
+                                <!-- First Tier Drop Down -->
+                                <ul>
+                                    
+                                    <li>
+                                       
+                                        
+
+                                           
+
+                                        
+                                        
+                                  
+                                    
+                                </ul>
+                            </li>
+
+
+
+                            
+
+                            
+
+                          
+
+                            
+                            <li><a href="#">Annexures</a>
+                                <!-- Second Tier Drop Down -->
+                                <ul>
+                                    
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/Final_Post_Consolidation.pdf" target="_blank">Annexures-I(a)</a></li>
+                                    
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/post_details.xlsx">Annexures-I</a></li>
+                                    
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-II.pdf" target="_blank">Annexures-II</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-III.pdf" target="_blank">Annexures-III</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-IV.pdf" target="_blank">Annexures-IV</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-V.pdf" target="_blank">Annexures-V</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-VI.pdf" target="_blank">Annexures-VI</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-VII.pdf" target="_blank">Annexures-VII</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-VIII.pdf" target="_blank">Annexures-VIII</a></li>
+                                    <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-IX.pdf" target="_blank">Annexures-IX</a></li>
+                                     <li><a href="https://indiapostgdsonline.cept.gov.in/Notifications1/ANNEXURE-X.pdf" target="_blank">Annexures-X</a></li>
+
+                                </ul>
+                            </li>
+                            
+
+                            <!-- Second Tier Drop Down -->
+                            
+
+                            
+
+
+                            <li><a href="#">Candidate Grievances</a>
+                                <ul>
+                                 
+                                    <li><a href="https://cept.gov.in/gdsonlinecomplaints/loginM.aspx" target="_blank">Grievance</a></li>
+                                </ul>
+                            </li>
+                            
+
+                            
+
+
+                            <li><a href="#">
+                                <img src="images/new.gif.png" />GDS Online Engagement Schedule-I,January-2025 Shortlisted Candidates </a>
+
+                                <ul style="top: -430px; line-height: 20px; height: 500px;">
+                                    <li>
+                                        
+                                        <a>Andhra Pradesh</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/AndhraPradesh_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/AndhraPradesh_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/AndhraPradesh_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/AndhraPradesh_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/AndhraPradesh_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/AndhraPradesh_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                         
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Assam</a>
+                                        <ul>
+
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Assam_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Assam_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Assam_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Assam_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Assam_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Assam_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Bihar</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Bihar_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Bihar_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Bihar_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Bihar_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                                <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Bihar_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Bihar_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Chhattisgarh</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Chhattisgarh_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Chhattisgarh_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Chhattisgarh_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Chhattisgarh_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Chhattisgarh_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Chhattisgarh_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Delhi</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Delhi_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Delhi_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Delhi_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                              <li style="left: -30px;width: 220px;line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Delhi_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                              <li style="left: -30px;width: 220px;line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Delhi_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                             <li style="left: -30px;width: 220px;line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Delhi_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Gujarat</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Gujarat_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Gujarat_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Gujarat_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Gujarat_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Gujarat_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Gujarat_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                            
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Haryana</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Haryana_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Haryana_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Haryana_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Haryana_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Haryana_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Haryana_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Himachal Pradesh</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/HimachalPradesh_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                       <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/HimachalPradesh_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/HimachalPradesh_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                                <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/HimachalPradesh_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/HimachalPradesh_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/HimachalPradesh_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                       
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Jammukashmir</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/JammuKashmir_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                        <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/JammuKashmir_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/JammuKashmir_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/JammuKashmir_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/JammuKashmir_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                        <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/JammuKashmir_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                       
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Jharkhand</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Jharkhand_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Jharkhand_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Jharkhand_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Jharkhand_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Jharkhand_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Jharkhand_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                          
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Karnataka</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Karnataka_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Karnataka_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Karnataka_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Karnataka_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Karnataka_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Karnataka_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                       
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Kerala</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Kerala_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Kerala_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Kerala_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                            <li style="left: -30px;width: 220px;line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Kerala_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                            <li style="left: -30px;width: 220px;line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Kerala_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                             <li style="left: -30px;width: 220px;line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Kerala_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        
+                                        <a>Madhya Pradesh</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/MadhyaPradesh_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/MadhyaPradesh_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/MadhyaPradesh_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/MadhyaPradesh_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/MadhyaPradesh_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/MadhyaPradesh_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                            
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Maharashtra</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Maharashtra_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                                 <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Maharashtra_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Maharashtra_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                                  <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Maharashtra_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Maharashtra_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Maharashtra_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                         
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>North East</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/NorthEast_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/NorthEast_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/NorthEast_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/NorthEast_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/NorthEast_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/NorthEast_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                         
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Odisha</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Odisha_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                                 <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Odisha_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Odisha_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Odisha_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Odisha_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Odisha_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Punjab</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Punjab_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Punjab_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Punjab_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Punjab_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Punjab_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Punjab_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                          
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                     
+                                        <ul>
+                                                <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Rajasthan_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                                <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Rajasthan_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Rajasthan_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                                <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Rajasthan_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                               <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Rajasthan_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                                <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Rajasthan_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Tamilnadu</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Tamilnadu_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Tamilnadu_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Tamilnadu_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Tamilnadu_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Tamilnadu_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Tamilnadu_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                         
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Telangana</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Telangana_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Telangana_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Telangana_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Telangana_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Telangana_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Telangana_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                            
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>Uttar Pradesh</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/UttarPradesh_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/UttarPradesh_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/UttarPradesh_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                              <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/UttarPradesh_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/UttarPradesh_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/UttarPradesh_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                       
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>UttaraKhand</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/Uttarakhand_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/Uttarakhand_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/Uttarakhand_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/Uttarakhand_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/Uttarakhand_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                          <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/Uttarakhand_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                        
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        
+                                        <a>West Bengal</a>
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_1_Jan2025/WestBengal_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_2_Jan2025/WestBengal_DV_List2.pdf" target="_blank ">Supplimentary List -II</a></li>
+                                           <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_3_Jan2025/WestBengal_DV_List3.pdf" target="_blank ">Supplimentary List -III</a></li>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_4_Jan2025/WestBengal_DV_List4.pdf" target="_blank ">Supplimentary List -IV</a></li>
+                                         <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_5_Jan2025/WestBengal_DV_List5.pdf" target="_blank ">Supplimentary List -V</a></li>
+                                        <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/DocVerList_6_Jan2025/WestBengal_DV_List6.pdf" target="_blank ">Supplimentary List -VI</a></li>
+                                       
+                                        </ul>
+                                    </li>
+
+
+                                </ul>
+
+                            </li>
+
+
+
+                            
+
+                                <!-- First Tier Drop Down -->
+                            
+
+                                   
+                                           
+                                          
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
+
+
+                          
+                                <!-- First Tier Drop Down -->
+                                
+
+                                <ul style="top: 30px; line-height: 20px; height: 500px;">
+                                    <li>
+                                        
+                                        
+                                        <ul>
+                                            <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/ManipurSplDrive/NorthEast_DV_List1.pdf" target="_blank ">List of Shortlisted Candidates</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/ManipurSplDrive/NorthEast_DV_List2.pdf" target="_blank ">Supplimentary List - II</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/ManipurSplDrive/NorthEast_DV_List3.pdf" target="_blank ">Supplimentary List - III</a></li>
+                                             <li style="left: -30px; width: 220px; line-height: 20px;"><a href="https://indiapostgdsonline.cept.gov.in/ManipurSplDrive/NorthEast_DV_List4.pdf" target="_blank ">Supplimentary List - IV</a></li>
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                        </ul>
+
+                                    </li>
+                                </ul>
+
+
+
+                            
+                        </ul>
+                    </nav>
+                    <!--Space-->
+                    <div class="spacebetweendiv">
+                    </div>
+                    <!--News Desk Start-->
+                    <!--Space-->
+                    <div class="spacebetweendiv">
+                    </div>
+                </div>
+                
+                <div id="NewsDiv" class="NewsDiv">
+                    <div class="MainListPadidngdiv">
+                        
+                        <div class="MainLinksBorderdiv">
+                            
+    
+
+    
+
+    
+
+    <div class="Height5pxdiv">
+    </div>
+
+    
+
+    
+    <div class="Height5pxdiv">
+    </div>
+    <div class="MainListContentDivHome">
+        <div class="Height30pxdiv">
+        </div>
+        
+        
+        
+        
+        
+        <div style="clear: both; height: 20px;"></div>
+        <div align="center">
+            <div style="display:none ">
+                
+                <div class="width20pxdiv">
+                </div>
+                
+                <div class="width20pxdiv">
+                </div>
+            </div>
+            
+            
+           <div align="center">
+    <span style="color: #0077B6; font-family: Calibri; font-size: 30px; font-weight: bold;">
+        <b>
+            This website is no longer active.
+            <br />
+            <a href="https://indiapost.gov.in/gdsonlineengagement" 
+               target="_blank"
+                style="color: red; text-decoration: underline;">
+                Click here
+            </a>
+            to access the new website
+        </b>
+    </span>
+    </div>
+                <div style="height: 50px">
+                </div>
+            </div>
+        </div>
+    </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="stylecleardiv">
+                </div>
+            </div>
+        </div>
+        <div class="Height20pxdiv">
+        </div>
+        
+        <div align="center">
+            <div class="disclaimermsgdiv" style="text-align: justify">
+                <span><b>Disclaimer</b> : 1. Department of Posts does not make any phone calls/SMS to
+                the candidates for depositing any money. Selected candidate is getting system generated
+                SMS only for his selection. The correspondence, if any, is made with candidates
+                through respective Recruiting authority only. Candidates are advised not to disclose
+                their registration number and mobile numbers and be guarded against any unscrupulous
+                phone calls.
+                <br />
+                    <br />
+                    2. Candidates are advised in their own interest to submit online applications much
+                before the closing date and not to wait till the last date to avoid the possibility
+                of disconnection/inability or failure to login to the website on account of heavy
+                load on the website during the closing days.&nbsp; </span>
+            </div>
+        </div>
+        
+        <div class="Height20pxdiv">
+        </div>
+        
+        <div align="center">
+            <div class="FooterDivstyle" align="center">
+                <div class="Height5pxdiv">
+                </div>
+                <table class="FooterTableStyle">
+                    <tr>
+                        <td class="FooterLinkstyle">
+                            <a class="hlink" href="https://indiapostgdsonline.gov.in/">Home</a>
+                        </td>
+                        <td class="FooterLinkstyle">
+                            
+                            <a class="hlink" target="_blank" href="https://indiapostgdsonline.cept.gov.in/PrivacyPolicy.aspx">Privacy Policy</a>
+                        </td>
+                        <td class="FooterLinkstyle">
+                            
+                            <a class="hlink" target="_blank" href="https://indiapostgdsonline.cept.gov.in/FAQ.html">FAQ</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        
+                        <td class="auto-style1">
+                            
+                            <a class="hlink" target="_blank" href="https://indiapostgdsonline.cept.gov.in/TermsAndConditions.aspx">Terms & Conditions</a>
+                        </td>
+                        <td class="auto-style1">
+                            
+                            <a class="hlink" target="_blank" href="https://indiapostgdsonline.gov.in/EmployeeLogin.aspx">Employee Corner</a>
+                        </td>
+                        <td class="auto-style1">
+                            
+                            <a class="hlink" target="_blank" href="https://indiapostgdsonline.cept.gov.in/HelpDesk.aspx">Contact Us</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="FooterLinkstyle">
+                            
+                        </td>
+                        <td class="FooterLinkstyle"></td>
+                        <td class="FooterLinkstyle"></td>
+                    </tr>
+                </table>
+                <div class="Height5pxdiv">
+                </div>
+            </div>
+        </div>
+        
+        <div class="Height20pxdiv">
+        </div>
+        
+        <div align="center">
+            <div class="WebSiteInfoDiv">
+                This website belongs to Department of Posts, Ministry of Communications, Government
+            of India
+            <br />
+                Site is best viewed in Google Chrome, Internet Explorer 9.0 and above at 1024 x
+            768 resolution<br />
+            </div>
+        </div>
+        
+        
+        <div style="clear: both; height: 20px;">
+        </div>
+        <div id="regdiv" align="center" style="display: none">
+            <div class="width1000pxdiv">
+                <table style="border: 1px solid Black;">
+                    <tr>
+                        <td class="headinstructions">Registration Instructions
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="redinstrctions">• It should be noted that candidates are requested to ensure their eligibility before
+                        registering in portal.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Registration is mandatory for applying online.<br />
+                            &nbsp&nbsp&nbsp • In the Registration, the mobile number and email ID are to be
+                        unique and also requires validation for mapping as a registered email/mobile number.
+                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp For this purpose OTP will be sent to the given mobile
+                        number and email ID without which the number cannot be registered and candidate
+                        cannot &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp make a Registration.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• For registering the application, the candidate required to submit the following
+                        basic details.<br />
+                            1. Mobile Number: Candidate has to enter 10 digit mobile number.<br />
+                            2. Email: Candidate has to enter a valid Email ID.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate should provide a valid mobile number and email through which he/she
+                        will receive further course communication. It is mandatory that candidate should
+                        keep his/her mobile number and email in active condition during the course of recruitment
+                        process as there is no provision for change of these details. Deduplication shall
+                        not be allowed. Only one Registration is allowed per candidate
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">3. Applicant’s Name: Candidate has to enter his/her name as per secondary school
+                        certificate.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">4. Father’s Name/Mother’s Name: Candidate has to enter his/her Father’s name/Mother’s
+                        name as per secondary school certificate.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">5. Date of Birth: Candidate has to enter his/her Date of Birth as per secondary
+                        school certificate.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">6. Gender: Candidate has to enter his/her Gender.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">6(a). Select (In Case of Transgender): This field will be enabled only if the candidate
+                        selects Transgender above.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">7. Community: Community should be selected as per community certificate.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">8. Circle in which secondary school passed: Candidate has to enter respective postal
+                        circle according to the state passed. The list of states and corresponding circles
+                        can be viewed by clicking on the link “click here to know your circle”.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">9. Year of passing secondary school: Candidate has to enter his/her year of passing
+                        10th Class.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">10. Aadhaar Number: Candidate has to enter 12 digit unique Aadhaar Number.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">11. Are You Person with Disability: Candidate has to select Yes/No according to
+                        his/her disability status.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">11(a). Type of Disability: This field will be enabled only if the candidate selects
+                        “yes” in above field.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">11(a)(i). Select PWD SubCategory: Candidate has to select respective PWD sub category.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">12. Languages Studied in 10th class: Candidate has to select the languages that
+                        he/she studied in 10th class. One can select multiple languages here.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">13. Whether Employed: Candidate has to select yes/no according to his/her employment
+                        status.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">13(a). Whether employer NOC is available: This field will be enabled if the candidate
+                        selects “yes” in above field.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">14 & 15. Candidate needs to upload his/her latest photo and signature in jpg/jpeg
+                        format with the following specifications.<br />
+                            Photo: size – not exceeding 50kb<br />
+                            Signature: size – not exceeding 20kb
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate needs to enter all the mandatory fields in Registration.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• In case of any modifications required, changes can be made in the same screen
+                        before submission. After submission there will not be any provision for subsequent
+                        editing of data. On satisfactory confirmation of entered data, candidate requires
+                        to consent the undertakings by clicking the checkboxes for submission of Registration
+                        data.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidates should produce the PWD certificate as per the eligibility at the time
+                        of original certificates verification if got selected.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate requires to Register only once there should not be any duplicate registration.
+                        mobile number and email id should be unique for Registation, ie mobile number/email
+                        id given for others registration should not be used again for other Registraions.
+                        Registering data of the same candidate by altering any of the parameters will be
+                        considered as duplicate Registration and is subjected to de duplication process
+                        and is liable for cancellation of candidature.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate needs to submit correct information during Registration. If any false
+                        information found, his/her candidature will be cancelled.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+        <div style="clear: both; height: 20px;">
+        </div>
+        <div id="feediv" align="center" style="display: none">
+            <div class="width1000pxdiv">
+                <table style="border: 1px solid Black;">
+                    <tr>
+                        <td class="headinstructions">Fee Payment Instructions
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="redinstrctions">• It should be noted that candidates are requested to ensure their eligibility before
+                        making fee payment since fee once paid will not be refunded.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate requires to make a Fee Payment of Rs.100/- (Rupees One hundred only)
+                        for the online submission of application. However, the following category is exempted
+                        for fee payment, all female / trans-woman candidates and all SC/ST candidates.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Fee Payment can be made only through online in the same portal.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• All types of payment modes like recognized Credit/Debit cards, Net Banking and
+                        UPI. Payment Gateway Charges as applicable are to borne by the candidate’s in addition
+                        to the fee.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style="clear: both; height: 20px;">
+        </div>
+        <div id="applydiv" align="center" style="display: none">
+            <div class="width1000pxdiv">
+                <table style="border: 1px solid Black;">
+                    <tr>
+                        <td class="headinstructions">Applying for Division Instructions
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="redinstrctions">• Registration number is mandatory and Fee will be asked through online payment
+                        after submission of online application for the candidates who have to pay the required
+                        fee. Application details submitted without making fee payment will not be considered
+                        as successfully submitted application.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• For Application process, Candidate needs to submit Present Address details, Permanent
+                        address details, SSC marks/grades/points, Choice of preferences. 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate should ensure that valid Present/Permanent address details are entered
+                        as further course of communication will be sent to the given address in case of
+                        selection.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate should ensure that marks/grades/points should be entered as per his/her
+                        SSC memo. In case of any deviation, his/her candidature will be cancelled.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate is allowed to apply for only one Division in any one circle eligible.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="instrctions">• Candidate needs to exercise the preferences thoroughly before submitting the application.
+                        Preferences will be displayed based on the eligibility (like age, community, Person
+                        with Disability and Local Language studied in Class X etc.) of the candidate.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                   
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="redinstrctions">• Candidates needs to submit the correct information during entire application process.
+                        If any information found incorrect, his/her candidature will be cancelled.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="width1000pxdiv">
+                <img src="images\Languages_table_image.jpg" alt="Circle wise languages" width="900px"
+                    height="1000px" align="center" />
+            </div>
+        </div>
+        
+    </form>
+</body>
+</html>
