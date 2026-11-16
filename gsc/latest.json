@@ -1,13 +1,13 @@
 {
- "generated": "2026-11-15T11:15+00:00",
+ "generated": "2026-11-16T11:46+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-18",
- "end": "2026-11-15",
+ "start": "2026-10-19",
+ "end": "2026-11-16",
  "countries": [
   {
    "country": "ind",
    "clicks": 196,
-   "impressions": 2549,
+   "impressions": 2550,
    "ctr": 0.0769,
    "position": 7.7
   },
@@ -414,6 +414,13 @@
   },
   {
    "date": "2026-11-15",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 88
+  },
+  {
+   "date": "2026-11-16",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
@@ -1609,9 +1616,9 @@
   {
    "page": "https://lottodost.com/",
    "clicks": 9,
-   "impressions": 38,
-   "ctr": 0.2368,
-   "position": 14.6
+   "impressions": 39,
+   "ctr": 0.2308,
+   "position": 16.5
   },
   {
    "page": "https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/",
@@ -6216,14 +6223,6 @@
    "position": 2
   },
   {
-   "date": "2026-11-05",
-   "page": "https://lottodost.com/maharashtra/akshay/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 1
-  },
-  {
    "date": "2026-11-06",
    "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
    "clicks": 0,
@@ -6366,6 +6365,14 @@
    "impressions": 1,
    "ctr": 0,
    "position": 1
+  },
+  {
+   "date": "2026-11-15",
+   "page": "https://lottodost.com/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 88
   }
  ],
  "image_days": [
@@ -6525,6 +6532,13 @@
   },
   {
    "date": "2026-11-15",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-16",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
