@@ -170,3 +170,4 @@
 {"at": "2026-11-17T09:04+00:00", "event": "resolved", "id": "site:other-app"}
 {"at": "2026-11-17T15:02+00:00", "event": "open", "id": "review:2026-11-17_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-17_NL8PM: gazette OCR did not confirm the 1st prize 48H 58717 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
 {"at": "2026-11-17T15:02+00:00", "event": "open", "id": "review:2026-11-17_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-17_NL1PM: gazette OCR did not confirm the 1st prize 84D 65148 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-17T18:35+00:00", "event": "resolved", "id": "mh:2026-11-15:Maharashtra Mohini"}
