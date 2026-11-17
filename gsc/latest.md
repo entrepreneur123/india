@@ -1,9 +1,9 @@
-# Search Console 2026-10-19 – 2026-11-16 (generated 2026-11-16T11:46+00:00)
+# Search Console 2026-10-20 – 2026-11-17 (generated 2026-11-17T12:06+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| ind | 196 | 2550 | 7.7% | 7.7 |
+| ind | 196 | 2551 | 7.7% | 7.7 |
 | bgd | 2 | 68 | 2.9% | 23 |
 | bra | 0 | 23 | 0.0% | 45.8 |
 | kor | 6 | 12 | 50.0% | 1.2 |
@@ -40,7 +40,8 @@
 | 2026-11-13 | 0 | 0 | 0.0% | 0 |
 | 2026-11-14 | 0 | 4 | 0.0% | 4.2 |
 | 2026-11-15 | 0 | 1 | 0.0% | 88 |
-| 2026-11-16 | 0 | 0 | 0.0% | 0 |
+| 2026-11-16 | 0 | 1 | 0.0% | 10 |
+| 2026-11-17 | 0 | 0 | 0.0% | 0 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -248,5 +249,5 @@
 | https://lottodost.com/maharashtra/ | NEUTRAL | Crawled - currently not indexed | 2026-11-06T09:36:29Z |
 | https://lottodost.com/night-8pm/ | NEUTRAL | Crawled - currently not indexed | 2026-11-06T02:06:29Z |
 | https://lottodost.com/day-6pm/ | NEUTRAL | Crawled - currently not indexed | 2026-10-28T22:51:00Z |
-| https://lottodost.com/morning-1pm/ | NEUTRAL | Crawled - currently not indexed | 2026-11-04T20:12:49Z |
+| https://lottodost.com/morning-1pm/ | PASS | Submitted and indexed | 2026-11-04T20:12:49Z |
 | https://lottodost.com/yesterday/ | NEUTRAL | Crawled - currently not indexed | 2026-10-29T07:50:11Z |

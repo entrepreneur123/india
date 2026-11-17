@@ -1,14 +1,14 @@
 {
- "generated": "2026-11-16T11:46+00:00",
+ "generated": "2026-11-17T12:06+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-19",
- "end": "2026-11-16",
+ "start": "2026-10-20",
+ "end": "2026-11-17",
  "countries": [
   {
    "country": "ind",
    "clicks": 196,
-   "impressions": 2550,
-   "ctr": 0.0769,
+   "impressions": 2551,
+   "ctr": 0.0768,
    "position": 7.7
   },
   {
@@ -421,6 +421,13 @@
   },
   {
    "date": "2026-11-16",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "date": "2026-11-17",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
@@ -3072,9 +3079,9 @@
   {
    "page": "https://lottodost.com/hi/maharashtra/ganeshlaxmi-bhagyashali/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 3
+   "position": 6.5
   },
   {
    "page": "https://lottodost.com/hi/maharashtra/sahyadri-dhanlaxmi/",
@@ -6223,14 +6230,6 @@
    "position": 2
   },
   {
-   "date": "2026-11-06",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 1
-  },
-  {
    "date": "2026-11-07",
    "page": "https://lottodost.com/about/",
    "clicks": 0,
@@ -6373,6 +6372,14 @@
    "impressions": 1,
    "ctr": 0,
    "position": 88
+  },
+  {
+   "date": "2026-11-16",
+   "page": "https://lottodost.com/hi/maharashtra/ganeshlaxmi-bhagyashali/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
   }
  ],
  "image_days": [
@@ -6543,6 +6550,13 @@
    "impressions": 0,
    "ctr": 0,
    "position": 0
+  },
+  {
+   "date": "2026-11-17",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
   }
  ],
  "image_pages": [
@@ -6554,16 +6568,7 @@
    "position": 32.8
   }
  ],
- "days_queries_india": [
-  {
-   "date": "2026-11-06",
-   "query": "maharashtra state lottery result today",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 1
-  }
- ],
+ "days_queries_india": [],
  "inspections": [
   {
    "url": "https://lottodost.com/",
@@ -6616,8 +6621,8 @@
   },
   {
    "url": "https://lottodost.com/morning-1pm/",
-   "verdict": "NEUTRAL",
-   "coverage": "Crawled - currently not indexed",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
    "lastCrawl": "2026-11-04T20:12:49Z",
    "canonical": "https://lottodost.com/morning-1pm/"
   },
