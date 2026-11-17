@@ -166,3 +166,4 @@
 {"at": "2026-11-17T01:01+00:00", "event": "open", "id": "mh:2026-11-16:Maharashtra Gajlaxmi Som", "kind": "unread", "severity": "low", "detail": "Maharashtra Gajlaxmi Som 2026-11-16: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-17T01:01+00:00", "event": "open", "id": "mh:2026-11-16:Maharashtra Sagarlaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sagarlaxmi 2026-11-16: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-17T01:01+00:00", "event": "open", "id": "mh:2026-11-16:Maharashtra Sahyadri Dhanlaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Dhanlaxmi 2026-11-16: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-17T04:14+00:00", "event": "open", "id": "site:other-app", "kind": "wrong", "severity": "medium", "detail": "https://lottodost.com/jobs/ serves the jobs app; it belongs on github.io only"}
