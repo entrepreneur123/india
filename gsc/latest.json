@@ -1,8 +1,8 @@
 {
- "generated": "2026-11-17T12:06+00:00",
+ "generated": "2026-11-18T11:57+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-20",
- "end": "2026-11-17",
+ "start": "2026-10-21",
+ "end": "2026-11-18",
  "countries": [
   {
    "country": "ind",
@@ -428,6 +428,13 @@
   },
   {
    "date": "2026-11-17",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-18",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
@@ -6222,62 +6229,6 @@
    "position": 1.8
   },
   {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/",
-   "clicks": 1,
-   "impressions": 1,
-   "ctr": 1,
-   "position": 2
-  },
-  {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/about/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
-  },
-  {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/bn/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 5
-  },
-  {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/contact/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 4
-  },
-  {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/disclaimer/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 5
-  },
-  {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/lottery-tax/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 10
-  },
-  {
-   "date": "2026-11-07",
-   "page": "https://lottodost.com/privacy",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 1
-  },
-  {
    "date": "2026-11-09",
    "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
    "clicks": 0,
@@ -6557,6 +6508,13 @@
    "impressions": 0,
    "ctr": 0,
    "position": 0
+  },
+  {
+   "date": "2026-11-18",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
   }
  ],
  "image_pages": [
@@ -6609,7 +6567,7 @@
    "url": "https://lottodost.com/night-8pm/",
    "verdict": "NEUTRAL",
    "coverage": "Crawled - currently not indexed",
-   "lastCrawl": "2026-11-06T02:06:29Z",
+   "lastCrawl": "2026-11-06T11:41:29Z",
    "canonical": "https://lottodost.com/night-8pm/"
   },
   {
