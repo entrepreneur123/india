@@ -29,6 +29,24 @@
    "severity": "low",
    "detail": "2026-11-17_NL1PM: gazette OCR did not confirm the 1st prize 84D 65148 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-17T15:02+00:00"
+  },
+  "mh:2026-11-17:Maharashtra Gajlaxmi Mangal": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Gajlaxmi Mangal 2026-11-17: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-18T01:07+00:00"
+  },
+  "mh:2026-11-17:Maharashtra Padmini": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Padmini 2026-11-17: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-18T01:07+00:00"
+  },
+  "mh:2026-11-17:Maharashtra Sahyadri Mahalaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Mahalaxmi 2026-11-17: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-18T01:07+00:00"
   }
  },
  "resolved": {
