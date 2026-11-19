@@ -53,6 +53,18 @@
    "severity": "low",
    "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-18: still a PDF link (OCR tries 2)",
    "first_seen": "2026-11-19T00:39+00:00"
+  },
+  "review:2026-11-19_NL8PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-19_NL8PM: gazette OCR did not confirm the 1st prize 81K 61195 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-19T16:39+00:00"
+  },
+  "review:2026-11-19_NL1PM": {
+   "kind": "review",
+   "severity": "low",
+   "detail": "2026-11-19_NL1PM: gazette OCR did not confirm the 1st prize 98C 88108 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py",
+   "first_seen": "2026-11-19T16:39+00:00"
   }
  },
  "resolved": {
