@@ -1,12 +1,12 @@
 {
  "countries": [
   {
-   "count": 130,
+   "count": 140,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 130
+    "visits": 140
    }
   },
   {
@@ -35,19 +35,18 @@
    "sum": {
     "visits": 10
    }
-  }
- ],
- "daily": [
+  },
   {
    "count": 10,
    "dimensions": {
-    "date": "2026-11-05",
-    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+    "countryName": "DE"
    },
    "sum": {
     "visits": 10
    }
-  },
+  }
+ ],
+ "daily": [
   {
    "count": 30,
    "dimensions": {
@@ -137,25 +136,45 @@
    "sum": {
     "visits": 20
    }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "date": "2026-11-18",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 20,
+   "dimensions": {
+    "date": "2026-11-19",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 20
+   }
   }
  ],
  "pages": [
   {
-   "count": 80,
+   "count": 90,
    "dimensions": {
     "requestPath": "/"
    },
    "sum": {
-    "visits": 80
+    "visits": 90
    }
   },
   {
-   "count": 70,
+   "count": 80,
    "dimensions": {
     "requestPath": "/maharashtra/"
    },
    "sum": {
-    "visits": 70
+    "visits": 80
    }
   },
   {
@@ -165,6 +184,15 @@
    },
    "sum": {
     "visits": 0
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/result/08-11-2026/maharashtra-ganeshlaxmi-vaibhav/"
+   },
+   "sum": {
+    "visits": 10
    }
   },
   {
@@ -189,15 +217,6 @@
    "count": 10,
    "dimensions": {
     "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
-  {
-   "count": 10,
-   "dimensions": {
-    "requestPath": "/hi/maharashtra/gajlaxmi/"
    },
    "sum": {
     "visits": 10
