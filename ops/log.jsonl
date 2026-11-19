@@ -187,3 +187,8 @@
 {"at": "2026-11-19T00:39+00:00", "event": "open", "id": "mh:2026-11-18:Maharashtra Sahyadri Vijayalaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Vijayalaxmi 2026-11-18: still a PDF link (OCR tries 2)"}
 {"at": "2026-11-19T16:39+00:00", "event": "open", "id": "review:2026-11-19_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-19_NL8PM: gazette OCR did not confirm the 1st prize 81K 61195 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
 {"at": "2026-11-19T16:39+00:00", "event": "open", "id": "review:2026-11-19_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-19_NL1PM: gazette OCR did not confirm the 1st prize 98C 88108 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "mh:2026-11-17:Maharashtra Gajlaxmi Mangal"}
+{"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "mh:2026-11-17:Maharashtra Padmini"}
+{"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "mh:2026-11-17:Maharashtra Sahyadri Mahalaxmi"}
+{"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "review:2026-11-18_NL8PM"}
+{"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "review:2026-11-18_NL1PM"}
