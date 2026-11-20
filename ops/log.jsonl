@@ -192,3 +192,6 @@
 {"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "mh:2026-11-17:Maharashtra Sahyadri Mahalaxmi"}
 {"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "review:2026-11-18_NL8PM"}
 {"at": "2026-11-19T19:13+00:00", "event": "resolved", "id": "review:2026-11-18_NL1PM"}
+{"at": "2026-11-20T00:46+00:00", "event": "open", "id": "mh:2026-11-19:Maharashtra Diwali", "kind": "unread", "severity": "low", "detail": "Maharashtra Diwali 2026-11-19: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-20T00:46+00:00", "event": "open", "id": "mh:2026-11-19:Maharashtra Ganeshlaxmi Gaurav", "kind": "unread", "severity": "low", "detail": "Maharashtra Ganeshlaxmi Gaurav 2026-11-19: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-20T00:46+00:00", "event": "open", "id": "mh:2026-11-19:Maharashtra Sahyadri Deeplaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Deeplaxmi 2026-11-19: still a PDF link (OCR tries 2)"}
