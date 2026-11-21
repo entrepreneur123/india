@@ -204,3 +204,5 @@
 {"at": "2026-11-20T18:58+00:00", "event": "resolved", "id": "review:2026-11-19_NL8PM"}
 {"at": "2026-11-20T18:58+00:00", "event": "resolved", "id": "review:2026-11-19_NL1PM"}
 {"at": "2026-11-21T03:53+00:00", "event": "open", "id": "mh:2026-11-20:Maharashtra Sahyadri Rajlaxmi", "kind": "unread", "severity": "low", "detail": "Maharashtra Sahyadri Rajlaxmi 2026-11-20: still a PDF link (OCR tries 2)"}
+{"at": "2026-11-21T15:26+00:00", "event": "open", "id": "review:2026-11-21_NL8PM", "kind": "review", "severity": "low", "detail": "2026-11-21_NL8PM: gazette OCR did not confirm the 1st prize 77H 85744 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
+{"at": "2026-11-21T15:26+00:00", "event": "open", "id": "review:2026-11-21_NL1PM", "kind": "review", "severity": "low", "detail": "2026-11-21_NL1PM: gazette OCR did not confirm the 1st prize 63L 20070 (lower prizes 98% confirmed): compare by eye with tools/eyecheck.py"}
