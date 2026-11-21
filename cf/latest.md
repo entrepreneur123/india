@@ -1,12 +1,10 @@
-# Visitors 2026-11-06 – 2026-11-19 (Cloudflare Web Analytics, generated 2026-11-19T11:55+00:00)
+# Visitors 2026-11-08 – 2026-11-21 (Cloudflare Web Analytics, generated 2026-11-21T11:27+00:00)
 
 Visits = sessions from outside the site; page views = every page load. Sites with ad/script blockers are not counted.
 
 ## Daily
 | date | visits | page views |
 |---|---|---|
-| 2026-11-06 | 30 | 30 |
-| 2026-11-07 | 10 | 20 |
 | 2026-11-08 | 30 | 30 |
 | 2026-11-09 | 0 | 10 |
 | 2026-11-10 | 10 | 10 |
@@ -16,24 +14,25 @@ Visits = sessions from outside the site; page views = every page load. Sites wit
 | 2026-11-15 | 20 | 20 |
 | 2026-11-18 | 10 | 10 |
 | 2026-11-19 | 20 | 20 |
+| 2026-11-20 | 30 | 30 |
 
 ## Countries
 | country | visits | page views |
 |---|---|---|
-| US | 140 | 140 |
+| US | 130 | 130 |
 | IN | 30 | 40 |
-| KR | 20 | 30 |
+| KR | 20 | 20 |
 | CN | 10 | 10 |
 | DE | 10 | 10 |
 
 ## Pages
 | path | visits | page views |
 |---|---|---|
-| / | 90 | 90 |
-| /maharashtra/ | 80 | 80 |
-| /kerala/ | 0 | 10 |
+| / | 80 | 80 |
+| /maharashtra/ | 70 | 70 |
 | /result/08-11-2026/maharashtra-ganeshlaxmi-vaibhav/ | 10 | 10 |
 | /result/07-11-2026/ | 10 | 10 |
 | /hi/maharashtra/ganeshlaxmi-shubh/ | 0 | 10 |
 | /hi/result/09-11-2026/maharashtra-sagarlaxmi/ | 10 | 10 |
+| /hi/maharashtra/ | 10 | 10 |
 | /maharashtra/sahyadri-prabhalaxmi/ | 10 | 10 |

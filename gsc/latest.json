@@ -1,13 +1,13 @@
 {
- "generated": "2026-11-19T11:54+00:00",
+ "generated": "2026-11-21T11:26+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-22",
- "end": "2026-11-19",
+ "start": "2026-10-24",
+ "end": "2026-11-21",
  "countries": [
   {
    "country": "ind",
    "clicks": 196,
-   "impressions": 2551,
+   "impressions": 2553,
    "ctr": 0.0768,
    "position": 7.7
   },
@@ -436,12 +436,26 @@
   {
    "date": "2026-11-18",
    "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "date": "2026-11-19",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "date": "2026-11-20",
+   "clicks": 0,
    "impressions": 0,
    "ctr": 0,
    "position": 0
   },
   {
-   "date": "2026-11-19",
+   "date": "2026-11-21",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
@@ -4134,6 +4148,13 @@
    "position": 8
   },
   {
+   "page": "https://lottodost.com/result/17-01-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
    "page": "https://lottodost.com/result/17-06-2026/",
    "clicks": 0,
    "impressions": 1,
@@ -4160,6 +4181,13 @@
    "impressions": 4,
    "ctr": 0,
    "position": 20.2
+  },
+  {
+   "page": "https://lottodost.com/result/18-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
   },
   {
    "page": "https://lottodost.com/result/19-06-2026/",
@@ -6228,30 +6256,6 @@
  ],
  "days_pages": [
   {
-   "date": "2026-11-10",
-   "page": "https://lottodost.com/maharashtra/sagarlaxmi/",
-   "clicks": 4,
-   "impressions": 6,
-   "ctr": 0.6667,
-   "position": 1.8
-  },
-  {
-   "date": "2026-11-09",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 1
-  },
-  {
-   "date": "2026-11-10",
-   "page": "https://lottodost.com/maharashtra/padmini/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 2
-  },
-  {
    "date": "2026-11-11",
    "page": "https://lottodost.com/",
    "clicks": 0,
@@ -6338,6 +6342,22 @@
    "impressions": 1,
    "ctr": 0,
    "position": 10
+  },
+  {
+   "date": "2026-11-18",
+   "page": "https://lottodost.com/result/18-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "date": "2026-11-19",
+   "page": "https://lottodost.com/result/17-01-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
   }
  ],
  "image_days": [
@@ -6529,6 +6549,20 @@
    "impressions": 0,
    "ctr": 0,
    "position": 0
+  },
+  {
+   "date": "2026-11-20",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-11-21",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
   }
  ],
  "image_pages": [
@@ -6593,9 +6627,9 @@
   },
   {
    "url": "https://lottodost.com/morning-1pm/",
-   "verdict": "PASS",
-   "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-11-04T20:12:49Z",
+   "verdict": "NEUTRAL",
+   "coverage": "Crawled - currently not indexed",
+   "lastCrawl": "2026-11-20T17:51:49Z",
    "canonical": "https://lottodost.com/morning-1pm/"
   },
   {

@@ -1,12 +1,12 @@
 {
  "countries": [
   {
-   "count": 140,
+   "count": 130,
    "dimensions": {
     "countryName": "US"
    },
    "sum": {
-    "visits": 140
+    "visits": 130
    }
   },
   {
@@ -19,7 +19,7 @@
    }
   },
   {
-   "count": 30,
+   "count": 20,
    "dimensions": {
     "countryName": "KR"
    },
@@ -47,26 +47,6 @@
   }
  ],
  "daily": [
-  {
-   "count": 30,
-   "dimensions": {
-    "date": "2026-11-06",
-    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
-   },
-   "sum": {
-    "visits": 30
-   }
-  },
-  {
-   "count": 20,
-   "dimensions": {
-    "date": "2026-11-07",
-    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
-   },
-   "sum": {
-    "visits": 10
-   }
-  },
   {
    "count": 30,
    "dimensions": {
@@ -156,34 +136,35 @@
    "sum": {
     "visits": 20
    }
+  },
+  {
+   "count": 30,
+   "dimensions": {
+    "date": "2026-11-20",
+    "siteTag": "690b8e2af1734589b634f9070c1e9bd6"
+   },
+   "sum": {
+    "visits": 30
+   }
   }
  ],
  "pages": [
   {
-   "count": 90,
-   "dimensions": {
-    "requestPath": "/"
-   },
-   "sum": {
-    "visits": 90
-   }
-  },
-  {
    "count": 80,
    "dimensions": {
-    "requestPath": "/maharashtra/"
+    "requestPath": "/"
    },
    "sum": {
     "visits": 80
    }
   },
   {
-   "count": 10,
+   "count": 70,
    "dimensions": {
-    "requestPath": "/kerala/"
+    "requestPath": "/maharashtra/"
    },
    "sum": {
-    "visits": 0
+    "visits": 70
    }
   },
   {
@@ -217,6 +198,15 @@
    "count": 10,
    "dimensions": {
     "requestPath": "/hi/result/09-11-2026/maharashtra-sagarlaxmi/"
+   },
+   "sum": {
+    "visits": 10
+   }
+  },
+  {
+   "count": 10,
+   "dimensions": {
+    "requestPath": "/hi/maharashtra/"
    },
    "sum": {
     "visits": 10
