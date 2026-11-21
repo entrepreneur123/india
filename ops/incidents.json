@@ -29,6 +29,12 @@
    "severity": "low",
    "detail": "2026-11-20_NL1PM: gazette OCR did not confirm the 1st prize 35B 45879 (lower prizes 99% confirmed): compare by eye with tools/eyecheck.py",
    "first_seen": "2026-11-20T17:52+00:00"
+  },
+  "mh:2026-11-20:Maharashtra Sahyadri Rajlaxmi": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Sahyadri Rajlaxmi 2026-11-20: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-11-21T03:53+00:00"
   }
  },
  "resolved": {
